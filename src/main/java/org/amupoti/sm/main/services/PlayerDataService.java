@@ -21,6 +21,7 @@ import java.net.URL;
 public class PlayerDataService {
 
     //TODO: this XPATH expressions are not valid since the page changes depending on the number of matches played by player
+
     private static final String VAL_MEDIA_LOCAL = "//*[@id=\"sm_central\"]/div[2]/table/tbody/tr[38]/td[9]/b";
     private static final String VAL_MEDIA_VISITANTE = "//*[@id=\"sm_central\"]/div[2]/table/tbody/tr[39]/td[9]/b";
     private static final String VAL_MANTENER_BROKER = "//*[@id=\"sm_central\"]/div[3]/table/tbody/tr[6]/td[2]";
