@@ -1,0 +1,5 @@
+<h1>Jugadores</h1>
+
+  #foreach( $player in $players )
+    <li>$player.playerId: Media local: $player.localMean. Media visitante:$player.visitorMean. Mantiene broker: $player.keepBroker </li>
+  #end

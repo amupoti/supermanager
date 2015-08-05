@@ -12,6 +12,7 @@ import lombok.ToString;
 @ToString
 public class PlayerData {
 
+    private PlayerId playerId;
     private Float localMean;
     private Float visitorMean;
     private Float keepBroker;
