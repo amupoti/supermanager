@@ -6,6 +6,7 @@ import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -46,6 +47,7 @@ public class PlayerDataService {
      * @throws IOException
      * @throws XPatherException
      */
+    @Cacheable("playerData")
     public PlayerData getPlayerData(PlayerId playerId) throws IOException, XPatherException, URISyntaxException {
         PlayerData playerData = new PlayerData();
         String html = htmlProviderService.getPlayerURL(playerId);
