@@ -44,7 +44,7 @@ public class PlayerController {
         LOG.info("Retrieving info for all players:");
         List<PlayerId> playerIdList = playerDataService.getAllPlayers();
         List<PlayerData> playerDataList = new LinkedList<>();
-        for (int i=0;i<10;i++){
+        for (int i=0;i<3;i++){
             LOG.info("Getting data for player "+playerIdList.get(i));
             PlayerData playerData = playerDataService.getPlayerData(playerIdList.get(i));
             playerDataList.add(playerData);

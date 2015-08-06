@@ -1,5 +1,46 @@
-<h1>Jugadores</h1>
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src="/js/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.tablesorter.js"></script>
+    <link rel="stylesheet" href="/css/style.css" type="text/css" id="" media="print, projection, screen">
+<script>
+$(document).ready(function()
+    {
+        $("#myTable").tablesorter();
+    }
+);
 
-  #foreach( $player in $players )
-    <li>$player.playerId: Media local: $player.localMean. Media visitante:$player.visitorMean. Mantiene broker: $player.keepBroker </li>
-  #end
+</script>
+</head>
+<body>
+    <h1>Jugadores</h1>
+
+    <table id="myTable" class="tablesorter">
+    <thead>
+    <tr>
+        <th>Nombre</th>
+        <th>Media local</th>
+        <th>Media Visitante</th>
+        <th>Mantiene broker</th>
+    </tr>
+    </thead>
+    <tbody>
+         #foreach( $player in $players )
+        <tr>
+            <td>$player.playerId</td>
+            <td>$player.localMean</td>
+            <td>$player.visitorMean</td>
+            <td>$player.keepBroker</td>
+        </tr>
+      #end
+    </tbody>
+    </table>
+
+
+
+</body>
+</html>
+
+
+
