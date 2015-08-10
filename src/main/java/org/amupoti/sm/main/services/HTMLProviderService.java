@@ -1,6 +1,6 @@
 package org.amupoti.sm.main.services;
 
-import org.amupoti.sm.main.services.bean.PlayerId;
+import org.amupoti.sm.main.repository.entity.PlayerId;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 

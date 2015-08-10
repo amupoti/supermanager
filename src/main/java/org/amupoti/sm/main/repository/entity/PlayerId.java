@@ -1,14 +1,16 @@
-package org.amupoti.sm.main.services.bean;
+package org.amupoti.sm.main.repository.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+
+import java.io.Serializable;
 
 /**
  * Created by Marcel on 04/08/2015.
  */
 @AllArgsConstructor
 @Data
-public class PlayerId {
+public class PlayerId implements Serializable{
 
     private String id;
 

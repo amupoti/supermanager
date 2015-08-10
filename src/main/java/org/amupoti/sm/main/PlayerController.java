@@ -1,8 +1,9 @@
 package org.amupoti.sm.main;
 
-import org.amupoti.sm.main.services.PlayerDataService;
-import org.amupoti.sm.main.services.bean.PlayerData;
-import org.amupoti.sm.main.services.bean.PlayerId;
+import org.amupoti.sm.main.services.DataProviderService;
+import org.amupoti.sm.main.services.PlayerService;
+import org.amupoti.sm.main.repository.entity.PlayerEntity;
+import org.amupoti.sm.main.repository.entity.PlayerId;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.htmlcleaner.XPatherException;
@@ -14,8 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Marcel on 03/08/2015.
@@ -26,33 +26,42 @@ public class PlayerController {
     private final static Log LOG = LogFactory.getLog(PlayerController.class);
 
     @Autowired
-    private PlayerDataService playerDataService;
+    private PlayerService playerService;
+
+    @Autowired
+    private DataProviderService dataProviderService;
 
     @RequestMapping(value = "/players/{id}")
     public String getPlayer(@PathVariable String id,Model model) throws IOException, XPatherException, URISyntaxException {
         PlayerId playerId = new PlayerId(id);
-        LOG.info("Retrieving info for player:"+playerId);
-        PlayerData playerData = playerDataService.getPlayerData(playerId);
+        LOG.info("Retrieving info for player:" + playerId);
+        PlayerEntity player= playerService.getPlayer(playerId);
         model.addAttribute("playerId",playerId);
-        model.addAttribute("player",playerData);
-        LOG.info("Retrieved info for player:" + playerId + "." +playerData);
+        model.addAttribute("player",player);
+        LOG.info("Retrieved info for player:" + playerId + "." +player);
         return "player";
     }
 
     @RequestMapping(value = "/players/all")
-    public String getPlayers(Model model) throws IOException, XPatherException, URISyntaxException {
-        LOG.info("Retrieving info for all players:");
-        List<PlayerId> playerIdList = playerDataService.getAllPlayers();
-        List<PlayerData> playerDataList = new LinkedList<>();
-        for (int i=0;i<3;i++){
-            LOG.info("Getting data for player "+playerIdList.get(i));
-            PlayerData playerData = playerDataService.getPlayerData(playerIdList.get(i));
-            playerDataList.add(playerData);
-        }
-        model.addAttribute("players",playerDataList);
+    public String getPlayers(Model model) throws IOException, XPatherException, URISyntaxException, InterruptedException, ExecutionException {
+        Iterable<PlayerEntity> playerList =  playerService.getPlayers();
+        model.addAttribute("players", playerList);
         return "players";
     }
 
+    @RequestMapping(value = "/populate")
+    public void populateData() throws IOException, XPatherException, InterruptedException, ExecutionException, URISyntaxException {
+        dataProviderService.populate();
+    }
+
+
+
+    @RequestMapping(value = "/test")
+    public void test(){
+        dataProviderService.storeDummyData();
+        PlayerEntity dummyData = dataProviderService.getDummyData();
+        LOG.info("Getting dummy data: "+dummyData);
+    }
 
 }
 

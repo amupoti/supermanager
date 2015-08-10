@@ -1,8 +1,11 @@
-package org.amupoti.sm.main.services.bean;
+package org.amupoti.sm.main.repository.entity;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 /**
  * Created by Marcel on 04/08/2015.
@@ -10,9 +13,11 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class PlayerData {
+@Entity
+public class PlayerEntity {
 
-    private PlayerId playerId;
+    @Id
+    private PlayerId id;
     private Float localMean;
     private Float visitorMean;
     private Float keepBroker;
