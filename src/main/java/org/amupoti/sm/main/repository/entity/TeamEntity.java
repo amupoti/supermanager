@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Marcel on 09/08/2015.
@@ -19,17 +21,12 @@ public class TeamEntity {
      * TODO: create Entity
      */
     @Id
+    @GeneratedValue(strategy= GenerationType.AUTO)
     private String id;
     private String name;
-    @OneToOne(cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
-    private ValueEntity valB;
-    @OneToOne(cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
-    private ValueEntity valA;
-    @OneToOne(cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
-    private ValueEntity valP;
-//    private ValueEntity valTeam;
+
+    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @MapKey(name="type")
+    private Map<String,ValueEntity> valMap = new HashMap<>();
 
 }

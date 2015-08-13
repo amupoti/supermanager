@@ -28,7 +28,7 @@ $(document).ready(function()
     <tbody>
          #foreach( $player in $players )
         <tr>
-            <td>$player.playerId</td>
+            <td>$player.id</td>
             <td>$player.localMean</td>
             <td>$player.visitorMean</td>
             <td>$player.keepBroker</td>

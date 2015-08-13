@@ -2,6 +2,7 @@ package org.amupoti.sm.main.services;
 
 import org.amupoti.sm.main.repository.PlayerRepository;
 import org.amupoti.sm.main.repository.TeamRepository;
+import org.amupoti.sm.main.repository.ValueRepository;
 import org.amupoti.sm.main.repository.entity.PlayerEntity;
 import org.amupoti.sm.main.repository.entity.PlayerId;
 import org.amupoti.sm.main.repository.entity.TeamEntity;
@@ -50,7 +51,22 @@ public class DataProviderService {
     private static final String BASE = "B";
     private static final String ALERO = "A";
     private static final String PIVOT = "P";
-    private static final String LOCAL_VAL = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[8]/td[2]";
+
+    /**
+     * XPath expressions for team page
+     */
+
+
+
+    private static final String VAL_LOCAL = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[8]/td[2]";
+    private static final String VAL_LOCAL_RECEIVED = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[8]/td[3]";
+    private static final String VAL_VISITOR = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[8]/td[4]";
+    private static final String VAL_VISITOR_RECEIVED = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[8]/td[5]";
+    private static final String VAL = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[8]/td[6]";
+    private static final String VAL_RECEIVED = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[8]/td[7]";
+
+
+
 
 
     private HtmlCleaner cleaner;
@@ -65,6 +81,9 @@ public class DataProviderService {
 
     @Autowired
     private TeamRepository teamRepository;
+
+    @Autowired
+    private ValueRepository valueRepository;
 
     @PostConstruct
     public void init() {
@@ -97,28 +116,13 @@ public class DataProviderService {
     }
 
 
-    /**
-     * Obtains the value of applying the given XPATH to the provided HTML page
-     * @param html
-     * @param xPathExpression
-     * @return
-     * @throws XPatherException
-     * @throws IOException
-     */
-    private String getValue(String html, String xPathExpression) throws XPatherException, IOException {
-        try{
-            TagNode node = cleaner.clean(html);
-            Object[] objects = node.evaluateXPath(xPathExpression);
-            String s = ((TagNode) objects[0]).getAllChildren().get(0).toString();
-            return s;
-        }
-        catch (Exception e){
-            return "-1";
-        }
-    }
 
-    //*[@id="sm_central"]/div/table/tbody/tr[3]/td[1]/a
-    ////*[@id="sm_central"]/div/table/tbody/tr[286]/td[1]/a
+    /**
+     * Returns the list of players by getting a page with all players
+     * @return
+     * @throws IOException
+     * @throws XPatherException
+     */
     private List<PlayerId> populatePlayerIds() throws IOException, XPatherException {
         String html = htmlProviderService.getAllPlayersURL();
         TagNode node = cleaner.clean(html);
@@ -135,22 +139,9 @@ public class DataProviderService {
         return playerIds.subList(0,5);
     }
 
-    public void storeDummyData(){
-        PlayerEntity playerEntity = new PlayerEntity();
-        playerEntity.setId(new PlayerId("Marcel"));
-        playerEntity.setLocalMean(22.2f);
-        playerEntity.setVisitorMean(22.2f);
-        playerEntity.setKeepBroker(22.2f);
-        playerRepository.save(playerEntity);
-    }
-
-    public PlayerEntity getDummyData(){
-        return playerRepository.findOne(new PlayerId("Marcel"));
-    }
-
     public void populate() throws IOException, XPatherException, URISyntaxException, InterruptedException, ExecutionException {
-        List<PlayerId> playerIdList = populatePlayerIds();
-        populatePlayerData(playerIdList);
+        //List<PlayerId> playerIdList = populatePlayerIds();
+        //populatePlayerData(playerIdList);
         //TODO: service should return player list
         //TODO: endpoint to load all the data into the cache: start with players, then we can retrieve by any kind of players
         //Add to model
@@ -192,6 +183,10 @@ public class DataProviderService {
         }
     }
 
+    /*
+     * Teams
+     */
+
     public void populateTeams() throws IOException, XPatherException {
         //Load from static data
         String[] teamIds = populateTeamIds();
@@ -201,8 +196,9 @@ public class DataProviderService {
 
     private String[] populateTeamIds() {
 
-//        String[] teamIds={"AND","BLB","CAI","CAN","CLA","EST","FCB","FUE","GBC","GCA","JOV","MAN","MUR","OBR","RMA","SEV","UNI","VBC"};
-        return new String[]{"AND", "BLB"};
+        String[] teamIds={"AND","BLB","CAI","CAN","CLA","EST","FCB","FUE","GBC","GCA","JOV","MAN","MUR","OBR","RMA","SEV","UNI","VBC"};
+       // return new String[]{"AND", "BLB"};
+        return teamIds;
     }
 
 
@@ -210,44 +206,69 @@ public class DataProviderService {
         //Load all team data from every team page
         for (int i = 0; i < teamIds.length; i++) {
             LOG.info("Populating team " + teamIds[i]);
-            populateTeamValues(teamIds[i], BASE);
 
-            populateTeamValues(teamIds[i], ALERO);
-            populateTeamValues(teamIds[i], PIVOT);
+            TeamEntity teamEntity = teamRepository.findByName(teamIds[i]);
+            if (teamEntity==null){
+                teamEntity = new TeamEntity();
+            }
+            // teamEntity.setId(teamIds[i]);
+            teamEntity.setName(teamIds[i]);
+
+            for (PlayerPosition p:PlayerPosition.values()){
+                String id = p.getId();
+                LOG.info("Populating position " +id );
+                ValueEntity valueEntity;
+                if (teamEntity.getValMap().get(id)!=null){
+                    valueEntity = teamEntity.getValMap().get(id);
+                }
+                else{
+                    valueEntity = new ValueEntity();
+                }
+                populateTeamValues(teamIds[i], id, valueEntity);
+                valueEntity = valueRepository.save(valueEntity);
+                teamEntity.getValMap().put(id, valueEntity);
+            }
+
+            teamRepository.save(teamEntity);
         }
     }
 
 
 
-    private void populateTeamValues(String teamId, String position) throws IOException, XPatherException {
+    private ValueEntity populateTeamValues(String teamId, String position, ValueEntity valueEntity) throws IOException, XPatherException {
+        LOG.info("Populating " + position + " for :" + teamId);
 
-        TeamEntity teamEntity = new TeamEntity();
-        teamEntity.setId(teamId);
-        ValueEntity valueB = new ValueEntity();
+        //Get page for the given position
+        String html = getTeamPageByPost(teamId, position);
+        //Obtain values via XPath
+        String value = getValue(html, VAL);
+        String valueReceived = getValue(html, VAL_RECEIVED);
+        String valueLocal = getValue(html, VAL_LOCAL);
+        String valueVisitor = getValue(html, VAL_VISITOR);
 
-        String html = getPageAsPost(teamId,position);
-        String valueLocal = getValue(html, LOCAL_VAL);
-        valueB.setVal((valueLocal));
-        LOG.info("Value for "+position+" is :"+valueLocal);
-        if (position.equals(BASE)){
-            teamEntity.setValB(valueB);
-        }
-        else if(position.equals(ALERO)){
-            teamEntity.setValA(valueB);
-
-        }
-        else{
-            teamEntity.setValP(valueB);
-
-        }
-
+        String valueLocalReceived = getValue(html, VAL_LOCAL_RECEIVED);
+        String valueVisitorReceived = getValue(html, VAL_VISITOR_RECEIVED);
+        //Set values into entity for persistence
+        valueEntity.setType(position);
+        valueEntity.setVal(value);
+        valueEntity.setValV(valueVisitor);
+        valueEntity.setValL(valueLocal);
+        valueEntity.setValRecL(valueLocalReceived);
+        valueEntity.setValRec(valueReceived);
+        valueEntity.setValRecV(valueVisitorReceived);
 
 
-        teamRepository.save(teamEntity);
 
+        return valueEntity;
 
     }
-    private String getPageAsPost(String teamId, String position) throws IOException {
+
+    /*
+     * Helpers
+     */
+
+
+    private String getTeamPageByPost(String teamId, String position) throws IOException {
         org.apache.http.client.HttpClient client = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost((TEAM_PAGE+teamId));
         List <NameValuePair> nvps = new ArrayList<NameValuePair>();
@@ -256,6 +277,45 @@ public class DataProviderService {
         HttpResponse response = client.execute(httpPost);
         return IOUtils.toString(response.getEntity().getContent());
 
+    }
+
+
+    /**
+     * Obtains the value of applying the given XPATH to the provided HTML page
+     * @param html
+     * @param xPathExpression
+     * @return
+     * @throws XPatherException
+     * @throws IOException
+     */
+    private String getValue(String html, String xPathExpression) throws XPatherException, IOException {
+        try{
+            TagNode node = cleaner.clean(html);
+            Object[] objects = node.evaluateXPath(xPathExpression);
+            String s = ((TagNode) objects[0]).getAllChildren().get(0).toString();
+            return s;
+        }
+        catch (Exception e){
+            return "-1";
+        }
+    }
+
+    /**
+     * Tests
+     */
+
+
+    public void storeDummyData(){
+        PlayerEntity playerEntity = new PlayerEntity();
+        playerEntity.setId(new PlayerId("Marcel"));
+        playerEntity.setLocalMean(22.2f);
+        playerEntity.setVisitorMean(22.2f);
+        playerEntity.setKeepBroker(22.2f);
+        playerRepository.save(playerEntity);
+    }
+
+    public PlayerEntity getDummyData(){
+        return playerRepository.findOne(new PlayerId("Marcel"));
     }
 
 }

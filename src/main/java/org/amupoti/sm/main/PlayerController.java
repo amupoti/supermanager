@@ -1,9 +1,11 @@
 package org.amupoti.sm.main;
 
-import org.amupoti.sm.main.services.DataProviderService;
-import org.amupoti.sm.main.services.PlayerService;
 import org.amupoti.sm.main.repository.entity.PlayerEntity;
 import org.amupoti.sm.main.repository.entity.PlayerId;
+import org.amupoti.sm.main.repository.entity.TeamEntity;
+import org.amupoti.sm.main.services.DataProviderService;
+import org.amupoti.sm.main.services.PlayerService;
+import org.amupoti.sm.main.services.TeamService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.htmlcleaner.XPatherException;
@@ -29,6 +31,9 @@ public class PlayerController {
     private PlayerService playerService;
 
     @Autowired
+    private TeamService teamService;
+
+    @Autowired
     private DataProviderService dataProviderService;
 
     @RequestMapping(value = "/players/{id}")
@@ -38,16 +43,26 @@ public class PlayerController {
         PlayerEntity player= playerService.getPlayer(playerId);
         model.addAttribute("playerId",playerId);
         model.addAttribute("player",player);
-        LOG.info("Retrieved info for player:" + playerId + "." +player);
+        LOG.info("Retrieved info for player:" + playerId + "." + player);
         return "player";
     }
 
-    @RequestMapping(value = "/players/all")
+    @RequestMapping(value = "/players/")
     public String getPlayers(Model model) throws IOException, XPatherException, URISyntaxException, InterruptedException, ExecutionException {
         Iterable<PlayerEntity> playerList =  playerService.getPlayers();
         model.addAttribute("players", playerList);
         return "players";
     }
+
+
+    @RequestMapping(value = "/teams/")
+    public String getTeams(Model model) throws IOException, XPatherException, URISyntaxException, InterruptedException, ExecutionException {
+
+        Iterable<TeamEntity> teamList =  teamService.getTeams();
+        model.addAttribute("teams", teamList);
+        return "teams";
+    }
+
 
     @RequestMapping(value = "/populate")
     public void populateData() throws IOException, XPatherException, InterruptedException, ExecutionException, URISyntaxException {
