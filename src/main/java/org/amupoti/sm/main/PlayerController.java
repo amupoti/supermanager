@@ -3,7 +3,7 @@ package org.amupoti.sm.main;
 import org.amupoti.sm.main.repository.entity.PlayerEntity;
 import org.amupoti.sm.main.repository.entity.PlayerId;
 import org.amupoti.sm.main.repository.entity.TeamEntity;
-import org.amupoti.sm.main.services.DataProviderService;
+import org.amupoti.sm.main.services.DataPopulationService;
 import org.amupoti.sm.main.services.PlayerService;
 import org.amupoti.sm.main.services.TeamService;
 import org.apache.commons.logging.Log;
@@ -34,7 +34,7 @@ public class PlayerController {
     private TeamService teamService;
 
     @Autowired
-    private DataProviderService dataProviderService;
+    private DataPopulationService dataPopulationService;
 
     @RequestMapping(value = "/players/{id}")
     public String getPlayer(@PathVariable String id,Model model) throws IOException, XPatherException, URISyntaxException {
@@ -66,17 +66,11 @@ public class PlayerController {
 
     @RequestMapping(value = "/populate")
     public void populateData() throws IOException, XPatherException, InterruptedException, ExecutionException, URISyntaxException {
-        dataProviderService.populate();
+        dataPopulationService.populate();
     }
 
 
 
-    @RequestMapping(value = "/test")
-    public void test(){
-        dataProviderService.storeDummyData();
-        PlayerEntity dummyData = dataProviderService.getDummyData();
-        LOG.info("Getting dummy data: "+dummyData);
-    }
 
 }
 

@@ -14,8 +14,10 @@ import java.net.URL;
 @Service
 public class HTMLProviderService {
 
-    private final String PLAYER_URL = "http://www.rincondelmanager.com/smgr/stats.php?nombre=";
-    private final String ALL_PLAYERS = "http://www.rincondelmanager.com/smgr/valoracion.php?pos=135";
+    private static final String PLAYER_URL = "http://www.rincondelmanager.com/smgr/stats.php?nombre=";
+    private static final String ALL_PLAYERS = "http://www.rincondelmanager.com/smgr/valoracion.php?pos=135";
+    public static final String TEAM_PAGE = "http://www.rincondelmanager.com/smgr/team.php?equipo=";
+
 
     public String getPlayerURL(PlayerId playerId) throws IOException, URISyntaxException {
         String url = (PLAYER_URL + playerId.getId())
@@ -28,5 +30,18 @@ public class HTMLProviderService {
 
         URL url = new URL(ALL_PLAYERS);
         return IOUtils.toString((url).openStream());
+    }
+
+
+    public String getTeamURLBody(String teamName) throws IOException {
+
+        return get(TEAM_PAGE+teamName);
+
+    }
+
+    private String get(String getUrl) throws IOException {
+        URL url = new URL(getUrl);
+        return IOUtils.toString((url).openStream());
+
     }
 }

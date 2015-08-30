@@ -29,4 +29,8 @@ public class TeamEntity {
     @MapKey(name="type")
     private Map<String,ValueEntity> valMap = new HashMap<>();
 
+    @OneToMany
+    @MapKey(name="number")
+    private Map<Integer,MatchEntity> matchMap = new HashMap<>();
+
 }
