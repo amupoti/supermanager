@@ -1,8 +1,8 @@
-package org.amupoti.sm.main.services;
+package org.amupoti.sm.main.services.provider;
 
 import org.amupoti.sm.main.repository.entity.PlayerId;
 import org.apache.commons.io.IOUtils;
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -11,12 +11,14 @@ import java.net.URL;
 /**
  * Created by Marcel on 05/08/2015.
  */
-@Service
 public class HTMLProviderService {
 
-    private static final String PLAYER_URL = "http://www.rincondelmanager.com/smgr/stats.php?nombre=";
-    private static final String ALL_PLAYERS = "http://www.rincondelmanager.com/smgr/valoracion.php?pos=135";
-    public static final String TEAM_PAGE = "http://www.rincondelmanager.com/smgr/team.php?equipo=";
+    @Value("${url.player}")
+    private String PLAYER_URL;// = "http://www.rincondelmanager.com/smgr/stats.php?nombre=";
+    @Value("${url.players}")
+    private  String ALL_PLAYERS;// = "http://www.rincondelmanager.com/smgr/valoracion.php?pos=135";
+    @Value("${url.team}")
+    public  String TEAM_PAGE;// = "http://www.rincondelmanager.com/smgr/team.php?equipo=";
 
 
     public String getPlayerURL(PlayerId playerId) throws IOException, URISyntaxException {
@@ -28,8 +30,7 @@ public class HTMLProviderService {
 
     public String getAllPlayersURL() throws IOException {
 
-        URL url = new URL(ALL_PLAYERS);
-        return IOUtils.toString((url).openStream());
+        return get(ALL_PLAYERS);
     }
 
 
@@ -39,7 +40,7 @@ public class HTMLProviderService {
 
     }
 
-    private String get(String getUrl) throws IOException {
+    public String get(String getUrl) throws IOException {
         URL url = new URL(getUrl);
         return IOUtils.toString((url).openStream());
 

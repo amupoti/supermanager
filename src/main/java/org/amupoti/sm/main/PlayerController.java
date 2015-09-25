@@ -54,6 +54,13 @@ public class PlayerController {
         return "players";
     }
 
+    @RequestMapping(value = "/overview/")
+    public String getOverview(Model model) throws IOException, XPatherException, URISyntaxException, InterruptedException, ExecutionException {
+        Iterable<PlayerEntity> playerList =  playerService.getPlayers();
+        model.addAttribute("players", playerList);
+
+        return "overview";
+    }
 
     @RequestMapping(value = "/teams/")
     public String getTeams(Model model) throws IOException, XPatherException, URISyntaxException, InterruptedException, ExecutionException {

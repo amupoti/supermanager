@@ -13,6 +13,6 @@ public interface MatchRepository extends CrudRepository<MatchEntity,String>{
      * Returns all the matches for the given teamName
      * @return
      */
-    @Query("select m from MatchEntity m where m.local= ?1 AND m.visitor=?1")
-    Iterable<MatchEntity> findByLocalAndVisitor(String teamName);
+    @Query("select m from MatchEntity m where m.local= ?1 OR m.visitor=?1")
+    Iterable<MatchEntity> findByLocalOrVisitor(String teamName);
 }

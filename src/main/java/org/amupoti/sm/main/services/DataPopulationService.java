@@ -67,21 +67,20 @@ public class DataPopulationService {
 
     public void populate() throws IOException, XPatherException, URISyntaxException, InterruptedException, ExecutionException {
 
-        populatePlayers();
         populateTeams();
+        populatePlayers();
         populateMatches();
 
     }
 
-    private void populateMatches() throws IOException {
+    private void populateMatches() throws IOException, XPatherException {
+        LOG.info("Populating matches");
 
-        for (int i=0;i<NUM_MATCHES;i++){
-
-            Iterable<TeamEntity> teams = teamRepository.findAll();
-            for (TeamEntity teamEntity:teams){
-                populateMatchesByTeam(teamEntity.getName());
-            }
+        Iterable<TeamEntity> teams = teamRepository.findAll();
+        for (TeamEntity teamEntity:teams){
+            populateMatchesByTeam(teamEntity.getName());
         }
+
     }
 
 
@@ -95,11 +94,15 @@ public class DataPopulationService {
      * @throws ExecutionException
      */
     private void populatePlayers() throws IOException, XPatherException, URISyntaxException, InterruptedException, ExecutionException {
+        LOG.info("Populating players");
         List<PlayerId> playerIdList = dataProviderStrategy.getPlayerIds();
-        List<PlayerEntity> playerEntityList = dataProviderStrategy.getPlayersData(playerIdList);
+        Iterable<PlayerEntity> playerEntityList = playerRepository.findAll();
+        if (playerEntityList==null || !playerEntityList.iterator().hasNext()) {
+            playerEntityList = dataProviderStrategy.getPlayersData(playerIdList);
+        }
 
-        for (int i=0;i<playerIdList.size();i++){
-            PlayerEntity playerData = playerEntityList.get(i);
+        while (playerEntityList.iterator().hasNext()){
+            PlayerEntity playerData = playerEntityList.iterator().next();
             playerRepository.save(playerData);
         }
     }
@@ -109,6 +112,7 @@ public class DataPopulationService {
      */
 
     private void populateTeams() throws IOException, XPatherException {
+        LOG.info("Populating teams");
         //Load from static data
         String[] teamIds = teamDataProvider.populateTeamIds();
         //Load from web, load players + calendar
@@ -130,22 +134,26 @@ public class DataPopulationService {
             }
             teamEntity.setName(teamIds[i]);
 
-            for (PlayerPosition p:PlayerPosition.values()){
-                String id = p.getId();
-                LOG.info("Populating position " +id );
-                ValueEntity valueEntity;
-                if (teamEntity.getValMap().get(id)!=null){
-                    valueEntity = teamEntity.getValMap().get(id);
-                }
-                else{
-                    valueEntity = new ValueEntity();
-                }
-                populateTeamValues(teamIds[i], p, valueEntity);
-                valueEntity = valueRepository.save(valueEntity);
-                teamEntity.getValMap().put(id, valueEntity);
-            }
+            doPopulateTeamValues(teamIds[i], teamEntity);
 
             teamRepository.save(teamEntity);
+        }
+    }
+
+    private void doPopulateTeamValues(String teamId, TeamEntity teamEntity) throws IOException, XPatherException {
+        for (PlayerPosition p:PlayerPosition.values()){
+            String id = p.getId();
+            LOG.info("Populating position " +id );
+            ValueEntity valueEntity;
+            if (teamEntity.getValMap().get(id)!=null){
+                valueEntity = teamEntity.getValMap().get(id);
+            }
+            else{
+                valueEntity = new ValueEntity();
+            }
+            doPopulateTeamValues(teamId, p, valueEntity);
+            valueEntity = valueRepository.save(valueEntity);
+            teamEntity.getValMap().put(id, valueEntity);
         }
     }
 
@@ -159,7 +167,7 @@ public class DataPopulationService {
      * @throws IOException
      * @throws XPatherException
      */
-    private ValueEntity populateTeamValues(String teamName, PlayerPosition position, ValueEntity valueEntity) throws IOException, XPatherException {
+    private ValueEntity doPopulateTeamValues(String teamName, PlayerPosition position, ValueEntity valueEntity) throws IOException, XPatherException {
         LOG.info("Populating " + position + " for :" + teamName);
 
         //Get page for the given position
@@ -184,21 +192,24 @@ public class DataPopulationService {
 
     }
 
-    private void populateMatchesByTeam(String teamName) throws IOException {
+    /**
+     * Match data will be always loaded
+     * @param teamName
+     * @throws IOException
+     * @throws XPatherException
+     */
+    private void populateMatchesByTeam(String teamName) throws IOException, XPatherException {
         TeamEntity teamEntity = teamRepository.findByName(teamName);
-        Iterable<MatchEntity> matchEntities = matchRepository.findByLocalAndVisitor(teamName);
-        if (matchEntities==null){
-            LOG.info("Getting matches for team " + teamName);
-            matchEntities = matchDataProvider.getTeamMatches(teamName);
-        }
-        else{
-            return;
-        }
+
+        LOG.info("Getting matches for team " + teamName);
+        Iterable<MatchEntity> matchEntities = matchDataProvider.getTeamMatches(teamName);
+        matchRepository.save(matchEntities);
 
         for (MatchEntity matchEntity:matchEntities){
 
             teamEntity.getMatchMap().put(matchEntity.getNumber(), matchEntity);
         }
+        teamRepository.save(teamEntity);
     }
 
 

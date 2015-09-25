@@ -15,11 +15,6 @@ import java.util.Map;
 @Entity
 public class TeamEntity {
 
-    /**
-     * We need here the mean value obtained as local, visitor and also the value received as local and visitor
-     * We need this by position and by team
-     * TODO: create Entity
-     */
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private String id;

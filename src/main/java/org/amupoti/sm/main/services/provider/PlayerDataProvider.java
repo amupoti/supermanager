@@ -1,9 +1,7 @@
 package org.amupoti.sm.main.services.provider;
 
-import org.amupoti.sm.main.repository.PlayerRepository;
 import org.amupoti.sm.main.repository.entity.PlayerEntity;
 import org.amupoti.sm.main.repository.entity.PlayerId;
-import org.amupoti.sm.main.services.HTMLProviderService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.htmlcleaner.HtmlCleaner;
@@ -47,10 +45,6 @@ public class PlayerDataProvider {
     @Autowired
     private HTMLProviderService htmlProviderService;
 
-    //TODO: remove this into data service
-    @Autowired
-    private PlayerRepository playerRepository;
-
     @PostConstruct
     public void init() {
         cleaner = new HtmlCleaner();
@@ -58,9 +52,12 @@ public class PlayerDataProvider {
     }
 
 
-
-
-
+    /**
+     * Returns the list of player Ids from the web
+     * @return
+     * @throws IOException
+     * @throws XPatherException
+     */
     public List<PlayerId> getPlayerIds() throws IOException, XPatherException {
         String html = htmlProviderService.getAllPlayersURL();
         TagNode node = cleaner.clean(html);
@@ -73,8 +70,7 @@ public class PlayerDataProvider {
                 playerIds.add(new PlayerId(name));
             }
         }
-        //TODO: change, just retrieving fist 5 players for tests
-        return playerIds.subList(0, 5);
+        return playerIds;
     }
 
     public List<PlayerEntity> getPlayersData(List<PlayerId> playerIdList) throws XPatherException, IOException, URISyntaxException, InterruptedException, ExecutionException {
@@ -114,10 +110,7 @@ public class PlayerDataProvider {
     @Cacheable("playerData")
     @Async
     private Future<PlayerEntity> populatePlayerData(PlayerId playerId) throws IOException, XPatherException, URISyntaxException {
-        PlayerEntity playerEntity = playerRepository.findOne(playerId);
-        if (playerEntity==null){
-            playerEntity = new PlayerEntity();
-        }
+        PlayerEntity playerEntity = new PlayerEntity();
         String html = htmlProviderService.getPlayerURL(playerId);
         String localMean = getValue(html, PlayerDataProvider.VAL_MEDIA_LOCAL);
         String visitorMean = getValue(html, PlayerDataProvider.VAL_MEDIA_VISITANTE);

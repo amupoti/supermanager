@@ -1,14 +1,15 @@
 package org.amupoti.sm.main.services.provider;
 
 import org.amupoti.sm.main.repository.entity.MatchEntity;
-import org.amupoti.sm.main.services.HTMLProviderService;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
+import org.htmlcleaner.XPatherException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.LinkedHashSet;
 
 /**
  * Created by Marcel on 17/08/2015.
@@ -45,14 +46,23 @@ public class MatchDataProvider {
         return null;
     }
 
-    public Iterable<MatchEntity> getTeamMatches(String teamName) throws IOException {
+    public Iterable<MatchEntity> getTeamMatches(String teamName) throws IOException, XPatherException {
         String html = htmlProviderService.getTeamURLBody(teamName);
         TagNode node = cleaner.clean(html);
         //Object[] objects = node.evaluateXPath(xPathExpression);
         //String s = ((TagNode) objects[0]).getAllChildren().get(0).toString();
-
+        LinkedHashSet<MatchEntity> matchEntityList = new LinkedHashSet<>();
         for (int i=0;i<34;i++){
-//   //*[@id="sm_izquierda"]/div[1]/table/tbody/tr[2]/td[2]
+            int current=  (i+2);
+            Object[] objects = node.evaluateXPath("//*[@id=\"sm_izquierda\"]/div[1]/table/tbody/tr["+current+"]/td[2]");
+            String local = getTeamName(objects[0]);
+            objects = node.evaluateXPath("//*[@id=\"sm_izquierda\"]/div[1]/table/tbody/tr["+current+"]/td[4]");
+            String visitor = getTeamName(objects[0]);
+            MatchEntity matchEntity = new MatchEntity();
+            matchEntity.setNumber(i+1);
+            matchEntity.setLocal(local);
+            matchEntity.setVisitor(visitor);
+            matchEntityList.add(matchEntity);
         }
 
         // //*[@id="sm_izquierda"]/div[1]/table/tbody/tr[2]/td[4]
@@ -60,6 +70,13 @@ public class MatchDataProvider {
         // //*[@id="sm_izquierda"]/div[1]/table/tbody/tr[3]/td[2]
 
         //*[@id="sm_izquierda"]/div[1]/table/tbody/tr[3]/td[4]
-        return null;
+
+        return matchEntityList;
+    }
+
+    private String getTeamName(Object object) {
+        TagNode tagNode = (TagNode) object;
+        String local = tagNode.getAllChildren().get(0).toString();
+        return local;
     }
 }

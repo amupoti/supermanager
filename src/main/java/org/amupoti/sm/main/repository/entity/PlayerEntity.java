@@ -6,6 +6,7 @@ import lombok.ToString;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 /**
  * Created by Marcel on 04/08/2015.
@@ -21,4 +22,6 @@ public class PlayerEntity {
     private Float localMean;
     private Float visitorMean;
     private Float keepBroker;
+    @OneToOne
+    private TeamEntity team;
 }
