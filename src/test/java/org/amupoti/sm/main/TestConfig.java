@@ -1,5 +1,7 @@
 package org.amupoti.sm.main;
 import org.amupoti.sm.main.services.provider.HTMLProviderService;
+import org.amupoti.sm.main.services.provider.player.PlayerDataService;
+import org.amupoti.sm.main.services.provider.player.RDMPlayerDataService;
 import org.apache.commons.io.IOUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -33,6 +35,11 @@ public class TestConfig {
 
             return IOUtils.toString(new ClassPathResource(getUrl).getInputStream());
         }
+    }
+
+    @Bean
+    public PlayerDataService getPlayerDataService(){
+        return new RDMPlayerDataService();
     }
 
 

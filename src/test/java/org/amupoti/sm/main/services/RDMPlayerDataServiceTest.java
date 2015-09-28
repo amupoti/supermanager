@@ -2,7 +2,7 @@ package org.amupoti.sm.main.services;
 
 import org.amupoti.sm.main.TestConfig;
 import org.amupoti.sm.main.repository.entity.PlayerId;
-import org.amupoti.sm.main.services.provider.PlayerDataProvider;
+import org.amupoti.sm.main.services.provider.player.RDMPlayerDataService;
 import org.htmlcleaner.XPatherException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -19,13 +19,13 @@ import java.util.List;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
-public class PlayerDataProviderTest {
+public class RDMPlayerDataServiceTest {
 
     @Autowired
-    private PlayerDataProvider playerDataProvider;
+    private RDMPlayerDataService RDMPlayerDataService;
     @Test
     public void testPlayerLoad() throws IOException, XPatherException {
-        List<PlayerId> playerIds = playerDataProvider.getPlayerIds();
+        List<PlayerId> playerIds = RDMPlayerDataService.getPlayerIds();
         Assert.assertTrue(playerIds.size()==60);
         Assert.assertEquals("Granger, Jayson",playerIds.get(0).getId());
     }

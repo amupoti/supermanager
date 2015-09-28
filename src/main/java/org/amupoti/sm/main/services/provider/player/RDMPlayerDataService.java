@@ -1,7 +1,8 @@
-package org.amupoti.sm.main.services.provider;
+package org.amupoti.sm.main.services.provider.player;
 
 import org.amupoti.sm.main.repository.entity.PlayerEntity;
 import org.amupoti.sm.main.repository.entity.PlayerId;
+import org.amupoti.sm.main.services.provider.HTMLProviderService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.htmlcleaner.HtmlCleaner;
@@ -11,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -26,8 +26,8 @@ import java.util.concurrent.Future;
  * Data is obtained by retrieveing the full HTML page and performing Xpath transformations
  * Created by Marcel on 17/08/2015.
  */
-@Service
-public class PlayerDataProvider {
+
+public class RDMPlayerDataService implements PlayerDataService {
 
     public static final String VAL_MEDIA_LOCAL = "//*[@id=\"sm_central\"]/div[2]/table/tbody/tr[38]/td[9]/b";
     public static final String VAL_MEDIA_VISITANTE = "//*[@id=\"sm_central\"]/div[2]/table/tbody/tr[39]/td[9]/b";
@@ -40,7 +40,7 @@ public class PlayerDataProvider {
 
     private HtmlCleaner cleaner;
 
-    private static final Log LOG = LogFactory.getLog(PlayerDataProvider.class);
+    private static final Log LOG = LogFactory.getLog(RDMPlayerDataService.class);
 
     @Autowired
     private HTMLProviderService htmlProviderService;
@@ -61,7 +61,7 @@ public class PlayerDataProvider {
     public List<PlayerId> getPlayerIds() throws IOException, XPatherException {
         String html = htmlProviderService.getAllPlayersURL();
         TagNode node = cleaner.clean(html);
-        Object[] objects = node.evaluateXPath(PlayerDataProvider.ALL_PLAYERS);
+        Object[] objects = node.evaluateXPath(RDMPlayerDataService.ALL_PLAYERS);
         List<PlayerId> playerIds = new LinkedList<>();
         for (int i = 0; i < objects.length; i++) {
             TagNode tagNode = (TagNode) objects[i];
@@ -112,9 +112,9 @@ public class PlayerDataProvider {
     private Future<PlayerEntity> populatePlayerData(PlayerId playerId) throws IOException, XPatherException, URISyntaxException {
         PlayerEntity playerEntity = new PlayerEntity();
         String html = htmlProviderService.getPlayerURL(playerId);
-        String localMean = getValue(html, PlayerDataProvider.VAL_MEDIA_LOCAL);
-        String visitorMean = getValue(html, PlayerDataProvider.VAL_MEDIA_VISITANTE);
-        String keepBroker = getValue(html, PlayerDataProvider.VAL_MANTENER_BROKER);
+        String localMean = getValue(html, RDMPlayerDataService.VAL_MEDIA_LOCAL);
+        String visitorMean = getValue(html, RDMPlayerDataService.VAL_MEDIA_VISITANTE);
+        String keepBroker = getValue(html, RDMPlayerDataService.VAL_MANTENER_BROKER);
 
         playerEntity.setId(playerId);
         playerEntity.setLocalMean(Float.parseFloat(localMean));

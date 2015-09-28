@@ -1,4 +1,4 @@
-package org.amupoti.sm.main.services.provider;
+package org.amupoti.sm.main.services.provider.team;
 
 import org.amupoti.sm.main.services.PlayerPosition;
 import org.apache.commons.io.IOUtils;
@@ -16,13 +16,14 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
  * Created by Marcel on 17/08/2015.
  */
 @Service
-public class TeamDataProvider {
+public class TeamDataProvider implements TeamDataService {
 
     private HtmlCleaner cleaner;
 
@@ -36,48 +37,53 @@ public class TeamDataProvider {
     private static final String VAL = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[8]/td[6]";
     private static final String VAL_RECEIVED = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[8]/td[7]";
     public static final String TEAM_PAGE = "http://www.rincondelmanager.com/smgr/team.php?equipo=";
-
+    /**
+     * String containing the HTML code of the page
+     */
+    private HashMap<String,String> htmlForTeams;
 
 
     @PostConstruct
     public void init() {
         cleaner = new HtmlCleaner();
+        htmlForTeams = new HashMap<>();
 
     }
-    public String getTeamMean(String html, String teamName) {
-        return getValue(html,VAL);
+    public String getTeamMean(String teamName,PlayerPosition position) {
+        return getValue(teamName,position,VAL);
     }
 
-    public String getTeamMeanReceived(String html, String teamName) {
-        return getValue(html,VAL_RECEIVED);
+    public String getTeamMeanReceived(String teamName,PlayerPosition position) {
+        return getValue(teamName,position,VAL_RECEIVED);
     }
 
-    public String getTeamMeanLocal(String html,  String teamName) {
-        return getValue(html,VAL_LOCAL);
+    public String getTeamMeanLocal(String teamName,PlayerPosition position) {
+        return getValue(teamName,position,VAL_LOCAL);
     }
 
-    public String getTeamMeanVisitor(String html, String teamName) {
-        return getValue(html,VAL_VISITOR);
+    public String getTeamMeanVisitor(String teamName,PlayerPosition position) {
+        return getValue(teamName,position,VAL_VISITOR);
     }
 
-    public String getTeamMeanLocalReceived(String html, String teamName) {
-        return getValue(html,VAL_LOCAL_RECEIVED);
+    public String getTeamMeanLocalReceived(String teamName,PlayerPosition position) {
+        return getValue(teamName,position,VAL_LOCAL_RECEIVED);
     }
 
-    public String getTeamMeanVisitorReceived(String html, String teamName) {
-        return getValue(html,VAL_VISITOR_RECEIVED);
+    public String getTeamMeanVisitorReceived(String teamName,PlayerPosition position) {
+        return getValue(teamName,position,VAL_VISITOR_RECEIVED);
     }
 
     /**
      * Obtains the value of applying the given XPATH to the provided HTML page
-     * @param html
+     * @param teamName
      * @param xPathExpression
      * @return
      * @throws XPatherException
      * @throws IOException
      */
-    private String getValue(String html, String xPathExpression) {
+    private String getValue(String teamName,PlayerPosition position,String xPathExpression) {
         try{
+            String html = getHtmlForTeam(teamName,position);
             TagNode node = cleaner.clean(html);
             Object[] objects = node.evaluateXPath(xPathExpression);
             String s = ((TagNode) objects[0]).getAllChildren().get(0).toString();
@@ -89,6 +95,21 @@ public class TeamDataProvider {
         }
     }
 
+    private String getHtmlForTeam(String teamName, PlayerPosition position) throws IOException {
+        String key = teamName+"-"+position;
+        String html;
+        if (htmlForTeams.get(key)==null){
+            html = getTeamPage(teamName,position);
+            htmlForTeams.put(key, html);
+        }
+        else{
+            html= htmlForTeams.get(key);
+        }
+
+        return html;
+
+    }
+
     /**
      * Returns a String containing the team page so it can be parsed to obtain the team values
      * @param teamId
@@ -96,7 +117,7 @@ public class TeamDataProvider {
      * @return
      * @throws IOException
      */
-    public String getTeamPage(String teamId, PlayerPosition position) throws IOException {
+    private String getTeamPage(String teamId, PlayerPosition position) throws IOException {
         org.apache.http.client.HttpClient client = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost((TEAM_PAGE+teamId));
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
@@ -113,8 +134,7 @@ public class TeamDataProvider {
      */
     public String[] populateTeamIds() {
 
-        String[] teamIds={"AND","BLB","CAI","CAN","CLA","EST","FCB","FUE","GBC","GCA","JOV","MAN","MUR","OBR","RMA","SEV","UNI","VBC"};
-        // return new String[]{"AND", "BLB"};
+        String[] teamIds={"AND","BLB","CAI","CAN","EST","FCB","FUE","GBC","GCA","JOV","LAB","MAN","MUR","OBR","RMA","SEV","UNI","VBC"};
         return teamIds;
     }
 }
