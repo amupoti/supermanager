@@ -1,6 +1,7 @@
-package org.amupoti.sm.main.services.provider;
+package org.amupoti.sm.main.services.provider.match;
 
 import org.amupoti.sm.main.repository.entity.MatchEntity;
+import org.amupoti.sm.main.services.provider.HTMLProviderService;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;

@@ -5,9 +5,9 @@ import org.amupoti.sm.main.repository.PlayerRepository;
 import org.amupoti.sm.main.repository.TeamRepository;
 import org.amupoti.sm.main.repository.ValueRepository;
 import org.amupoti.sm.main.repository.entity.*;
-import org.amupoti.sm.main.services.provider.MatchDataProvider;
+import org.amupoti.sm.main.services.provider.match.MatchDataProvider;
 import org.amupoti.sm.main.services.provider.player.PlayerDataService;
-import org.amupoti.sm.main.services.provider.team.TeamDataProvider;
+import org.amupoti.sm.main.services.provider.team.TeamDataService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.htmlcleaner.XPatherException;
@@ -28,11 +28,7 @@ import java.util.concurrent.ExecutionException;
 @Service
 public class DataPopulationService {
 
-    //TODO: this XPATH expressions are not valid since the page changes depending on the number of matches played by player
-
-
     private static final int NUM_MATCHES = 34;
-
 
     private final static Log LOG = LogFactory.getLog(DataPopulationService.class);
 
@@ -53,7 +49,7 @@ public class DataPopulationService {
     private PlayerDataService dataProviderStrategy;
 
     @Autowired
-    private TeamDataProvider teamDataProvider;
+    private TeamDataService teamDataService;
 
     @Autowired
     private MatchDataProvider matchDataProvider;
@@ -116,13 +112,10 @@ public class DataPopulationService {
     private void populateTeams() throws IOException, XPatherException {
         LOG.info("Populating teams");
         //Load from static data
-        String[] teamIds = teamDataProvider.populateTeamIds();
+        String[] teamIds = teamDataService.getTeamIds();
         //Load from web, load players + calendar
         populateTeamData(teamIds);
     }
-
-
-
 
 
     private void populateTeamData(String ...teamIds) throws IOException, XPatherException {
@@ -174,13 +167,13 @@ public class DataPopulationService {
         //Get page for the given position
 
         //Obtain values via XPath
-        String value = teamDataProvider.getTeamMean(teamName,position);// RDMPlayerDataService.VAL);
-        String valueReceived = teamDataProvider.getTeamMeanReceived(teamName,position);
-        String valueLocal = teamDataProvider.getTeamMeanLocal(teamName,position);
-        String valueVisitor = teamDataProvider.getTeamMeanVisitor(teamName,position);
+        String value = teamDataService.getTeamMean(teamName,position);// RDMPlayerDataService.VAL);
+        String valueReceived = teamDataService.getTeamMeanReceived(teamName,position);
+        String valueLocal = teamDataService.getTeamMeanLocal(teamName,position);
+        String valueVisitor = teamDataService.getTeamMeanVisitor(teamName,position);
 
-        String valueLocalReceived = teamDataProvider.getTeamMeanLocalReceived(teamName,position);
-        String valueVisitorReceived = teamDataProvider.getTeamMeanVisitorReceived(teamName,position);
+        String valueLocalReceived = teamDataService.getTeamMeanLocalReceived(teamName,position);
+        String valueVisitorReceived = teamDataService.getTeamMeanVisitorReceived(teamName,position);
         //Set values into entity for persistence
         valueEntity.setType(position.getId());
         valueEntity.setVal(value);

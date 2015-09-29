@@ -11,7 +11,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -22,8 +21,7 @@ import java.util.List;
 /**
  * Created by Marcel on 17/08/2015.
  */
-@Service
-public class TeamDataProvider implements TeamDataService {
+public class RDMTeamDataService implements TeamDataService {
 
     private HtmlCleaner cleaner;
 
@@ -132,7 +130,7 @@ public class TeamDataProvider implements TeamDataService {
      * Returns an array with the team identifiers
      * @return
      */
-    public String[] populateTeamIds() {
+    public String[] getTeamIds() {
 
         String[] teamIds={"AND","BLB","CAI","CAN","EST","FCB","FUE","GBC","GCA","JOV","LAB","MAN","MUR","OBR","RMA","SEV","UNI","VBC"};
         return teamIds;

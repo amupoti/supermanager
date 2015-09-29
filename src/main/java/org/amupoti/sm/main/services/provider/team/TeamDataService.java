@@ -7,16 +7,17 @@ import org.amupoti.sm.main.services.PlayerPosition;
  */
 public interface TeamDataService {
 
-    String getTeamMean(String teamName,PlayerPosition position);
+    String getTeamMean(String teamName, PlayerPosition position);
 
-    String getTeamMeanReceived(String teamName,PlayerPosition position);
+    String getTeamMeanReceived(String teamName, PlayerPosition position);
 
-    String getTeamMeanLocal(String teamName,PlayerPosition position);
+    String getTeamMeanLocal(String teamName, PlayerPosition position);
 
-    String getTeamMeanVisitor(String teamName,PlayerPosition position);
+    String getTeamMeanVisitor(String teamName, PlayerPosition position);
 
-    String getTeamMeanLocalReceived(String teamName,PlayerPosition position);
+    String getTeamMeanLocalReceived(String teamName, PlayerPosition position);
 
-    String getTeamMeanVisitorReceived(String teamName,PlayerPosition position);
+    String getTeamMeanVisitorReceived(String teamName, PlayerPosition position);
 
+    String[] getTeamIds();
 }
