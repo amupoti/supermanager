@@ -16,5 +16,5 @@ addons:
     build_command_prepend: "mvn clean"
     build_command:   "mvn verify"
     branch_pattern: master
-after_success: 
-  - coveralls
+after_success:
+  - mvn clean test jacoco:report coveralls:report
