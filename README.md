@@ -4,7 +4,7 @@
   <img alt="Coverity Scan Build Status"
        src="https://scan.coverity.com/projects/6034/badge.svg"/>
 </a>
-[![Coverage Status](https://coveralls.io/repos/amupoti/supermanager/badge.svg?branch=master&service=github)](https://coveralls.io/github/amupoti/supermanager?branch=master
+[![Coverage Status](https://coveralls.io/repos/amupoti/supermanager/badge.svg?branch=master&service=github)](https://coveralls.io/github/amupoti/supermanager?branch=master)
 <br>
 Simplified view for players in supermanager.acb.com 
 
