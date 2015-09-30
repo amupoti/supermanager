@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -75,6 +77,26 @@ public class PlayerController {
     public void populateData() throws IOException, XPatherException, InterruptedException, ExecutionException, URISyntaxException {
         dataPopulationService.populate();
     }
+
+
+    @RequestMapping(value = "/wizard/")
+    public String getSupermagerInfo(Model model)  {
+        Iterable<PlayerEntity> playerList =  playerService.getPlayers();
+        List<SMDataBean> smDataList = new LinkedList<>();
+        for (PlayerEntity playerEntity:playerList){
+            SMDataBean smDataBean = new SMDataBean();
+            smDataBean.setPlayerId(playerEntity.getId().toString());
+            smDataBean.setPlayerLocalVal(playerEntity.getLocalMean());
+            smDataBean.setPlayerVisitorVal(playerEntity.getVisitorMean());
+            smDataBean.setKeepBroker(playerEntity.getKeepBroker());
+            smDataList.add(smDataBean);
+
+        }
+        model.addAttribute("smDataList", smDataList);
+
+        return "wizard";
+    }
+
 
 
 
