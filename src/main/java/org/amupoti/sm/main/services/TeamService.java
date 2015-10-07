@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class TeamService {
 
+
     @Autowired
     TeamRepository teamRepository;
 
@@ -22,4 +23,6 @@ public class TeamService {
     public Iterable<TeamEntity> getTeams(){
         return teamRepository.findAll();
     }
+
+
 }

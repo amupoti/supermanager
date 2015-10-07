@@ -15,5 +15,7 @@ public class SMDataBean {
     String teamVal;
     String otherTeamReceivedVal;
     Float keepBroker;
+    Float calendarBoost;
+    String teamName;
 
 }

@@ -14,11 +14,11 @@ import java.net.URL;
 public class HTMLProviderService {
 
     @Value("${url.player}")
-    private String PLAYER_URL;// = "http://www.rincondelmanager.com/smgr/stats.php?nombre=";
+    private String PLAYER_URL;
     @Value("${url.players}")
-    private  String ALL_PLAYERS;// = "http://www.rincondelmanager.com/smgr/valoracion.php?pos=135";
+    private  String ALL_PLAYERS;
     @Value("${url.team}")
-    public  String TEAM_PAGE;// = "http://www.rincondelmanager.com/smgr/team.php?equipo=";
+    public  String TEAM_PAGE;
 
 
     public String getPlayerURL(PlayerId playerId) throws IOException, URISyntaxException {

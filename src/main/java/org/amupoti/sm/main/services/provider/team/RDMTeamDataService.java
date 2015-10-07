@@ -132,7 +132,7 @@ public class RDMTeamDataService implements TeamDataService {
      */
     public String[] getTeamIds() {
 
-        String[] teamIds={"AND","BLB","CAI","CAN","EST","FCB","FUE","GBC","GCA","JOV","LAB","MAN","MUR","OBR","RMA","SEV","UNI","VBC"};
-        return teamIds;
+
+        return TeamConstants.getTeamIds();
     }
 }

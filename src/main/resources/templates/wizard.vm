@@ -23,6 +23,8 @@ $(document).ready(function()
         <th>Val. jugador local</th>
         <th>Val. jugador visitante</th>
         <th>Mantiene broker</th>
+        <th>Calendario a favor</th>
+        <th>Equipo</th>
     </tr>
     </thead>
     <tbody>
@@ -32,6 +34,8 @@ $(document).ready(function()
             <td>$smData.playerLocalVal</td>
             <td>$smData.playerVisitorVal</td>
             <td>$smData.keepBroker</td>
+            <td>$smData.calendarBoost</td>
+            <td>$smData.teamName</td>
         </tr>
       #end
     </tbody>

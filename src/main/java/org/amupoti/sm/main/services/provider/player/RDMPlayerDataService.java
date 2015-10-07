@@ -1,7 +1,9 @@
 package org.amupoti.sm.main.services.provider.player;
 
+import org.amupoti.sm.main.repository.TeamRepository;
 import org.amupoti.sm.main.repository.entity.PlayerEntity;
 import org.amupoti.sm.main.repository.entity.PlayerId;
+import org.amupoti.sm.main.repository.entity.TeamEntity;
 import org.amupoti.sm.main.services.provider.HTMLProviderService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,6 +35,12 @@ public class RDMPlayerDataService implements PlayerDataService {
     public static final String VAL_MEDIA_VISITANTE = "//*[@id=\"sm_central\"]/div[2]/table/tbody/tr[39]/td[9]/b";
     public static final String VAL_MANTENER_BROKER = "//*[@id=\"sm_central\"]/div[3]/table/tbody/tr[6]/td[2]";
     public static final String ALL_PLAYERS = "//*[@id=\"sm_central\"]/div/table/tbody/tr/td[1]/a";
+
+    //*[@id="pr"]/div/table/tbody/tr[4]/td[2]/a
+    //public static final String ALL_PLAYERS = "//*[@id=\"sm_central\"]/div/table/tbody/tr/td[1]/a";
+    public static final String PLAYER_TEAM = "//*[@id=\"sm_central\"]/div[2]/table/tbody/tr[1]/td/b";
+
+
     public static final String BASE = "B";
     public static final String ALERO = "A";
     public static final String PIVOT = "P";
@@ -44,6 +52,9 @@ public class RDMPlayerDataService implements PlayerDataService {
 
     @Autowired
     private HTMLProviderService htmlProviderService;
+
+    @Autowired
+    private TeamRepository teamRepository;
 
     @PostConstruct
     public void init() {
@@ -116,11 +127,23 @@ public class RDMPlayerDataService implements PlayerDataService {
         String visitorMean = getValue(html, RDMPlayerDataService.VAL_MEDIA_VISITANTE);
         String keepBroker = getValue(html, RDMPlayerDataService.VAL_MANTENER_BROKER);
 
+        //Parse team and store in player data
+        String team = getValue(html, RDMPlayerDataService.PLAYER_TEAM);
+        team=parseTeam(team);
+        TeamEntity teamEntity = teamRepository.findByName(team);
+
         playerEntity.setId(playerId);
         playerEntity.setLocalMean(Float.parseFloat(localMean));
         playerEntity.setVisitorMean(Float.parseFloat(visitorMean));
         playerEntity.setKeepBroker(Float.parseFloat(keepBroker));
+        playerEntity.setTeam(teamEntity);
         return new AsyncResult<>(playerEntity);
+    }
+
+    private String parseTeam(String team) {
+        String[] split = team.split("\\(");
+        return split[1].substring(0,3);
+
     }
 
     private String getValue(String html, String xPathExpression) {

@@ -3,6 +3,7 @@ package org.amupoti.sm.main;
 import org.amupoti.sm.main.repository.entity.PlayerEntity;
 import org.amupoti.sm.main.repository.entity.PlayerId;
 import org.amupoti.sm.main.repository.entity.TeamEntity;
+import org.amupoti.sm.main.services.DataBoostService;
 import org.amupoti.sm.main.services.DataPopulationService;
 import org.amupoti.sm.main.services.PlayerService;
 import org.amupoti.sm.main.services.TeamService;
@@ -37,6 +38,9 @@ public class PlayerController {
 
     @Autowired
     private DataPopulationService dataPopulationService;
+
+    @Autowired
+    private DataBoostService dataBoostService;
 
     @RequestMapping(value = "/players/{id}")
     public String getPlayer(@PathVariable String id,Model model) throws IOException, XPatherException, URISyntaxException {
@@ -82,13 +86,14 @@ public class PlayerController {
     @RequestMapping(value = "/wizard/")
     public String getSupermagerInfo(Model model)  {
         Iterable<PlayerEntity> playerList =  playerService.getPlayers();
+
+
         List<SMDataBean> smDataList = new LinkedList<>();
         for (PlayerEntity playerEntity:playerList){
             SMDataBean smDataBean = new SMDataBean();
-            smDataBean.setPlayerId(playerEntity.getId().toString());
-            smDataBean.setPlayerLocalVal(playerEntity.getLocalMean());
-            smDataBean.setPlayerVisitorVal(playerEntity.getVisitorMean());
-            smDataBean.setKeepBroker(playerEntity.getKeepBroker());
+            addPlayerData(playerEntity, smDataBean);
+            addTeamData(playerEntity,smDataBean);
+
             smDataList.add(smDataBean);
 
         }
@@ -97,8 +102,20 @@ public class PlayerController {
         return "wizard";
     }
 
+    private void addTeamData(PlayerEntity playerEntity, SMDataBean smDataBean) {
 
+        //TeamEntity teamEntity = teamService.getTeam(playerEntity.getTeam().getName());
+        TeamEntity teamEntity = playerEntity.getTeam();
+        smDataBean.setCalendarBoost(dataBoostService.getCalendarData(teamEntity, 1));
+    }
 
+    private void addPlayerData(PlayerEntity playerEntity, SMDataBean smDataBean) {
+        smDataBean.setPlayerId(playerEntity.getId().toString());
+        smDataBean.setPlayerLocalVal(playerEntity.getLocalMean());
+        smDataBean.setPlayerVisitorVal(playerEntity.getVisitorMean());
+        smDataBean.setKeepBroker(playerEntity.getKeepBroker());
+        smDataBean.setTeamName(playerEntity.getTeam().getName());
+    }
 
 
 }

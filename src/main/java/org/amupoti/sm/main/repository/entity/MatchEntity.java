@@ -24,5 +24,8 @@ public class MatchEntity {
     private String local;
     private String visitor;
 
+    public boolean isLocal(String teamName){
+        return teamName.equals(local);
+    }
 
 }

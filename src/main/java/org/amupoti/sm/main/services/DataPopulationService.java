@@ -94,7 +94,8 @@ public class DataPopulationService {
         LOG.info("Populating players");
         List<PlayerId> playerIdList = dataProviderStrategy.getPlayerIds();
         Iterable<PlayerEntity> playerEntityList = playerRepository.findAll();
-        if (playerEntityList==null || !playerEntityList.iterator().hasNext()) {
+        //TODO: temp hack to populate the repo
+        if (playerEntityList==null || playerEntityList.iterator().hasNext()) {
             playerEntityList = dataProviderStrategy.getPlayersData(playerIdList);
         }
 
@@ -113,7 +114,7 @@ public class DataPopulationService {
         LOG.info("Populating teams");
         //Load from static data
         String[] teamIds = teamDataService.getTeamIds();
-        //Load from web, load players + calendar
+        //Load from web, load players + calendarBoost
         populateTeamData(teamIds);
     }
 
