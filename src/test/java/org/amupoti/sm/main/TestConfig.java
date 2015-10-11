@@ -1,7 +1,10 @@
 package org.amupoti.sm.main;
+
 import org.amupoti.sm.main.services.provider.HTMLProviderService;
 import org.amupoti.sm.main.services.provider.player.PlayerDataService;
 import org.amupoti.sm.main.services.provider.player.RDMPlayerDataService;
+import org.amupoti.sm.main.services.provider.team.MockTeamDataService;
+import org.amupoti.sm.main.services.provider.team.TeamDataService;
 import org.apache.commons.io.IOUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -41,6 +44,13 @@ public class TestConfig {
     public PlayerDataService getPlayerDataService(){
         return new RDMPlayerDataService();
     }
+
+    @Bean
+    public TeamDataService getTeamDataService(){
+        return new MockTeamDataService();
+    }
+
+
 
 
 }

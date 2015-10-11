@@ -1,9 +1,9 @@
 package org.amupoti.sm.main.services.provider.player;
 
-import org.amupoti.sm.main.repository.TeamRepository;
 import org.amupoti.sm.main.repository.entity.PlayerEntity;
 import org.amupoti.sm.main.repository.entity.PlayerId;
 import org.amupoti.sm.main.repository.entity.TeamEntity;
+import org.amupoti.sm.main.services.TeamService;
 import org.amupoti.sm.main.services.provider.HTMLProviderService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -54,7 +54,7 @@ public class RDMPlayerDataService implements PlayerDataService {
     private HTMLProviderService htmlProviderService;
 
     @Autowired
-    private TeamRepository teamRepository;
+    private TeamService teamService;
 
     @PostConstruct
     public void init() {
@@ -130,7 +130,7 @@ public class RDMPlayerDataService implements PlayerDataService {
         //Parse team and store in player data
         String team = getValue(html, RDMPlayerDataService.PLAYER_TEAM);
         team=parseTeam(team);
-        TeamEntity teamEntity = teamRepository.findByName(team);
+        TeamEntity teamEntity = teamService.getTeam(team);
 
         playerEntity.setId(playerId);
         playerEntity.setLocalMean(Float.parseFloat(localMean));

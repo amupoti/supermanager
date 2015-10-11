@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
  * Created by Marcel on 11/08/2015.
  */
 @Service
+
 public class TeamService {
 
 
@@ -25,4 +26,7 @@ public class TeamService {
     }
 
 
+    public TeamEntity getTeam(String name){
+        return teamRepository.findByName(name);
+    }
 }

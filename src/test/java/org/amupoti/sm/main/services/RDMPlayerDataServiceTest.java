@@ -5,6 +5,7 @@ import org.amupoti.sm.main.repository.entity.PlayerId;
 import org.amupoti.sm.main.services.provider.player.RDMPlayerDataService;
 import org.htmlcleaner.XPatherException;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import java.util.List;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
+@Ignore("Need to refactor to Jmockit and mock dependences")
 public class RDMPlayerDataServiceTest {
 
     @Autowired
