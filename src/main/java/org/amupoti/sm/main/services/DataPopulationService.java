@@ -93,11 +93,7 @@ public class DataPopulationService {
     private void populatePlayers() throws IOException, XPatherException, URISyntaxException, InterruptedException, ExecutionException {
         LOG.info("Populating players");
         List<PlayerId> playerIdList = dataProviderStrategy.getPlayerIds();
-        Iterable<PlayerEntity> playerEntityList = playerRepository.findAll();
-        //TODO: temp hack to populate the repo
-        if (playerEntityList==null || playerEntityList.iterator().hasNext()) {
-            playerEntityList = dataProviderStrategy.getPlayersData(playerIdList);
-        }
+        Iterable<PlayerEntity> playerEntityList = dataProviderStrategy.getPlayersData(playerIdList);
 
         Iterator<PlayerEntity> iterator = playerEntityList.iterator();
         while (iterator.hasNext()){

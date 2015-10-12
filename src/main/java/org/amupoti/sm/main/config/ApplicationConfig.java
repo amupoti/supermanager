@@ -1,8 +1,8 @@
 package org.amupoti.sm.main.config;
 
 import org.amupoti.sm.main.services.provider.HTMLProviderService;
-import org.amupoti.sm.main.services.provider.player.MockPlayerDataService;
 import org.amupoti.sm.main.services.provider.player.PlayerDataService;
+import org.amupoti.sm.main.services.provider.player.RDMPlayerDataService;
 import org.amupoti.sm.main.services.provider.team.RDMTeamDataService;
 import org.amupoti.sm.main.services.provider.team.TeamDataService;
 import org.springframework.cache.CacheManager;
@@ -37,8 +37,8 @@ public class ApplicationConfig {
 
     @Bean
     public PlayerDataService getPlayerDataService(){
-        //return new RDMPlayerDataService()
-        return new MockPlayerDataService();
+        return new RDMPlayerDataService();
+        //return new MockPlayerDataService();
     }
 
     @Bean

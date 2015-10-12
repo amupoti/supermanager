@@ -78,8 +78,9 @@ public class PlayerController {
 
 
     @RequestMapping(value = "/populate")
-    public void populateData() throws IOException, XPatherException, InterruptedException, ExecutionException, URISyntaxException {
+    public String populateData() throws IOException, XPatherException, InterruptedException, ExecutionException, URISyntaxException {
         dataPopulationService.populate();
+        return "populate";
     }
 
 
@@ -106,7 +107,7 @@ public class PlayerController {
 
         //TeamEntity teamEntity = teamService.getTeam(playerEntity.getTeam().getName());
         TeamEntity teamEntity = playerEntity.getTeam();
-        smDataBean.setCalendarBoost(dataBoostService.getCalendarData(teamEntity, 1));
+        smDataBean.setCalendarBoost(dataBoostService.getCalendarData(teamEntity, 2));
     }
 
     private void addPlayerData(PlayerEntity playerEntity, SMDataBean smDataBean) {
