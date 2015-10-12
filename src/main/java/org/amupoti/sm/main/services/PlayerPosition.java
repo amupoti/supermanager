@@ -7,7 +7,7 @@ import lombok.Getter;
  */
 @Getter
 public enum PlayerPosition {
-    BASE("B",0),ALERO("A",1),PIVOT("P",2);
+    BASE("B",0),ALERO("A",1),PIVOT("P",2),TOTAL("T",3);
 
     private final String id;
     private int number;

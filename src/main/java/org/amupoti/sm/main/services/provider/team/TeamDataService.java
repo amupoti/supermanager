@@ -2,13 +2,10 @@ package org.amupoti.sm.main.services.provider.team;
 
 import org.amupoti.sm.main.services.PlayerPosition;
 
-import java.util.HashMap;
-
 /**
  * Created by Marcel on 28/09/2015.
  */
 public interface TeamDataService {
-
 
 
     String getTeamMean(String teamName, PlayerPosition position);

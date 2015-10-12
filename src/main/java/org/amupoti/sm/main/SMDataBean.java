@@ -11,11 +11,19 @@ public class SMDataBean {
     String playerId;
     Float playerLocalVal;
     Float playerVisitorVal;
-    String otherTeamPositionReceivedVal;
+
     String teamVal;
     String otherTeamReceivedVal;
+    String teamValAsLV;
+    String otherTeamReceivedValAsLV;
+
     Float keepBroker;
-    Float calendarBoost;
+    Float calendarBoostShort;
+    Float calendarBoostMedium;
+    Float calendarBoostLong;
     String teamName;
 
+    //TODO: position values
+    String otherTeamPositionReceivedVal;
 }
+

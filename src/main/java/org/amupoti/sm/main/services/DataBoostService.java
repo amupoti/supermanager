@@ -11,19 +11,19 @@ import org.springframework.stereotype.Service;
 @Service
 public class DataBoostService {
 
-    private static final Float LOCAL_BOOST = 10.0f;
-    private static final int MAX_GAMES_AHEAD = 3;
+
     private static final int MAX_GAMES = 34;
 
-    public Float getCalendarData(TeamEntity team, int matchNumber) {
+    public Float getCalendarData(TeamEntity team, int matchNumber,int matchesAhead) {
 
         Float ranking = 0.0f;
-        for (int i=matchNumber;i<=MAX_GAMES && i<=MAX_GAMES_AHEAD;i++) {
+        int matchesAheadLimit = matchesAhead+matchNumber;
+        for (int i=matchNumber;i<=MAX_GAMES && i<matchesAheadLimit;i++) {
             MatchEntity matchEntity = team.getMatchMap().get(i);
             if (matchEntity.isLocal(team.getName())) {
 
                 ranking += TeamConstants.getTeamBoosts().get(matchEntity.getVisitor());
-                ranking += LOCAL_BOOST;
+                ranking += TeamConstants.LOCAL_BOOST;
             }else{
                 ranking += TeamConstants.getTeamBoosts().get(matchEntity.getLocal());
             }

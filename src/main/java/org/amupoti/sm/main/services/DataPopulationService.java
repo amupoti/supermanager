@@ -67,6 +67,7 @@ public class DataPopulationService {
         populateTeams();
         populatePlayers();
         populateMatches();
+        LOG.info("Finished data load");
 
     }
 

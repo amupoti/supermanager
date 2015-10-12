@@ -1,12 +1,8 @@
 package org.amupoti.sm.main;
 
-import org.amupoti.sm.main.repository.entity.PlayerEntity;
-import org.amupoti.sm.main.repository.entity.PlayerId;
-import org.amupoti.sm.main.repository.entity.TeamEntity;
-import org.amupoti.sm.main.services.DataBoostService;
-import org.amupoti.sm.main.services.DataPopulationService;
-import org.amupoti.sm.main.services.PlayerService;
-import org.amupoti.sm.main.services.TeamService;
+import org.amupoti.sm.main.repository.entity.*;
+import org.amupoti.sm.main.services.*;
+import org.amupoti.sm.main.services.provider.team.TeamConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.htmlcleaner.XPatherException;
@@ -29,6 +25,9 @@ import java.util.concurrent.ExecutionException;
 public class PlayerController {
 
     private final static Log LOG = LogFactory.getLog(PlayerController.class);
+    private static final int LONG_TERM = 6;
+    private static final int MEDIUM_TERM = 4;
+    private static final int SHORT_TERM = 1;
 
     @Autowired
     private PlayerService playerService;
@@ -103,13 +102,56 @@ public class PlayerController {
         return "wizard";
     }
 
+    /**
+     * Adds all information related to the team, like calendar-related boosts, mean values per received per team, etc.
+     * @param playerEntity
+     * @param smDataBean
+     */
     private void addTeamData(PlayerEntity playerEntity, SMDataBean smDataBean) {
 
+        int matchNumber = TeamConstants.CURRENT_MATCH_NUMBER;
         //TeamEntity teamEntity = teamService.getTeam(playerEntity.getTeam().getName());
         TeamEntity teamEntity = playerEntity.getTeam();
-        smDataBean.setCalendarBoost(dataBoostService.getCalendarData(teamEntity, 2));
+        /*
+         * Get boost depending on calendar
+         */
+        smDataBean.setCalendarBoostShort(dataBoostService.getCalendarData(teamEntity, matchNumber, SHORT_TERM));
+        smDataBean.setCalendarBoostMedium(dataBoostService.getCalendarData(teamEntity, matchNumber , MEDIUM_TERM));
+        smDataBean.setCalendarBoostLong(dataBoostService.getCalendarData(teamEntity, matchNumber , LONG_TERM));
+        /*
+         * Get mean values depending if local or visitor
+         */
+        ValueEntity teamValues = teamEntity.getValMap().get(PlayerPosition.TOTAL.getId());
+        MatchEntity matchEntity = teamEntity.getMatchMap().get(matchNumber);
+        boolean isLocal = matchEntity.isLocal(teamEntity.getName());
+
+        smDataBean.setTeamVal(teamValues.getVal());
+        if (isLocal) {
+
+            smDataBean.setTeamValAsLV(teamValues.getValL());
+            ValueEntity otherTeamValues = teamService.getTeam(matchEntity.getVisitor()).getValMap().get(PlayerPosition.TOTAL.getId());
+            //Set mean value and value as visitor/local
+            smDataBean.setOtherTeamReceivedVal(otherTeamValues.getValRec());
+            smDataBean.setOtherTeamReceivedValAsLV(otherTeamValues.getValRecV());
+        }
+        else{
+
+            smDataBean.setTeamValAsLV(teamValues.getValV());
+            ValueEntity otherTeamValues = teamService.getTeam(matchEntity.getLocal()).getValMap().get(PlayerPosition.TOTAL.getId());
+            smDataBean.setOtherTeamReceivedVal(otherTeamValues.getValRec());
+            smDataBean.setOtherTeamReceivedValAsLV(otherTeamValues.getValRecL());
+        }
+        /*
+         *  Get mean values depending on player position
+         */
+        //TODO: load players with position so we can add value for that position
     }
 
+    /**
+     * Adds all data related to the player that we want to show in the wizard
+     * @param playerEntity
+     * @param smDataBean
+     */
     private void addPlayerData(PlayerEntity playerEntity, SMDataBean smDataBean) {
         smDataBean.setPlayerId(playerEntity.getId().toString());
         smDataBean.setPlayerLocalVal(playerEntity.getLocalMean());

@@ -20,10 +20,16 @@ $(document).ready(function()
     <thead>
     <tr>
         <th>Jugador</th>
-        <th>Val. jugador local</th>
-        <th>Val. jugador visitante</th>
-        <th>Mantiene broker</th>
-        <th>Calendario a favor</th>
+        <th>Val-L</th>
+        <th>Val-V</th>
+        <th>Broker =</th>
+        <th>Media Equipo</th>
+        <th>Media Rec VS</th>
+        <th>Media Equipo L/V</th>
+        <th>Media Rec VS L/V</th>
+        <th>Cal-Corto</th>
+        <th>Cal-Medio</th>
+        <th>Cal-Largo</th>
         <th>Equipo</th>
     </tr>
     </thead>
@@ -34,7 +40,13 @@ $(document).ready(function()
             <td>$smData.playerLocalVal</td>
             <td>$smData.playerVisitorVal</td>
             <td>$smData.keepBroker</td>
-            <td>$smData.calendarBoost</td>
+            <td>$smData.teamVal</td>
+            <td>$smData.otherTeamReceivedVal</td>
+            <td>$smData.teamValAsLV</td>
+            <td>$smData.otherTeamReceivedValAsLV</td>
+            <td>$smData.calendarBoostShort</td>
+            <td>$smData.calendarBoostMedium</td>
+            <td>$smData.calendarBoostLong</td>
             <td>$smData.teamName</td>
         </tr>
       #end
