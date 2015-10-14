@@ -126,21 +126,26 @@ public class PlayerController {
         boolean isLocal = matchEntity.isLocal(teamEntity.getName());
 
         smDataBean.setTeamVal(teamValues.getVal());
+        TeamEntity otherTeam;
+        ValueEntity otherTeamValues;
+        String teamVal;
         if (isLocal) {
-
-            smDataBean.setTeamValAsLV(teamValues.getValL());
-            ValueEntity otherTeamValues = teamService.getTeam(matchEntity.getVisitor()).getValMap().get(PlayerPosition.TOTAL.getId());
-            //Set mean value and value as visitor/local
-            smDataBean.setOtherTeamReceivedVal(otherTeamValues.getValRec());
+            teamVal  = teamValues.getValL();
+            otherTeam = teamService.getTeam(matchEntity.getVisitor());
+            otherTeamValues = otherTeam.getValMap().get(PlayerPosition.TOTAL.getId());
             smDataBean.setOtherTeamReceivedValAsLV(otherTeamValues.getValRecV());
-        }
-        else{
+            smDataBean.setLocalOrVisitor(TeamConstants.LOCAL);
+        } else {
 
-            smDataBean.setTeamValAsLV(teamValues.getValV());
-            ValueEntity otherTeamValues = teamService.getTeam(matchEntity.getLocal()).getValMap().get(PlayerPosition.TOTAL.getId());
-            smDataBean.setOtherTeamReceivedVal(otherTeamValues.getValRec());
+            teamVal = teamValues.getValV();
+            otherTeam = teamService.getTeam(matchEntity.getLocal());
+            otherTeamValues = otherTeam.getValMap().get(PlayerPosition.TOTAL.getId());
             smDataBean.setOtherTeamReceivedValAsLV(otherTeamValues.getValRecL());
+            smDataBean.setLocalOrVisitor(TeamConstants.VISITOR);
         }
+        smDataBean.setTeamValAsLV(teamVal);
+        smDataBean.setOtherTeamReceivedVal(otherTeamValues.getValRec());
+        smDataBean.setOtherTeamName(otherTeam.getName());
         /*
          *  Get mean values depending on player position
          */
@@ -154,6 +159,7 @@ public class PlayerController {
      */
     private void addPlayerData(PlayerEntity playerEntity, SMDataBean smDataBean) {
         smDataBean.setPlayerId(playerEntity.getId().toString());
+        smDataBean.setPlayerPosition(playerEntity.getPlayerPosition().name());
         smDataBean.setPlayerLocalVal(playerEntity.getLocalMean());
         smDataBean.setPlayerVisitorVal(playerEntity.getVisitorMean());
         smDataBean.setKeepBroker(playerEntity.getKeepBroker());

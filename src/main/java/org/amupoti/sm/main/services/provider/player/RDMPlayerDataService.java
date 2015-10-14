@@ -3,6 +3,7 @@ package org.amupoti.sm.main.services.provider.player;
 import org.amupoti.sm.main.repository.entity.PlayerEntity;
 import org.amupoti.sm.main.repository.entity.PlayerId;
 import org.amupoti.sm.main.repository.entity.TeamEntity;
+import org.amupoti.sm.main.services.PlayerPosition;
 import org.amupoti.sm.main.services.TeamService;
 import org.amupoti.sm.main.services.provider.HTMLProviderService;
 import org.apache.commons.logging.Log;
@@ -18,6 +19,7 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -62,6 +64,8 @@ public class RDMPlayerDataService implements PlayerDataService {
 
     }
 
+    private HashMap<PlayerId,PlayerPosition> playerPositionMap =new HashMap<>();
+
 
     /**
      * Returns the list of player Ids from the web
@@ -70,15 +74,30 @@ public class RDMPlayerDataService implements PlayerDataService {
      * @throws XPatherException
      */
     public List<PlayerId> getPlayerIds() throws IOException, XPatherException {
-        String html = htmlProviderService.getAllPlayersURL();
+
+        List<PlayerId> playerIds = new LinkedList<>();
+
+
+        PlayerPosition[] positions = {PlayerPosition.BASE,PlayerPosition.ALERO,PlayerPosition.PIVOT};
+        for (PlayerPosition playerPosition:positions) {
+            LOG.info("Getting playerIds for position "+playerPosition);
+            String html = htmlProviderService.getAllPlayersURL(playerPosition);
+            playerIds.addAll(getPlayerIdsPerPosition(html, playerPosition));
+        }
+        return playerIds;
+    }
+
+    private List<PlayerId> getPlayerIdsPerPosition(String html, PlayerPosition playerPosition) throws IOException, XPatherException {
+        List<PlayerId> playerIds = new LinkedList<>();
         TagNode node = cleaner.clean(html);
         Object[] objects = node.evaluateXPath(RDMPlayerDataService.ALL_PLAYERS);
-        List<PlayerId> playerIds = new LinkedList<>();
         for (int i = 0; i < objects.length; i++) {
             TagNode tagNode = (TagNode) objects[i];
             String name = tagNode.getAllChildren().get(0).toString();
             if (name.contains(",")) {
-                playerIds.add(new PlayerId(name));
+                PlayerId playerId = new PlayerId(name);
+                playerIds.add(playerId);
+                playerPositionMap.put(playerId,playerPosition);
             }
         }
         return playerIds;
@@ -136,7 +155,9 @@ public class RDMPlayerDataService implements PlayerDataService {
         playerEntity.setLocalMean(Float.parseFloat(localMean));
         playerEntity.setVisitorMean(Float.parseFloat(visitorMean));
         playerEntity.setKeepBroker(Float.parseFloat(keepBroker));
+        playerEntity.setPlayerPosition(playerPositionMap.get(playerId));
         playerEntity.setTeam(teamEntity);
+
         return new AsyncResult<>(playerEntity);
     }
 

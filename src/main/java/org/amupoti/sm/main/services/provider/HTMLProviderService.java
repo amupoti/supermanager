@@ -1,6 +1,7 @@
 package org.amupoti.sm.main.services.provider;
 
 import org.amupoti.sm.main.repository.entity.PlayerId;
+import org.amupoti.sm.main.services.PlayerPosition;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -15,8 +16,12 @@ public class HTMLProviderService {
 
     @Value("${url.player}")
     private String PLAYER_URL;
-    @Value("${url.players}")
-    private  String ALL_PLAYERS;
+    @Value("${url.players.base}")
+    private  String ALL_PLAYERS_BASE;
+    @Value("${url.players.alero}")
+    private  String ALL_PLAYERS_ALERO;
+    @Value("${url.players.pivot}")
+    private  String ALL_PLAYERS_PIVOT;
     @Value("${url.team}")
     public  String TEAM_PAGE;
 
@@ -28,9 +33,23 @@ public class HTMLProviderService {
 
     }
 
-    public String getAllPlayersURL() throws IOException {
+    public String getAllPlayersURL(PlayerPosition playerPosition) throws IOException {
 
-        return get(ALL_PLAYERS);
+        String url = null;
+        switch (playerPosition){
+            case BASE:
+                url=ALL_PLAYERS_BASE;
+                break;
+            case ALERO:
+                url=ALL_PLAYERS_ALERO;
+                break;
+            case PIVOT:
+                url=ALL_PLAYERS_PIVOT;
+                break;
+
+
+        }
+        return get(url);
     }
 
 
