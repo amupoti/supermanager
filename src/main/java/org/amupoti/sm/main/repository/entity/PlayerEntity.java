@@ -23,6 +23,7 @@ public class PlayerEntity {
     private Float localMean;
     private Float visitorMean;
     private Float keepBroker;
+    private Float broker;
     private PlayerPosition playerPosition;
     @OneToOne
     private TeamEntity team;

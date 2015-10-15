@@ -26,11 +26,15 @@ $(document).ready(function()
         <th>Val-V</th>
         <th>Local?</th>
         <th>Contra?</th>
+
+        <th>Broker</th>
         <th>Broker =</th>
         <th>Media Equipo</th>
         <th>Media Rec VS</th>
         <th>Media Equipo L/V</th>
         <th>Media Rec VS L/V</th>
+
+        <th>Media Rec Jug VS</th>
         <th>Cal-Corto</th>
         <th>Cal-Medio</th>
         <th>Cal-Largo</th>
@@ -48,12 +52,14 @@ $(document).ready(function()
             <td>$smData.localOrVisitor</td>
             <td>$smData.otherTeamName</td>
 
+            <td>$smData.broker</td>
             <td>$smData.keepBroker</td>
             <td>$smData.teamVal</td>
             <td>$smData.otherTeamReceivedVal</td>
             <td>$smData.teamValAsLV</td>
             <td>$smData.otherTeamReceivedValAsLV</td>
 
+            <td>$smData.playerOtherTeamReceivedVal</td>
             <td>$smData.calendarBoostShort</td>
             <td>$smData.calendarBoostMedium</td>
             <td>$smData.calendarBoostLong</td>

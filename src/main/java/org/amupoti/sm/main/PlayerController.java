@@ -116,8 +116,11 @@ public class PlayerController {
          * Get boost depending on calendar
          */
         smDataBean.setCalendarBoostShort(dataBoostService.getCalendarData(teamEntity, matchNumber, SHORT_TERM));
-        smDataBean.setCalendarBoostMedium(dataBoostService.getCalendarData(teamEntity, matchNumber , MEDIUM_TERM));
-        smDataBean.setCalendarBoostLong(dataBoostService.getCalendarData(teamEntity, matchNumber , LONG_TERM));
+        smDataBean.setCalendarBoostMedium(dataBoostService.getCalendarData(teamEntity, matchNumber, MEDIUM_TERM));
+        smDataBean.setCalendarBoostLong(dataBoostService.getCalendarData(teamEntity, matchNumber, LONG_TERM));
+
+        smDataBean.setPlayerOtherTeamReceivedVal(dataBoostService.getCalendar(teamEntity, 2, SHORT_TERM, playerEntity.getPlayerPosition()));
+
         /*
          * Get mean values depending if local or visitor
          */
@@ -163,7 +166,10 @@ public class PlayerController {
         smDataBean.setPlayerLocalVal(playerEntity.getLocalMean());
         smDataBean.setPlayerVisitorVal(playerEntity.getVisitorMean());
         smDataBean.setKeepBroker(playerEntity.getKeepBroker());
+        smDataBean.setBroker(playerEntity.getBroker());
         smDataBean.setTeamName(playerEntity.getTeam().getName());
+
+
     }
 
 

@@ -15,6 +15,7 @@ public class SMDataBean {
     Float playerLocalVal;
     Float playerVisitorVal;
     String playerPosition;
+    Float playerOtherTeamReceivedVal;
 
     /*
      * Team related data
@@ -25,6 +26,7 @@ public class SMDataBean {
     String teamValAsLV;
     String otherTeamReceivedValAsLV;
 
+    Float broker;
     Float keepBroker;
     Float calendarBoostShort;
     Float calendarBoostMedium;

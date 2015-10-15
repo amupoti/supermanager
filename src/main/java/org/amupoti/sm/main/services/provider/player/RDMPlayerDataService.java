@@ -37,6 +37,7 @@ public class RDMPlayerDataService implements PlayerDataService {
     public static final String VAL_MEDIA_VISITANTE = "//*[@id=\"sm_central\"]/div[2]/table/tbody/tr[6]/td[9]/b";
     public static final String VAL_MANTENER_BROKER = "//*[@id=\"sm_central\"]/div[3]/table/tbody/tr[6]/td[2]";
     public static final String ALL_PLAYERS = "//*[@id=\"sm_central\"]/div/table/tbody/tr/td[1]/a";
+    private static final String BROKER = "//*[@id=\"sm_central\"]/div[3]/table/tbody/tr[6]/td[4]";
 
     //*[@id="pr"]/div/table/tbody/tr[4]/td[2]/a
     //public static final String ALL_PLAYERS = "//*[@id=\"sm_central\"]/div/table/tbody/tr/td[1]/a";
@@ -46,6 +47,7 @@ public class RDMPlayerDataService implements PlayerDataService {
     public static final String BASE = "B";
     public static final String ALERO = "A";
     public static final String PIVOT = "P";
+
 
 
     private HtmlCleaner cleaner;
@@ -145,6 +147,7 @@ public class RDMPlayerDataService implements PlayerDataService {
         String localMean = getValue(html, RDMPlayerDataService.VAL_MEDIA_LOCAL);
         String visitorMean = getValue(html, RDMPlayerDataService.VAL_MEDIA_VISITANTE);
         String keepBroker = getValue(html, RDMPlayerDataService.VAL_MANTENER_BROKER);
+        String broker =getValue(html, RDMPlayerDataService.BROKER).replace(",","");
 
         //Parse team and store in player data
         String team = getValue(html, RDMPlayerDataService.PLAYER_TEAM);
@@ -156,6 +159,7 @@ public class RDMPlayerDataService implements PlayerDataService {
         playerEntity.setVisitorMean(Float.parseFloat(visitorMean));
         playerEntity.setKeepBroker(Float.parseFloat(keepBroker));
         playerEntity.setPlayerPosition(playerPositionMap.get(playerId));
+        playerEntity.setBroker(Float.parseFloat(broker));
         playerEntity.setTeam(teamEntity);
 
         return new AsyncResult<>(playerEntity);
