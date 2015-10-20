@@ -1,0 +1,1 @@
+web: java -jar target\acb.sm-1.0-SNAPSHOT.jar
