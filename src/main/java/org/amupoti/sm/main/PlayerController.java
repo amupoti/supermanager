@@ -119,7 +119,7 @@ public class PlayerController {
         smDataBean.setCalendarBoostMedium(dataBoostService.getCalendarData(teamEntity, matchNumber, MEDIUM_TERM));
         smDataBean.setCalendarBoostLong(dataBoostService.getCalendarData(teamEntity, matchNumber, LONG_TERM));
 
-        smDataBean.setPlayerOtherTeamReceivedVal(dataBoostService.getCalendar(teamEntity, 2, SHORT_TERM, playerEntity.getPlayerPosition()));
+        smDataBean.setPlayerOtherTeamReceivedVal(dataBoostService.getCalendar(teamEntity,matchNumber, SHORT_TERM, playerEntity.getPlayerPosition()));
 
         /*
          * Get mean values depending if local or visitor

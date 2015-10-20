@@ -9,7 +9,7 @@ import java.util.HashMap;
  */
 public class TeamConstants {
 
-    public static final int CURRENT_MATCH_NUMBER = 2;
+    public static final int CURRENT_MATCH_NUMBER = 3;
     public static final String VISITOR = "Visitante";
     public static final String LOCAL = "Local";
     @Getter
