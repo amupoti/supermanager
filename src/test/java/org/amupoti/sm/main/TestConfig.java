@@ -1,24 +1,16 @@
 package org.amupoti.sm.main;
 
 import org.amupoti.sm.main.services.provider.HTMLProviderService;
-import org.amupoti.sm.main.services.provider.player.PlayerDataService;
-import org.amupoti.sm.main.services.provider.player.RDMPlayerDataService;
-import org.amupoti.sm.main.services.provider.team.MockTeamDataService;
-import org.amupoti.sm.main.services.provider.team.TeamDataService;
-import org.apache.commons.io.IOUtils;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.core.io.ClassPathResource;
-
-import java.io.IOException;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * Created by Marcel on 25/09/2015.
  */
 @PropertySource("classpath:urls.properties")
-@ComponentScan("org.amupoti.sm.main.services.provider")
+//@ComponentScan("org.amupoti.sm.main.services.provider")
 public class TestConfig {
 
     @Bean
@@ -28,29 +20,12 @@ public class TestConfig {
 
     @Bean
     public HTMLProviderService getHtmlProviderService(){
-        return new LocalHTMLProviderService();
-    }
-
-    private class LocalHTMLProviderService extends HTMLProviderService{
-
-        @Override
-        public String get(String getUrl) throws IOException {
-
-            return IOUtils.toString(new ClassPathResource(getUrl).getInputStream());
-        }
+        return new HTMLProviderService();
     }
 
     @Bean
-    public PlayerDataService getPlayerDataService(){
-        return new RDMPlayerDataService();
+    public RestTemplate getRestTemplate(){
+        return new RestTemplate();
     }
-
-    @Bean
-    public TeamDataService getTeamDataService(){
-        return new MockTeamDataService();
-    }
-
-
-
 
 }

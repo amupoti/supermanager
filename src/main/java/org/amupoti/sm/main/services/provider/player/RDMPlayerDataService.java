@@ -99,7 +99,7 @@ public class RDMPlayerDataService implements PlayerDataService {
             if (name.contains(",")) {
                 PlayerId playerId = new PlayerId(name);
                 playerIds.add(playerId);
-                playerPositionMap.put(playerId,playerPosition);
+                playerPositionMap.put(playerId, playerPosition);
             }
         }
         return playerIds;
@@ -165,9 +165,16 @@ public class RDMPlayerDataService implements PlayerDataService {
         return new AsyncResult<>(playerEntity);
     }
 
-    private String parseTeam(String team) {
-        String[] split = team.split("\\(");
-        return split[1].substring(0,3);
+    private String parseTeam(final String team) {
+        String teamName = null;
+        try {
+            String[] split = team.split("\\(");
+            teamName = split[1].substring(0,3);
+        }catch (StringIndexOutOfBoundsException e){
+            LOG.error("Invalid team name: "+team);
+            throw e;
+        }
+        return teamName;
 
     }
 

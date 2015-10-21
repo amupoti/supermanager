@@ -2,8 +2,9 @@ package org.amupoti.sm.main.services.provider;
 
 import org.amupoti.sm.main.repository.entity.PlayerId;
 import org.amupoti.sm.main.services.PlayerPosition;
-import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -25,11 +26,12 @@ public class HTMLProviderService {
     @Value("${url.team}")
     public  String TEAM_PAGE;
 
+    @Autowired
+    private RestTemplate restTemplate;
 
     public String getPlayerURL(PlayerId playerId) throws IOException, URISyntaxException {
-        String url = (PLAYER_URL + playerId.getId())
-                .replaceAll(" ", "%20");
-        return IOUtils.toString((new URL(url)).openStream());
+        String url = (PLAYER_URL + playerId.getId());
+        return get(url);
 
     }
 
@@ -61,7 +63,8 @@ public class HTMLProviderService {
 
     public String get(String getUrl) throws IOException {
         URL url = new URL(getUrl);
-        return IOUtils.toString((url).openStream());
+        //return IOUtils.toString((url).openStream());
+        return restTemplate.getForObject(getUrl, String.class);
 
     }
 }
