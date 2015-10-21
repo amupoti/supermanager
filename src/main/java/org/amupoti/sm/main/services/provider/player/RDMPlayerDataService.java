@@ -33,7 +33,7 @@ import java.util.concurrent.Future;
 
 public class RDMPlayerDataService implements PlayerDataService {
 
-    public static final String VAL_MEDIA_LOCAL = "//*[@id=\"sm_central\"]/div[2]/table/tbody/tr[5]/td[9]/b";
+    public static final String VAL_MEDIA_LOCAL = "//*[@id=\"sm_central\"]/div[2]";
     public static final String VAL_MEDIA_VISITANTE = "//*[@id=\"sm_central\"]/div[2]/table/tbody/tr[6]/td[9]/b";
     public static final String VAL_MANTENER_BROKER = "//*[@id=\"sm_central\"]/div[3]/table/tbody/tr[6]/td[2]";
     public static final String ALL_PLAYERS = "//*[@id=\"sm_central\"]/div/table/tbody/tr/td[1]/a";
@@ -144,13 +144,13 @@ public class RDMPlayerDataService implements PlayerDataService {
     private Future<PlayerEntity> populatePlayerData(PlayerId playerId) throws IOException, XPatherException, URISyntaxException {
         PlayerEntity playerEntity = new PlayerEntity();
         String html = htmlProviderService.getPlayerURL(playerId);
-        String localMean = getValue(html, RDMPlayerDataService.VAL_MEDIA_LOCAL);
-        String visitorMean = getValue(html, RDMPlayerDataService.VAL_MEDIA_VISITANTE);
-        String keepBroker = getValue(html, RDMPlayerDataService.VAL_MANTENER_BROKER);
-        String broker =getValue(html, RDMPlayerDataService.BROKER).replace(",","");
+        String localMean = getValueViaLabel(html, RDMPlayerDataService.VAL_MEDIA_LOCAL);
+        String visitorMean = getValueViaLabel(html, RDMPlayerDataService.VAL_MEDIA_VISITANTE);
+        String keepBroker = getValueViaXPath(html, RDMPlayerDataService.VAL_MANTENER_BROKER);
+        String broker = getValueViaXPath(html, RDMPlayerDataService.BROKER).replace(",","");
 
         //Parse team and store in player data
-        String team = getValue(html, RDMPlayerDataService.PLAYER_TEAM);
+        String team = getValueViaXPath(html, RDMPlayerDataService.PLAYER_TEAM);
         team=parseTeam(team);
         TeamEntity teamEntity = teamService.getTeam(team);
 
@@ -165,6 +165,7 @@ public class RDMPlayerDataService implements PlayerDataService {
         return new AsyncResult<>(playerEntity);
     }
 
+
     private String parseTeam(final String team) {
         String teamName = null;
         try {
@@ -178,7 +179,7 @@ public class RDMPlayerDataService implements PlayerDataService {
 
     }
 
-    private String getValue(String html, String xPathExpression) {
+    private String getValueViaXPath(String html, String xPathExpression) {
         try{
             TagNode node = cleaner.clean(html);
             Object[] objects = node.evaluateXPath(xPathExpression);
@@ -187,8 +188,18 @@ public class RDMPlayerDataService implements PlayerDataService {
         }
         catch (Exception e){
             //TODO: this is a poor way to handle any problem we may have during parsing.
+            LOG.warn("Could not get value from html with xPathExpression: " + xPathExpression);
             return "-1";
         }
     }
+
+    public String getValueViaLabel(String html, String expression) {
+    //TODO: get data properly, must check where "media local" is
+        TagNode node = cleaner.clean(html);
+        //Object[] objects = node.getElementsByAttValue()evaluateXPath(xPathExpression);
+
+        return "-1";
+    }
+
 
 }

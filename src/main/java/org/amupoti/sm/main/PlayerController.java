@@ -41,6 +41,8 @@ public class PlayerController {
     @Autowired
     private DataBoostService dataBoostService;
 
+    private boolean dataPopulated = false;
+
     @RequestMapping(value = "/players/{id}")
     public String getPlayer(@PathVariable String id,Model model) throws IOException, XPatherException, URISyntaxException {
         PlayerId playerId = new PlayerId(id);
@@ -79,15 +81,22 @@ public class PlayerController {
     @RequestMapping(value = "/populate")
     public String populateData() throws IOException, XPatherException, InterruptedException, ExecutionException, URISyntaxException {
         dataPopulationService.populate();
+        dataPopulated=true;
         return "populate";
     }
 
 
     @RequestMapping(value = "/wizard/")
-    public String getSupermagerInfo(Model model)  {
+    public String getSupermagerInfo(Model model) throws URISyntaxException, ExecutionException, XPatherException, InterruptedException, IOException {
+
+        //TODO: add into init method
+        if(!dataPopulated) {
+            dataPopulationService.populate();
+            dataPopulated=true;
+        }
+
+
         Iterable<PlayerEntity> playerList =  playerService.getPlayers();
-
-
         List<SMDataBean> smDataList = new LinkedList<>();
         for (PlayerEntity playerEntity:playerList){
             SMDataBean smDataBean = new SMDataBean();

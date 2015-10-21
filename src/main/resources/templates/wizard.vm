@@ -22,19 +22,19 @@ $(document).ready(function()
         <th>Jugador</th>
         <th>Posición</th>
         <th>Equipo</th>
-        <th>Val-L</th>
-        <th>Val-V</th>
+     <!--   <th>Val-L</th> -->
+     <!--   <th>Val-V</th> -->
         <th>Local?</th>
         <th>Contra?</th>
 
         <th>Broker</th>
         <th>Broker =</th>
         <th>Media Equipo</th>
-        <th>Media Rec VS</th>
+        <th>Media Rec Otro</th>
         <th>Media Equipo L/V</th>
-        <th>Media Rec VS L/V</th>
+        <th>Media Rec Otro L/V</th>
 
-        <th>Media Rec Jug VS</th>
+        <th>Media Rec Posi Otro</th>
         <th>Cal-Corto</th>
         <th>Cal-Medio</th>
         <th>Cal-Largo</th>
@@ -47,8 +47,8 @@ $(document).ready(function()
             <td>$smData.playerId</td>
             <td>$smData.playerPosition</td>
             <td>$smData.teamName</td>
-            <td>$smData.playerLocalVal</td>
-            <td>$smData.playerVisitorVal</td>
+          <!--  <td>$smData.playerLocalVal</td> -->
+          <!--  <td>$smData.playerVisitorVal</td> -->
             <td>$smData.localOrVisitor</td>
             <td>$smData.otherTeamName</td>
 

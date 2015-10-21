@@ -34,4 +34,10 @@ public class HTMLProviderServiceITTest {
         String html = htmlProviderService.getPlayerURL(new PlayerId("Rodríguez, Sergio"));
         Assert.assertTrue(html.contains("(RMA)"));
     }
+
+    @Test
+    public void testParsingPlayerMeans() throws IOException, URISyntaxException {
+        String html = htmlProviderService.getPlayerURL(new PlayerId("Rodríguez, Sergio"));
+        Assert.assertTrue(html.contains("(RMA)"));
+    }
 }
