@@ -18,7 +18,7 @@ import java.net.URISyntaxException;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
-public class HTMLProviderServiceTestIT {
+public class HTMLProviderServiceITTest {
 
     @Autowired
     HTMLProviderService htmlProviderService;
