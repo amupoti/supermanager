@@ -13,7 +13,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Marcel on 25/09/2015.
@@ -27,8 +27,8 @@ public class RDMPlayerDataServiceTest {
     private RDMPlayerDataService RDMPlayerDataService;
     @Test
     public void testPlayerLoad() throws IOException, XPatherException {
-        List<PlayerId> playerIds = RDMPlayerDataService.getPlayerIds();
+        Set<PlayerId> playerIds = RDMPlayerDataService.getPlayerIds();
         Assert.assertTrue(playerIds.size()==60);
-        Assert.assertEquals("Granger, Jayson",playerIds.get(0).getId());
+        Assert.assertEquals("Granger, Jayson",playerIds.iterator().next());
     }
 }

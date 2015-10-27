@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 
@@ -93,7 +93,7 @@ public class DataPopulationService {
      */
     private void populatePlayers() throws IOException, XPatherException, URISyntaxException, InterruptedException, ExecutionException {
         LOG.info("Populating players");
-        List<PlayerId> playerIdList = dataProviderStrategy.getPlayerIds();
+        Set<PlayerId> playerIdList = dataProviderStrategy.getPlayerIds();
         Iterable<PlayerEntity> playerEntityList = dataProviderStrategy.getPlayersData(playerIdList);
 
         Iterator<PlayerEntity> iterator = playerEntityList.iterator();
@@ -193,6 +193,7 @@ public class DataPopulationService {
     private void populateMatchesByTeam(String teamName) throws IOException, XPatherException {
         TeamEntity teamEntity = teamRepository.findByName(teamName);
 
+        //TODO: get from repo if already there
         LOG.info("Getting matches for team " + teamName);
         Iterable<MatchEntity> matchEntities = matchDataProvider.getTeamMatches(teamName);
         matchRepository.save(matchEntities);

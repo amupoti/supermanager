@@ -34,7 +34,9 @@ $(document).ready(function()
         <th>Media Equipo L/V</th>
         <th>Media Rec Otro L/V</th>
 
-        <th>Media Rec Posi Otro</th>
+        <th>Media Rec Posi Otro-C</th>
+        <th>Media Rec Posi Otro-M</th>
+        <th>Media Rec Posi Otro-L</th>
         <th>Cal-Corto</th>
         <th>Cal-Medio</th>
         <th>Cal-Largo</th>
@@ -59,7 +61,10 @@ $(document).ready(function()
             <td>$smData.teamValAsLV</td>
             <td>$smData.otherTeamReceivedValAsLV</td>
 
-            <td>$smData.playerOtherTeamReceivedVal</td>
+            <td>$smData.playerOtherTeamReceivedValShort</td>
+            <td>$smData.playerOtherTeamReceivedValMedium</td>
+            <td>$smData.playerOtherTeamReceivedValLong</td>
+
             <td>$smData.calendarBoostShort</td>
             <td>$smData.calendarBoostMedium</td>
             <td>$smData.calendarBoostLong</td>

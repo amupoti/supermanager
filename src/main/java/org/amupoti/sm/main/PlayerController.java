@@ -89,13 +89,6 @@ public class PlayerController {
     @RequestMapping(value = "/wizard/")
     public String getSupermagerInfo(Model model) throws URISyntaxException, ExecutionException, XPatherException, InterruptedException, IOException {
 
-        //TODO: add into init method
-        if(!dataPopulated) {
-            dataPopulationService.populate();
-            dataPopulated=true;
-        }
-
-
         Iterable<PlayerEntity> playerList =  playerService.getPlayers();
         List<SMDataBean> smDataList = new LinkedList<>();
         for (PlayerEntity playerEntity:playerList){
@@ -128,7 +121,9 @@ public class PlayerController {
         smDataBean.setCalendarBoostMedium(dataBoostService.getCalendarData(teamEntity, matchNumber, MEDIUM_TERM));
         smDataBean.setCalendarBoostLong(dataBoostService.getCalendarData(teamEntity, matchNumber, LONG_TERM));
 
-        smDataBean.setPlayerOtherTeamReceivedVal(dataBoostService.getCalendar(teamEntity,matchNumber, SHORT_TERM, playerEntity.getPlayerPosition()));
+        smDataBean.setPlayerOtherTeamReceivedValShort(dataBoostService.getCalendar(teamEntity, matchNumber, SHORT_TERM, playerEntity.getPlayerPosition()));
+        smDataBean.setPlayerOtherTeamReceivedValMedium(dataBoostService.getCalendar(teamEntity,matchNumber, MEDIUM_TERM, playerEntity.getPlayerPosition()));
+        smDataBean.setPlayerOtherTeamReceivedValLong(dataBoostService.getCalendar(teamEntity,matchNumber, LONG_TERM, playerEntity.getPlayerPosition()));
 
         /*
          * Get mean values depending if local or visitor

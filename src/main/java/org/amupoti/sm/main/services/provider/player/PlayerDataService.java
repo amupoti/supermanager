@@ -7,6 +7,7 @@ import org.htmlcleaner.XPatherException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -15,7 +16,7 @@ import java.util.concurrent.ExecutionException;
  */
 public interface PlayerDataService {
 
-    List<PlayerId> getPlayerIds() throws IOException, XPatherException;
+    Set<PlayerId> getPlayerIds() throws IOException, XPatherException;
 
-    List<PlayerEntity> getPlayersData(List<PlayerId> playerIdList) throws XPatherException, IOException, URISyntaxException, InterruptedException, ExecutionException;
+    List<PlayerEntity> getPlayersData(Set<PlayerId> playerIds) throws XPatherException, IOException, URISyntaxException, InterruptedException, ExecutionException;
 }

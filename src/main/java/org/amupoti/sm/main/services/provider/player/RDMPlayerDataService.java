@@ -1,5 +1,6 @@
 package org.amupoti.sm.main.services.provider.player;
 
+import org.amupoti.sm.main.repository.PlayerRepository;
 import org.amupoti.sm.main.repository.entity.PlayerEntity;
 import org.amupoti.sm.main.repository.entity.PlayerId;
 import org.amupoti.sm.main.repository.entity.TeamEntity;
@@ -19,9 +20,7 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -60,6 +59,10 @@ public class RDMPlayerDataService implements PlayerDataService {
     @Autowired
     private TeamService teamService;
 
+    @Autowired
+    private PlayerRepository playerRepository;
+
+
     @PostConstruct
     public void init() {
         cleaner = new HtmlCleaner();
@@ -75,10 +78,9 @@ public class RDMPlayerDataService implements PlayerDataService {
      * @throws IOException
      * @throws XPatherException
      */
-    public List<PlayerId> getPlayerIds() throws IOException, XPatherException {
+    public Set<PlayerId> getPlayerIds() throws IOException, XPatherException {
 
-        List<PlayerId> playerIds = new LinkedList<>();
-
+        Set<PlayerId> playerIds = new LinkedHashSet<>();
 
         PlayerPosition[] positions = {PlayerPosition.BASE,PlayerPosition.ALERO,PlayerPosition.PIVOT};
         for (PlayerPosition playerPosition:positions) {
@@ -105,20 +107,23 @@ public class RDMPlayerDataService implements PlayerDataService {
         return playerIds;
     }
 
-    public List<PlayerEntity> getPlayersData(List<PlayerId> playerIdList) throws XPatherException, IOException, URISyntaxException, InterruptedException, ExecutionException {
+    public List<PlayerEntity> getPlayersData(Set<PlayerId> playerIds) throws XPatherException, IOException, URISyntaxException, InterruptedException, ExecutionException {
         List<Future<PlayerEntity>> futurePlayerDataList = new LinkedList<>();
         List<PlayerEntity> playerDataList = new LinkedList<>();
 
 
         //Fire up all URL retrieval and value computation in new threads
-        for (int i=0;i<playerIdList.size();i++){
-            LOG.info("Getting data for player "+playerIdList.get(i));
-            Future<PlayerEntity> playerData = populatePlayerData(playerIdList.get(i));
+        int num =0;
+        for (PlayerId playerId:playerIds){
+            num++;
+            LOG.info("Getting data for player "+playerId+ ". "+num+" out of "+playerIds.size()+" processed.");
+
+            Future<PlayerEntity> playerData = populatePlayerData(playerId);
             futurePlayerDataList.add(playerData);
             Thread.sleep(100);
         }
 
-        for (int i=0;i<playerIdList.size();i++){
+        for (int i=0;i<playerIds.size();i++){
             if (!futurePlayerDataList.get(i).isDone()){
                 LOG.info("Player "+i+" not ready, waiting...");
                 Thread.sleep(1000);
@@ -126,6 +131,7 @@ public class RDMPlayerDataService implements PlayerDataService {
             }
             else{
                 playerDataList.add(futurePlayerDataList.get(i).get());
+                LOG.info("Processed "+(i+1)+" players out of "+playerIds.size());
             }
         }
         return playerDataList;
@@ -142,7 +148,11 @@ public class RDMPlayerDataService implements PlayerDataService {
     @Cacheable("playerData")
     @Async
     private Future<PlayerEntity> populatePlayerData(PlayerId playerId) throws IOException, XPatherException, URISyntaxException {
-        PlayerEntity playerEntity = new PlayerEntity();
+
+        PlayerEntity playerEntity = playerRepository.findOne(playerId);
+        if (playerEntity==null){
+            playerEntity = new PlayerEntity();
+        }
         String html = htmlProviderService.getPlayerURL(playerId);
         String localMean = getValueViaLabel(html, RDMPlayerDataService.VAL_MEDIA_LOCAL);
         String visitorMean = getValueViaLabel(html, RDMPlayerDataService.VAL_MEDIA_VISITANTE);

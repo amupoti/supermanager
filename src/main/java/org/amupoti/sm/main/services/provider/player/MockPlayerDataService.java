@@ -12,9 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -30,17 +28,17 @@ public class MockPlayerDataService implements PlayerDataService{
 
 
     @Override
-    public List<PlayerId> getPlayerIds() throws IOException, XPatherException {
-        List<PlayerId> list = new LinkedList<>();
+    public Set<PlayerId> getPlayerIds() throws IOException, XPatherException {
+        Set<PlayerId> set = new LinkedHashSet<>();
         for (int i=0;i<MAX_PLAYERS;i++) {
             PlayerId playerId = new PlayerId("Pepito, Palo"+i);
-            list.add(playerId);
+            set.add(playerId);
         }
-        return list;
+        return set;
     }
 
     @Override
-    public List<PlayerEntity> getPlayersData(List<PlayerId> playerIdList) throws XPatherException, IOException, URISyntaxException, InterruptedException, ExecutionException {
+    public List<PlayerEntity> getPlayersData(Set<PlayerId> playerIdList) throws XPatherException, IOException, URISyntaxException, InterruptedException, ExecutionException {
         log.info(String.format("Populating mock data for %s players",playerIdList.size()));
         List<PlayerEntity> playerDataList = new LinkedList<>();
 
