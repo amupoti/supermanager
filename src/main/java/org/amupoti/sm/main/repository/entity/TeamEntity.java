@@ -17,7 +17,7 @@ public class TeamEntity {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private String id;
+    private Integer id;
     private String name;
 
     @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)

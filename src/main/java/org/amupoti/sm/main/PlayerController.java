@@ -165,7 +165,7 @@ public class PlayerController {
      * @param smDataBean
      */
     private void addPlayerData(PlayerEntity playerEntity, SMDataBean smDataBean) {
-        smDataBean.setPlayerId(playerEntity.getId().toString());
+        smDataBean.setPlayerId(playerEntity.getPlayerId().toString());
         smDataBean.setPlayerPosition(playerEntity.getPlayerPosition().name());
         smDataBean.setPlayerLocalVal(playerEntity.getLocalMean());
         smDataBean.setPlayerVisitorVal(playerEntity.getVisitorMean());

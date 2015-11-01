@@ -8,4 +8,5 @@ import org.springframework.data.repository.CrudRepository;
  * Created by Marcel on 08/08/2015.
  */
 public interface PlayerRepository extends CrudRepository <PlayerEntity,PlayerId>{
+    PlayerEntity findByPlayerId(PlayerId playerId);
 }

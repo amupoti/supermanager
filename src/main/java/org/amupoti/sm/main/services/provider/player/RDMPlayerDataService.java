@@ -149,7 +149,7 @@ public class RDMPlayerDataService implements PlayerDataService {
     @Async
     private Future<PlayerEntity> populatePlayerData(PlayerId playerId) throws IOException, XPatherException, URISyntaxException {
 
-        PlayerEntity playerEntity = playerRepository.findOne(playerId);
+        PlayerEntity playerEntity = playerRepository.findByPlayerId(playerId);
         if (playerEntity==null){
             playerEntity = new PlayerEntity();
         }
@@ -164,7 +164,7 @@ public class RDMPlayerDataService implements PlayerDataService {
         team=parseTeam(team);
         TeamEntity teamEntity = teamService.getTeam(team);
 
-        playerEntity.setId(playerId);
+        playerEntity.setPlayerId(playerId);
         playerEntity.setLocalMean(Float.parseFloat(localMean));
         playerEntity.setVisitorMean(Float.parseFloat(visitorMean));
         playerEntity.setKeepBroker(Float.parseFloat(keepBroker));

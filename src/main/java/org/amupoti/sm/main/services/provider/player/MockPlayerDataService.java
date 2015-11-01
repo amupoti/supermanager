@@ -45,7 +45,7 @@ public class MockPlayerDataService implements PlayerDataService{
         for (PlayerId playerId:playerIdList){
             log.info("Adding player " + playerId);
             PlayerEntity playerEntity = new PlayerEntity();
-            playerEntity.setId(playerId);
+            playerEntity.setPlayerId(playerId);
             playerEntity.setKeepBroker(getRand());
             playerEntity.setLocalMean(getRand());
             playerEntity.setVisitorMean(getRand());

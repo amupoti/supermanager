@@ -18,7 +18,7 @@ public class MatchEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private String id;
+    private Integer id;
     private int number;
 
     private String local;

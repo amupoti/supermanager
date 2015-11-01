@@ -5,9 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.amupoti.sm.main.services.PlayerPosition;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 /**
  * Created by Marcel on 04/08/2015.
@@ -19,7 +17,9 @@ import javax.persistence.OneToOne;
 public class PlayerEntity {
 
     @Id
-    private PlayerId id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
+    private PlayerId playerId;
     private Float localMean;
     private Float visitorMean;
     private Float keepBroker;

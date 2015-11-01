@@ -19,7 +19,7 @@ public class ValueEntity {
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
-    private String id;
+    private Integer id;
     private String type;
     private String val;
     private String valL;

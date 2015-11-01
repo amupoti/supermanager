@@ -68,7 +68,11 @@
             <artifactId>spring-test</artifactId>
             <version>4.0.1.RELEASE</version>
         </dependency>
-
+        <dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.1-901.jdbc4</version>
+        </dependency>
 
     </dependencies>
 

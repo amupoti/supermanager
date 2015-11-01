@@ -22,8 +22,9 @@ public class PlayerService {
         return playerRepository.findAll();
     }
 
-    public PlayerEntity getPlayer(PlayerId id){
-        return playerRepository.findOne(id);
+    public PlayerEntity getPlayer(PlayerId playerId){
+        return  playerRepository.findByPlayerId(playerId);
+
     }
 }
 
