@@ -1,5 +1,7 @@
 package org.amupoti.sm.main.config;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +16,8 @@ import java.net.URISyntaxException;
 @Configuration
 public class DbConfig {
 
+    private static final Log LOG = LogFactory.getLog(DbConfig.class);
+
     @Bean
     public DataSource dataSource() throws URISyntaxException {
 
@@ -23,6 +27,7 @@ public class DbConfig {
             String password = "admin";
             String url = "jdbc:postgresql://localhost/postgres";
             String dbProperty = System.getProperty("DATABASE_URL");
+        //postgres://najbyysoikmuyx:56KbynVuoY1fElvaT92tsIxb5T@ec2-54-225-197-30.compute-1.amazonaws.com:5432/d4g57ifaku4coq
             if(dbProperty != null) {
                 dbUri = new URI(dbProperty);
 
@@ -35,7 +40,8 @@ public class DbConfig {
             dataSourceBuilder.url(url);
             dataSourceBuilder.username(username);
             dataSourceBuilder.password(password);
-            dataSourceBuilder.driverClassName("org.postgresql.Driver");
+
+            LOG.info("Creating datasource trying to connect to URL: "+url+" with username: "+username +" and password "+password);
 
             return dataSourceBuilder.build();
 
