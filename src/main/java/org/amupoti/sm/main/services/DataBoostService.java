@@ -58,8 +58,8 @@ public class DataBoostService {
     }
 
     private Float parseVal(String valRec) {
-        String[] split = valRec.split(" \\(");
-        return Float.parseFloat(split[0]);
+
+        return Float.parseFloat(valRec);
 
     }
 

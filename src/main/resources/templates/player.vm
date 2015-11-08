@@ -1,4 +1,0 @@
-<h1>Datos para: $playerId.id</h1>
-Media Local: $player.localMean
-Media Visitante: $player.visitorMean
-Mantiene broker: $player.keepBroker

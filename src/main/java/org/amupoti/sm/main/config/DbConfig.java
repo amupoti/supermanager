@@ -27,7 +27,7 @@ public class DbConfig {
             String password = "admin";
             String url = "jdbc:postgresql://localhost/postgres";
             String dbProperty = System.getenv("DATABASE_URL");
-        //postgres://najbyysoikmuyx:56KbynVuoY1fElvaT92tsIxb5T@ec2-54-225-197-30.compute-1.amazonaws.com:5432/d4g57ifaku4coq
+
             if(dbProperty != null) {
                 dbUri = new URI(dbProperty);
 

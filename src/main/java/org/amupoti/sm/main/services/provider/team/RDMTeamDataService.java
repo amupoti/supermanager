@@ -84,13 +84,22 @@ public class RDMTeamDataService implements TeamDataService {
             String html = getHtmlForTeam(teamName,position);
             TagNode node = cleaner.clean(html);
             Object[] objects = node.evaluateXPath(xPathExpression);
-            String s = ((TagNode) objects[0]).getAllChildren().get(0).toString();
-            return s;
+            String value = ((TagNode) objects[0]).getAllChildren().get(0).toString();
+            if (value.contains("(")){
+                value = parseVal(value);
+            }
+            return value;
         }
         catch (Exception e){
-            //TODO: this is a poor way to handle any problem we may have during parsing.
+            //TODO: this is a poor way to handle any problem we may have during parsing, but won't break data
             return "-1";
         }
+    }
+
+    private String parseVal(String valRec) {
+        String[] split = valRec.split(" \\(");
+        return split[0];
+
     }
 
     private String getHtmlForTeam(String teamName, PlayerPosition position) throws IOException {

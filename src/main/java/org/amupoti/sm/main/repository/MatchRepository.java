@@ -7,7 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 /**
  * Created by Marcel on 16/08/2015.
  */
-public interface MatchRepository extends CrudRepository<MatchEntity,String>{
+public interface MatchRepository extends CrudRepository<MatchEntity,Integer>{
 
     /**
      * Returns all the matches for the given teamName

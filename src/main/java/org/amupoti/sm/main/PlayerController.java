@@ -1,6 +1,9 @@
 package org.amupoti.sm.main;
 
-import org.amupoti.sm.main.repository.entity.*;
+import org.amupoti.sm.main.repository.entity.MatchEntity;
+import org.amupoti.sm.main.repository.entity.PlayerEntity;
+import org.amupoti.sm.main.repository.entity.TeamEntity;
+import org.amupoti.sm.main.repository.entity.ValueEntity;
 import org.amupoti.sm.main.services.*;
 import org.amupoti.sm.main.services.provider.team.TeamConstants;
 import org.apache.commons.logging.Log;
@@ -41,33 +44,9 @@ public class PlayerController {
     @Autowired
     private DataBoostService dataBoostService;
 
-    private boolean dataPopulated = false;
+    @Autowired
+    private ControlService controlService;
 
-    @RequestMapping(value = "/players/{id}")
-    public String getPlayer(@PathVariable String id,Model model) throws IOException, XPatherException, URISyntaxException {
-        PlayerId playerId = new PlayerId(id);
-        LOG.info("Retrieving info for player:" + playerId);
-        PlayerEntity player= playerService.getPlayer(playerId);
-        model.addAttribute("playerId",playerId);
-        model.addAttribute("player",player);
-        LOG.info("Retrieved info for player:" + playerId + "." + player);
-        return "player";
-    }
-
-    @RequestMapping(value = "/players/")
-    public String getPlayers(Model model) throws IOException, XPatherException, URISyntaxException, InterruptedException, ExecutionException {
-        Iterable<PlayerEntity> playerList =  playerService.getPlayers();
-        model.addAttribute("players", playerList);
-        return "players";
-    }
-
-    @RequestMapping(value = "/overview/")
-    public String getOverview(Model model) throws IOException, XPatherException, URISyntaxException, InterruptedException, ExecutionException {
-        Iterable<PlayerEntity> playerList =  playerService.getPlayers();
-        model.addAttribute("players", playerList);
-
-        return "overview";
-    }
 
     @RequestMapping(value = "/teams/")
     public String getTeams(Model model) throws IOException, XPatherException, URISyntaxException, InterruptedException, ExecutionException {
@@ -78,10 +57,11 @@ public class PlayerController {
     }
 
 
-    @RequestMapping(value = "/populate")
-    public String populateData() throws IOException, XPatherException, InterruptedException, ExecutionException, URISyntaxException {
+    @RequestMapping(value = "/populate/{match}")
+    public String populateData(@PathVariable(value = "match") Integer match) throws IOException, XPatherException, InterruptedException, ExecutionException, URISyntaxException {
+        LOG.info("Populating data for match "+match);
+        controlService.setCurrentMatch(match);
         dataPopulationService.populate();
-        dataPopulated=true;
         return "populate";
     }
 
@@ -111,7 +91,8 @@ public class PlayerController {
      */
     private void addTeamData(PlayerEntity playerEntity, SMDataBean smDataBean) {
 
-        int matchNumber = TeamConstants.CURRENT_MATCH_NUMBER;
+        int matchNumber = controlService.getMatchNumber();
+        LOG.info("Showing data for match number "+matchNumber);
         //TeamEntity teamEntity = teamService.getTeam(playerEntity.getTeam().getName());
         TeamEntity teamEntity = playerEntity.getTeam();
         /*
