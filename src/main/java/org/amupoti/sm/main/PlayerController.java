@@ -92,15 +92,9 @@ public class PlayerController {
     private void addTeamData(PlayerEntity playerEntity, SMDataBean smDataBean) {
 
         int matchNumber = controlService.getMatchNumber();
-        LOG.info("Showing data for match number "+matchNumber);
+        LOG.debug("Showing data for match number "+matchNumber);
         //TeamEntity teamEntity = teamService.getTeam(playerEntity.getTeam().getName());
         TeamEntity teamEntity = playerEntity.getTeam();
-        /*
-         * Get boost depending on calendar
-         */
-        smDataBean.setCalendarBoostShort(dataBoostService.getCalendarData(teamEntity, matchNumber, SHORT_TERM));
-        smDataBean.setCalendarBoostMedium(dataBoostService.getCalendarData(teamEntity, matchNumber, MEDIUM_TERM));
-        smDataBean.setCalendarBoostLong(dataBoostService.getCalendarData(teamEntity, matchNumber, LONG_TERM));
 
         smDataBean.setPlayerOtherTeamReceivedValShort(dataBoostService.getCalendar(teamEntity, matchNumber, SHORT_TERM, playerEntity.getPlayerPosition()));
         smDataBean.setPlayerOtherTeamReceivedValMedium(dataBoostService.getCalendar(teamEntity,matchNumber, MEDIUM_TERM, playerEntity.getPlayerPosition()));

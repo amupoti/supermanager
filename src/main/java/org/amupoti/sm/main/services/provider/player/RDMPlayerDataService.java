@@ -6,6 +6,7 @@ import org.amupoti.sm.main.repository.entity.PlayerId;
 import org.amupoti.sm.main.repository.entity.TeamEntity;
 import org.amupoti.sm.main.services.PlayerPosition;
 import org.amupoti.sm.main.services.TeamService;
+import org.amupoti.sm.main.services.exception.PlayerException;
 import org.amupoti.sm.main.services.provider.HTMLProviderService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -107,7 +108,7 @@ public class RDMPlayerDataService implements PlayerDataService {
         return playerIds;
     }
 
-    public List<PlayerEntity> getPlayersData(Set<PlayerId> playerIds) throws XPatherException, IOException, URISyntaxException, InterruptedException, ExecutionException {
+    public List<PlayerEntity> getPlayersData(Set<PlayerId> playerIds)  {
         List<Future<PlayerEntity>> futurePlayerDataList = new LinkedList<>();
         List<PlayerEntity> playerDataList = new LinkedList<>();
 
@@ -118,23 +119,41 @@ public class RDMPlayerDataService implements PlayerDataService {
             num++;
             LOG.info("Getting data for player "+playerId+ ". "+num+" out of "+playerIds.size()+" processed.");
 
-            Future<PlayerEntity> playerData = populatePlayerData(playerId);
-            futurePlayerDataList.add(playerData);
-            Thread.sleep(100);
+            Future<PlayerEntity> playerData = null;
+            try {
+                playerData = populatePlayerData(playerId);
+                futurePlayerDataList.add(playerData);
+                sleep(50);
+            } catch (PlayerException e) {
+                LOG.error("Could not get data for player " + playerId);
+            }
         }
 
-        for (int i=0;i<playerIds.size();i++){
+        for (int i=0;i<futurePlayerDataList.size();i++){
             if (!futurePlayerDataList.get(i).isDone()){
                 LOG.info("Player "+i+" not ready, waiting...");
-                Thread.sleep(1000);
+                sleep(50);
                 i--;
             }
             else{
-                playerDataList.add(futurePlayerDataList.get(i).get());
-                LOG.info("Processed "+(i+1)+" players out of "+playerIds.size());
+                try {
+                    playerDataList.add(futurePlayerDataList.get(i).get());
+                    LOG.info("Processed " + (i + 1) + " players out of " + futurePlayerDataList.size());
+                } catch (ExecutionException |InterruptedException e) {
+                    LOG.error("Could not process player number "+(i+1));
+                    e.printStackTrace();
+                }
             }
         }
         return playerDataList;
+    }
+
+    private void sleep(int i) {
+        try {
+            Thread.sleep(i);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -147,43 +166,47 @@ public class RDMPlayerDataService implements PlayerDataService {
      */
     @Cacheable("playerData")
     @Async
-    private Future<PlayerEntity> populatePlayerData(PlayerId playerId) throws IOException, XPatherException, URISyntaxException {
+    private Future<PlayerEntity> populatePlayerData(PlayerId playerId) throws PlayerException {
 
         PlayerEntity playerEntity = playerRepository.findByPlayerId(playerId);
         if (playerEntity==null){
             playerEntity = new PlayerEntity();
         }
-        String html = htmlProviderService.getPlayerURL(playerId);
-        String localMean = getValueViaLabel(html, RDMPlayerDataService.VAL_MEDIA_LOCAL);
-        String visitorMean = getValueViaLabel(html, RDMPlayerDataService.VAL_MEDIA_VISITANTE);
-        String keepBroker = getValueViaXPath(html, RDMPlayerDataService.VAL_MANTENER_BROKER);
-        String broker = getValueViaXPath(html, RDMPlayerDataService.BROKER).replace(",","");
+        String html = null;
+        try {
+            html = htmlProviderService.getPlayerURL(playerId);
 
-        //Parse team and store in player data
-        String team = getValueViaXPath(html, RDMPlayerDataService.PLAYER_TEAM);
-        team=parseTeam(team);
-        TeamEntity teamEntity = teamService.getTeam(team);
+            String localMean = getValueViaLabel(html, RDMPlayerDataService.VAL_MEDIA_LOCAL);
+            String visitorMean = getValueViaLabel(html, RDMPlayerDataService.VAL_MEDIA_VISITANTE);
+            String keepBroker = getValueViaXPath(html, RDMPlayerDataService.VAL_MANTENER_BROKER);
+            String broker = getValueViaXPath(html, RDMPlayerDataService.BROKER).replace(",","");
 
-        playerEntity.setPlayerId(playerId);
-        playerEntity.setLocalMean(Float.parseFloat(localMean));
-        playerEntity.setVisitorMean(Float.parseFloat(visitorMean));
-        playerEntity.setKeepBroker(Float.parseFloat(keepBroker));
-        playerEntity.setPlayerPosition(playerPositionMap.get(playerId));
-        playerEntity.setBroker(Float.parseFloat(broker));
-        playerEntity.setTeam(teamEntity);
+            //Parse team and store in player data
+            String team = getValueViaXPath(html, RDMPlayerDataService.PLAYER_TEAM);
+            team=parseTeam(team);
+            TeamEntity teamEntity = teamService.getTeam(team);
 
+            playerEntity.setPlayerId(playerId);
+            playerEntity.setLocalMean(Float.parseFloat(localMean));
+            playerEntity.setVisitorMean(Float.parseFloat(visitorMean));
+            playerEntity.setKeepBroker(Float.parseFloat(keepBroker));
+            playerEntity.setPlayerPosition(playerPositionMap.get(playerId));
+            playerEntity.setBroker(Float.parseFloat(broker));
+            playerEntity.setTeam(teamEntity);
+        } catch (IOException | URISyntaxException e) {
+            throw new PlayerException("A problem ocurred during HTML parsing",e);
+        }
         return new AsyncResult<>(playerEntity);
     }
 
 
-    private String parseTeam(final String team) {
+    private String parseTeam(final String team) throws PlayerException {
         String teamName = null;
         try {
             String[] split = team.split("\\(");
             teamName = split[1].substring(0,3);
         }catch (StringIndexOutOfBoundsException e){
-            LOG.error("Invalid team name: "+team);
-            throw e;
+            throw new PlayerException("Invalid team name: "+team, e);
         }
         return teamName;
 
@@ -204,7 +227,7 @@ public class RDMPlayerDataService implements PlayerDataService {
     }
 
     public String getValueViaLabel(String html, String expression) {
-    //TODO: get data properly, must check where "media local" is
+        //TODO: get data properly, must check where "media local" is
         TagNode node = cleaner.clean(html);
         //Object[] objects = node.getElementsByAttValue()evaluateXPath(xPathExpression);
 

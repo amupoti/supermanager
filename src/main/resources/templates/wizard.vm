@@ -30,16 +30,13 @@ $(document).ready(function()
         <th>Broker</th>
         <th>Broker =</th>
         <th>Media Equipo</th>
-        <th>Media Rec Otro</th>
-        <th>Media Equipo L/V</th>
-        <th>Media Rec Otro L/V</th>
+        <th>Media Rec Rival</th>
+        <th>Media Equipo como L/V</th>
+        <th>Media Rec Rival como L/V</th>
 
-        <th>Media Rec Posi Otro-C</th>
-        <th>Media Rec Posi Otro-M</th>
-        <th>Media Rec Posi Otro-L</th>
-        <th>Cal-Corto</th>
-        <th>Cal-Medio</th>
-        <th>Cal-Largo</th>
+        <th>Media Rec Posi Rival-1 partido</th>
+        <th>Media Rec Posi Rival-3 partidos</th>
+        <th>Media Rec Posi Rival-5 partidos</th>
 
     </tr>
     </thead>
@@ -64,11 +61,6 @@ $(document).ready(function()
             <td>$smData.playerOtherTeamReceivedValShort</td>
             <td>$smData.playerOtherTeamReceivedValMedium</td>
             <td>$smData.playerOtherTeamReceivedValLong</td>
-
-            <td>$smData.calendarBoostShort</td>
-            <td>$smData.calendarBoostMedium</td>
-            <td>$smData.calendarBoostLong</td>
-
 
         </tr>
       #end
