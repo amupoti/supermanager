@@ -18,7 +18,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -64,8 +63,8 @@ public class RDMPlayerDataService implements PlayerDataService {
     private PlayerRepository playerRepository;
 
 
-    @PostConstruct
-    public void init() {
+
+    public RDMPlayerDataService() {
         cleaner = new HtmlCleaner();
 
     }

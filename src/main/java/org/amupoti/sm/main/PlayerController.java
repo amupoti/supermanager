@@ -93,7 +93,7 @@ public class PlayerController {
 
         int matchNumber = controlService.getMatchNumber();
         LOG.debug("Showing data for match number "+matchNumber);
-        //TeamEntity teamEntity = teamService.getTeam(playerEntity.getTeam().getName());
+
         TeamEntity teamEntity = playerEntity.getTeam();
 
         smDataBean.setPlayerOtherTeamReceivedValShort(dataBoostService.getCalendar(teamEntity, matchNumber, SHORT_TERM, playerEntity.getPlayerPosition()));
