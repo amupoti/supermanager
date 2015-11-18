@@ -84,6 +84,12 @@ public class PlayerController {
         return "wizard";
     }
 
+    @RequestMapping(value = "/")
+    public String rootRedirect(Model model) throws URISyntaxException, ExecutionException, XPatherException, InterruptedException, IOException {
+
+        return "redirect:/wizard/";
+    }
+
     /**
      * Adds all information related to the team, like calendar-related boosts, mean values per received per team, etc.
      * @param playerEntity
