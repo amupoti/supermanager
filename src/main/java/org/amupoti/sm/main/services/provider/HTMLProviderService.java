@@ -1,7 +1,7 @@
 package org.amupoti.sm.main.services.provider;
 
 import org.amupoti.sm.main.repository.entity.PlayerId;
-import org.amupoti.sm.main.services.PlayerPosition;
+import org.amupoti.sm.main.bean.PlayerPosition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.client.RestTemplate;

@@ -1,4 +1,4 @@
-package org.amupoti.sm.main.services;
+package org.amupoti.sm.main.bean;
 
 import lombok.Getter;
 

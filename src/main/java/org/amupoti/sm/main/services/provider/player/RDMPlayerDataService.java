@@ -4,7 +4,7 @@ import org.amupoti.sm.main.repository.PlayerRepository;
 import org.amupoti.sm.main.repository.entity.PlayerEntity;
 import org.amupoti.sm.main.repository.entity.PlayerId;
 import org.amupoti.sm.main.repository.entity.TeamEntity;
-import org.amupoti.sm.main.services.PlayerPosition;
+import org.amupoti.sm.main.bean.PlayerPosition;
 import org.amupoti.sm.main.services.TeamService;
 import org.amupoti.sm.main.services.exception.PlayerException;
 import org.amupoti.sm.main.services.provider.HTMLProviderService;

@@ -1,7 +1,9 @@
-package org.amupoti.sm.main.services;
+package org.amupoti.sm.main.services.compute;
 
 import org.amupoti.sm.main.repository.entity.MatchEntity;
 import org.amupoti.sm.main.repository.entity.TeamEntity;
+import org.amupoti.sm.main.bean.PlayerPosition;
+import org.amupoti.sm.main.services.TeamService;
 import org.amupoti.sm.main.services.provider.team.TeamConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

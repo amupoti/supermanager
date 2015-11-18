@@ -1,4 +1,4 @@
-package org.amupoti.sm.main;
+package org.amupoti.sm.main.services.compute.bean;
 
 import lombok.Data;
 

@@ -11,13 +11,13 @@ import org.springframework.stereotype.Service;
  * Created by Marcel on 03/11/2015.
  */
 @Service
-public class ControlService {
+public class MatchControlService {
 
     private static final String CONTROL = "CONTROL_MATCH";
     @Autowired
     private ControlRepository controlRepository;
 
-    private final static Log LOG = LogFactory.getLog(ControlService.class);
+    private final static Log LOG = LogFactory.getLog(MatchControlService.class);
 
     /**
      * Updates the current match into the DB

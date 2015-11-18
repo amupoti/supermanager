@@ -1,11 +1,13 @@
 package org.amupoti.sm.main;
 
-import org.amupoti.sm.main.repository.entity.MatchEntity;
 import org.amupoti.sm.main.repository.entity.PlayerEntity;
 import org.amupoti.sm.main.repository.entity.TeamEntity;
-import org.amupoti.sm.main.repository.entity.ValueEntity;
-import org.amupoti.sm.main.services.*;
-import org.amupoti.sm.main.services.provider.team.TeamConstants;
+import org.amupoti.sm.main.services.DataPopulationService;
+import org.amupoti.sm.main.services.MatchControlService;
+import org.amupoti.sm.main.services.PlayerService;
+import org.amupoti.sm.main.services.TeamService;
+import org.amupoti.sm.main.services.compute.ComputePlayerValuesService;
+import org.amupoti.sm.main.services.compute.bean.SMDataBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.htmlcleaner.XPatherException;
@@ -28,9 +30,6 @@ import java.util.concurrent.ExecutionException;
 public class PlayerController {
 
     private final static Log LOG = LogFactory.getLog(PlayerController.class);
-    private static final int LONG_TERM = 6;
-    private static final int MEDIUM_TERM = 4;
-    private static final int SHORT_TERM = 1;
 
     @Autowired
     private PlayerService playerService;
@@ -42,10 +41,10 @@ public class PlayerController {
     private DataPopulationService dataPopulationService;
 
     @Autowired
-    private DataBoostService dataBoostService;
+    private ComputePlayerValuesService computePlayerValuesService;
 
     @Autowired
-    private ControlService controlService;
+    private MatchControlService matchControlService;
 
 
     @RequestMapping(value = "/teams/")
@@ -60,7 +59,7 @@ public class PlayerController {
     @RequestMapping(value = "/populate/{match}")
     public String populateData(@PathVariable(value = "match") Integer match) throws IOException, XPatherException, InterruptedException, ExecutionException, URISyntaxException {
         LOG.info("Populating data for match "+match);
-        controlService.setCurrentMatch(match);
+        matchControlService.setCurrentMatch(match);
         dataPopulationService.populate();
         return "populate";
     }
@@ -73,8 +72,8 @@ public class PlayerController {
         List<SMDataBean> smDataList = new LinkedList<>();
         for (PlayerEntity playerEntity:playerList){
             SMDataBean smDataBean = new SMDataBean();
-            addPlayerData(playerEntity, smDataBean);
-            addTeamData(playerEntity,smDataBean);
+            computePlayerValuesService.addPlayerData(playerEntity, smDataBean);
+            computePlayerValuesService.addTeamData(playerEntity,smDataBean);
 
             smDataList.add(smDataBean);
 
@@ -90,72 +89,6 @@ public class PlayerController {
         return "redirect:/wizard/";
     }
 
-    /**
-     * Adds all information related to the team, like calendar-related boosts, mean values per received per team, etc.
-     * @param playerEntity
-     * @param smDataBean
-     */
-    private void addTeamData(PlayerEntity playerEntity, SMDataBean smDataBean) {
-
-        int matchNumber = controlService.getMatchNumber();
-        LOG.debug("Showing data for match number "+matchNumber);
-
-        TeamEntity teamEntity = playerEntity.getTeam();
-
-        smDataBean.setPlayerOtherTeamReceivedValShort(dataBoostService.getCalendar(teamEntity, matchNumber, SHORT_TERM, playerEntity.getPlayerPosition()));
-        smDataBean.setPlayerOtherTeamReceivedValMedium(dataBoostService.getCalendar(teamEntity,matchNumber, MEDIUM_TERM, playerEntity.getPlayerPosition()));
-        smDataBean.setPlayerOtherTeamReceivedValLong(dataBoostService.getCalendar(teamEntity,matchNumber, LONG_TERM, playerEntity.getPlayerPosition()));
-
-        /*
-         * Get mean values depending if local or visitor
-         */
-        ValueEntity teamValues = teamEntity.getValMap().get(PlayerPosition.TOTAL.getId());
-        MatchEntity matchEntity = teamEntity.getMatchMap().get(matchNumber);
-        boolean isLocal = matchEntity.isLocal(teamEntity.getName());
-
-        smDataBean.setTeamVal(teamValues.getVal());
-        TeamEntity otherTeam;
-        ValueEntity otherTeamValues;
-        String teamVal;
-        if (isLocal) {
-            teamVal  = teamValues.getValL();
-            otherTeam = teamService.getTeam(matchEntity.getVisitor());
-            otherTeamValues = otherTeam.getValMap().get(PlayerPosition.TOTAL.getId());
-            smDataBean.setOtherTeamReceivedValAsLV(otherTeamValues.getValRecV());
-            smDataBean.setLocalOrVisitor(TeamConstants.LOCAL);
-        } else {
-
-            teamVal = teamValues.getValV();
-            otherTeam = teamService.getTeam(matchEntity.getLocal());
-            otherTeamValues = otherTeam.getValMap().get(PlayerPosition.TOTAL.getId());
-            smDataBean.setOtherTeamReceivedValAsLV(otherTeamValues.getValRecL());
-            smDataBean.setLocalOrVisitor(TeamConstants.VISITOR);
-        }
-        smDataBean.setTeamValAsLV(teamVal);
-        smDataBean.setOtherTeamReceivedVal(otherTeamValues.getValRec());
-        smDataBean.setOtherTeamName(otherTeam.getName());
-        /*
-         *  Get mean values depending on player position
-         */
-        //TODO: load players with position so we can add value for that position
-    }
-
-    /**
-     * Adds all data related to the player that we want to show in the wizard
-     * @param playerEntity
-     * @param smDataBean
-     */
-    private void addPlayerData(PlayerEntity playerEntity, SMDataBean smDataBean) {
-        smDataBean.setPlayerId(playerEntity.getPlayerId().toString());
-        smDataBean.setPlayerPosition(playerEntity.getPlayerPosition().name());
-        smDataBean.setPlayerLocalVal(playerEntity.getLocalMean());
-        smDataBean.setPlayerVisitorVal(playerEntity.getVisitorMean());
-        smDataBean.setKeepBroker(playerEntity.getKeepBroker());
-        smDataBean.setBroker(playerEntity.getBroker());
-        smDataBean.setTeamName(playerEntity.getTeam().getName());
-
-
-    }
 
 
 }

@@ -1,5 +1,6 @@
 package org.amupoti.sm.main.services;
 
+import org.amupoti.sm.main.bean.PlayerPosition;
 import org.amupoti.sm.main.repository.MatchRepository;
 import org.amupoti.sm.main.repository.PlayerRepository;
 import org.amupoti.sm.main.repository.TeamRepository;

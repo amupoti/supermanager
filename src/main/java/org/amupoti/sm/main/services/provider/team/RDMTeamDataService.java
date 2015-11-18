@@ -1,6 +1,6 @@
 package org.amupoti.sm.main.services.provider.team;
 
-import org.amupoti.sm.main.services.PlayerPosition;
+import org.amupoti.sm.main.bean.PlayerPosition;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;

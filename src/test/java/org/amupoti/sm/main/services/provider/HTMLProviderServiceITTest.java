@@ -2,7 +2,7 @@ package org.amupoti.sm.main.services.provider;
 
 import org.amupoti.sm.main.TestConfig;
 import org.amupoti.sm.main.repository.entity.PlayerId;
-import org.amupoti.sm.main.services.PlayerPosition;
+import org.amupoti.sm.main.bean.PlayerPosition;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

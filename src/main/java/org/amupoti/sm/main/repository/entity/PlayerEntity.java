@@ -3,7 +3,7 @@ package org.amupoti.sm.main.repository.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.amupoti.sm.main.services.PlayerPosition;
+import org.amupoti.sm.main.bean.PlayerPosition;
 
 import javax.persistence.*;
 
