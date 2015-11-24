@@ -16,6 +16,7 @@ import org.springframework.web.servlet.view.velocity.VelocityToolboxView;
 import org.springframework.web.servlet.view.velocity.VelocityViewResolver;
 
 import javax.servlet.Servlet;
+import java.util.Properties;
 
 /**
  * Minimal Spring-Boot Auto-Configuration for the Velocity Template Engine
@@ -37,6 +38,11 @@ public class VelocityAutoConfiguration {
     public VelocityConfig velocityConfig() {
       VelocityConfigurer cfg = new VelocityConfigurer();
       cfg.setResourceLoader(resourceLoader);
+      Properties props = new Properties();
+      props.setProperty( "input.encoding", "UTF-8" );
+      props.setProperty( "output.encoding", "UTF-8" );
+
+      cfg.setVelocityProperties(props);
       return cfg;
     }
 

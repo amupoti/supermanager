@@ -9,14 +9,14 @@ $(document).ready(function()
     {
         $("#myTable").tablesorter({
             widgets: ['zebra']
-            }); 
+            });
     }
 );
 
 </script>
 </head>
 <body>
-    <h1>Supermanager</h1>
+    <h1>Supermanager - Previsión para la jornada $matchNumber</h1>
 
     <table id="myTable" class="tablesorter">
     <thead>

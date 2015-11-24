@@ -79,7 +79,7 @@ public class PlayerController {
 
         }
         model.addAttribute("smDataList", smDataList);
-
+        model.addAttribute("matchNumber", matchControlService.getMatchNumber());
         return "wizard";
     }
 
