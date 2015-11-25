@@ -1,12 +1,16 @@
 package org.amupoti.sm.main.services.compute;
 
+import org.amupoti.sm.main.bean.PlayerPosition;
 import org.amupoti.sm.main.repository.entity.MatchEntity;
 import org.amupoti.sm.main.repository.entity.TeamEntity;
-import org.amupoti.sm.main.bean.PlayerPosition;
 import org.amupoti.sm.main.services.TeamService;
-import org.amupoti.sm.main.services.provider.team.TeamConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 /**
  * Created by Marcel on 05/10/2015.
@@ -20,30 +24,41 @@ public class DataBoostService {
 
     private static final int MAX_GAMES = 34;
 
-    public Float getCalendarData(TeamEntity team, int matchNumber,int matchesAhead) {
+    /**
+     *
+     * @param team
+     * @param matchNumber The current match number that will be played
+     * @param matchesAhead How many matches after the current match we want to check
+     * @param playerPosition
+     * @return
+     */
+    public String getCalendar(TeamEntity team, int matchNumber, int matchesAhead, PlayerPosition playerPosition) {
 
-        Float ranking = 0.0f;
-        int matchesAheadLimit = matchesAhead+matchNumber;
-        for (int i=matchNumber;i<=MAX_GAMES && i<matchesAheadLimit;i++) {
-            MatchEntity matchEntity = team.getMatchMap().get(i);
-            if (matchEntity.isLocal(team.getName())) {
+        int match = matchesAhead+matchNumber;
+        MatchEntity matchEntity = team.getMatchMap().get(match);
+        String valRec;
+        if (matchEntity.isLocal(team.getName())) {
+            valRec = teamService.getTeam(matchEntity.getVisitor()).getValMap().get(playerPosition.getId()).getValRecV();
+        }else{
+            valRec = teamService.getTeam(matchEntity.getLocal()).getValMap().get(playerPosition.getId()).getValRecL();
 
-                ranking += TeamConstants.getTeamBoosts().get(matchEntity.getVisitor());
-                ranking += TeamConstants.LOCAL_BOOST;
-            }else{
-                ranking += TeamConstants.getTeamBoosts().get(matchEntity.getLocal());
-            }
         }
-
-        return ranking;
-
+        return format(parseVal(valRec));
     }
 
-    public Float getCalendar(TeamEntity team, int matchNumber,int matchesAhead,PlayerPosition playerPosition) {
+    /**
+     *
+     * @param team
+     * @param matchNumber The current match number that will be played
+     * @param matchesAhead How many matches after the current match we want to check. 0 means we are just checking the current match
+     * @param playerPosition
+     * @return
+     */
+    public String getCalendarSum(TeamEntity team, int matchNumber,int matchesAhead,PlayerPosition playerPosition) {
 
-        Float ranking = 0.0f;
+        BigDecimal ranking = new BigDecimal(0);
         int matchesAheadLimit = matchesAhead+matchNumber;
-        for (int i=matchNumber;i<=MAX_GAMES && i<matchesAheadLimit;i++) {
+        for (int i=matchNumber;i<=MAX_GAMES && i<=matchesAheadLimit;i++) {
             MatchEntity matchEntity = team.getMatchMap().get(i);
             String valRec;
             if (matchEntity.isLocal(team.getName())) {
@@ -52,16 +67,30 @@ public class DataBoostService {
                 valRec = teamService.getTeam(matchEntity.getLocal()).getValMap().get(playerPosition.getId()).getValRecL();
 
             }
-            ranking += parseVal(valRec);
+            ranking=ranking.add(parseVal(valRec));
         }
 
-        return ranking;
+        //Get the ranking mean
+        ranking = ranking.divide(new BigDecimal(matchesAhead+1),BigDecimal.ROUND_HALF_EVEN);
+
+        //return ranking.setScale(2).toString();
+
+        return format(ranking);
+
 
     }
 
-    private Float parseVal(String valRec) {
+    private String format(BigDecimal ranking) {
+        DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.getDefault());
+        otherSymbols.setDecimalSeparator('.');
+        otherSymbols.setGroupingSeparator(',');
+        DecimalFormat df = new DecimalFormat("#0.00", otherSymbols);
+        return df.format(ranking);
+    }
 
-        return Float.parseFloat(valRec);
+    private BigDecimal parseVal(String valRec) {
+
+        return new BigDecimal(Float.parseFloat(valRec));
 
     }
 

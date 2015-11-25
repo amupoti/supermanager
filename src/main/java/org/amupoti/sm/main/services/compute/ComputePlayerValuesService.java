@@ -21,9 +21,9 @@ import org.springframework.stereotype.Service;
 public class ComputePlayerValuesService {
 
 
-    private static final int LONG_TERM = 6;
-    private static final int MEDIUM_TERM = 4;
-    private static final int SHORT_TERM = 1;
+    private static final int LONG_TERM = 2;
+    private static final int MEDIUM_TERM = 1;
+    private static final int SHORT_TERM = 0;
 
     private static Log LOG = LogFactory.getLog(ComputePlayerValuesService.class);
 
@@ -50,6 +50,7 @@ public class ComputePlayerValuesService {
         smDataBean.setPlayerOtherTeamReceivedValShort(dataBoostService.getCalendar(teamEntity, matchNumber, SHORT_TERM, playerEntity.getPlayerPosition()));
         smDataBean.setPlayerOtherTeamReceivedValMedium(dataBoostService.getCalendar(teamEntity,matchNumber, MEDIUM_TERM, playerEntity.getPlayerPosition()));
         smDataBean.setPlayerOtherTeamReceivedValLong(dataBoostService.getCalendar(teamEntity,matchNumber, LONG_TERM, playerEntity.getPlayerPosition()));
+        smDataBean.setPlayerOtherNextMatchesVal(dataBoostService.getCalendarSum(teamEntity,matchNumber, LONG_TERM, playerEntity.getPlayerPosition()));
 
         /*
          * Get mean values depending if local or visitor

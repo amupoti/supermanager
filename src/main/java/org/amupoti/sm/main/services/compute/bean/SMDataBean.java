@@ -16,9 +16,10 @@ public class SMDataBean {
     Float playerVisitorVal;
     String playerPosition;
 
-    Float playerOtherTeamReceivedValShort;
-    Float playerOtherTeamReceivedValMedium;
-    Float playerOtherTeamReceivedValLong;
+    String playerOtherTeamReceivedValShort;
+    String playerOtherTeamReceivedValMedium;
+    String playerOtherTeamReceivedValLong;
+    String playerOtherNextMatchesVal;
 
     /*
      * Team related data
