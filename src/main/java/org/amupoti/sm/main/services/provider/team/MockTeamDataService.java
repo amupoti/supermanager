@@ -43,6 +43,36 @@ public class MockTeamDataService implements TeamDataService{
     }
 
     @Override
+    public String getTeamMeanPoints(String teamName, PlayerPosition position) {
+        return getRand();
+    }
+
+    @Override
+    public String getTeamMeanPointsReceived(String teamName, PlayerPosition position) {
+        return getRand();
+    }
+
+    @Override
+    public String getTeamMeanPointsLocal(String teamName, PlayerPosition position) {
+        return getRand();
+    }
+
+    @Override
+    public String getTeamMeanPointsVisitor(String teamName, PlayerPosition position) {
+        return getRand();
+    }
+
+    @Override
+    public String getTeamMeanPointsLocalReceived(String teamName, PlayerPosition position) {
+        return getRand();
+    }
+
+    @Override
+    public String getTeamMeanPointsVisitorReceived(String teamName, PlayerPosition position) {
+        return getRand();
+    }
+
+    @Override
     public String[] getTeamIds() {
 
         String[] teamIds={"AND","BLB","CAI","CAN","EST","FCB","FUE","GBC","GCA","JOV","LAB","MAN","MUR","OBR","RMA","SEV","UNI","VBC"};

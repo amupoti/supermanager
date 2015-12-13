@@ -128,27 +128,57 @@ public class DataPopulationService {
             }
             teamEntity.setName(teamIds[i]);
 
-            doPopulateTeamValues(teamIds[i], teamEntity);
+            doPopulateVal(teamIds[i], teamEntity);
 
             teamRepository.save(teamEntity);
         }
     }
 
-    private void doPopulateTeamValues(String teamId, TeamEntity teamEntity) throws IOException, XPatherException {
+    private void populatePointsTeamValues(String teamId, TeamEntity teamEntity) throws IOException, XPatherException {
+        ValueEntity valueEntity;
+        PlayerPosition playerPosition =  PlayerPosition.TOTAL;
+        String id = getPointId(playerPosition);
+        if (teamEntity.getValMap().get(id)!=null){
+            valueEntity = teamEntity.getValMap().get(id);
+        }
+        else{
+            valueEntity = new ValueEntity();
+        }
+        doPopulatePoints(teamId, playerPosition, valueEntity);
+        valueEntity = valueRepository.save(valueEntity);
+        teamEntity.getValMap().put(id, valueEntity);
+    }
+
+    private String getPointId(PlayerPosition playerPosition) {
+        return playerPosition.getId()+"-points";
+    }
+
+    private void doPopulateVal(String teamId, TeamEntity teamEntity) throws IOException, XPatherException {
+
+        //Populate val.
         for (PlayerPosition p:PlayerPosition.values()){
             String id = p.getId();
             LOG.info("Populating position " +id );
-            ValueEntity valueEntity;
-            if (teamEntity.getValMap().get(id)!=null){
-                valueEntity = teamEntity.getValMap().get(id);
-            }
-            else{
-                valueEntity = new ValueEntity();
-            }
-            doPopulateTeamValues(teamId, p, valueEntity);
-            valueEntity = valueRepository.save(valueEntity);
-            teamEntity.getValMap().put(id, valueEntity);
+            doPopulateValTeamValues(teamId, teamEntity, p, id);
         }
+
+        populatePointsTeamValues(teamId, teamEntity);
+        
+    }
+
+
+    private void doPopulateValTeamValues(String teamId, TeamEntity teamEntity, PlayerPosition p, String id) throws IOException, XPatherException {
+        ValueEntity valueEntity;
+        if (teamEntity.getValMap().get(id)!=null){
+            valueEntity = teamEntity.getValMap().get(id);
+        }
+        else{
+            valueEntity = new ValueEntity();
+        }
+        doPopulateVal(teamId, p, valueEntity);
+
+        valueEntity = valueRepository.save(valueEntity);
+        teamEntity.getValMap().put(id, valueEntity);
     }
 
 
@@ -161,12 +191,12 @@ public class DataPopulationService {
      * @throws IOException
      * @throws XPatherException
      */
-    private ValueEntity doPopulateTeamValues(String teamName, PlayerPosition position, ValueEntity valueEntity) throws IOException, XPatherException {
-        LOG.info("Populating " + position + " for :" + teamName);
+    private ValueEntity doPopulateVal(String teamName, PlayerPosition position, ValueEntity valueEntity) throws IOException, XPatherException {
+        LOG.info("Populating val. " + position + " for :" + teamName);
         //Get page for the given position
 
         //Obtain values via XPath
-        String value = teamDataService.getTeamMean(teamName,position);// RDMPlayerDataService.VAL);
+        String value = teamDataService.getTeamMean(teamName,position);
         String valueReceived = teamDataService.getTeamMeanReceived(teamName,position);
         String valueLocal = teamDataService.getTeamMeanLocal(teamName,position);
         String valueVisitor = teamDataService.getTeamMeanVisitor(teamName,position);
@@ -184,6 +214,31 @@ public class DataPopulationService {
         return valueEntity;
 
     }
+
+    private ValueEntity doPopulatePoints(String teamName, PlayerPosition position, ValueEntity valueEntity) throws IOException, XPatherException {
+        LOG.info("Populating points " + position + " for :" + teamName);
+        //Get page for the given position
+
+        //Obtain values via XPath
+        String value = teamDataService.getTeamMeanPoints(teamName, position);// RDMPlayerDataService.VAL);
+        String valueReceived = teamDataService.getTeamMeanPointsReceived(teamName, position);
+        String valueLocal = teamDataService.getTeamMeanPointsLocal(teamName, position);
+        String valueVisitor = teamDataService.getTeamMeanPointsVisitor(teamName, position);
+
+        String valueLocalReceived = teamDataService.getTeamMeanPointsLocalReceived(teamName, position);
+        String valueVisitorReceived = teamDataService.getTeamMeanPointsVisitorReceived(teamName, position);
+        //Set values into entity for persistence
+        valueEntity.setType(getPointId(position));
+        valueEntity.setVal(value);
+        valueEntity.setValV(valueVisitor);
+        valueEntity.setValL(valueLocal);
+        valueEntity.setValRecL(valueLocalReceived);
+        valueEntity.setValRec(valueReceived);
+        valueEntity.setValRecV(valueVisitorReceived);
+        return valueEntity;
+
+    }
+
 
     /**
      * Match data will be always loaded

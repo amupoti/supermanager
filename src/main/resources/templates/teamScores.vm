@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src="/js/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.tablesorter.js"></script>
+    <link rel="stylesheet" href="/css/style.css" type="text/css" id="" media="print, projection, screen">
+<script>
+$(document).ready(function()
+    {
+        $("#myTable").tablesorter();
+    }
+);
+
+</script>
+</head>
+<body>
+    <h1>Anotación de los equipos</h1>
+
+    <table id="myTable" class="tablesorter">
+    <thead>
+    <tr>
+        <th>Nombre</th>
+        <th>M</th>
+        <th>L</th>
+        <th>V</th>
+        <th>Rec-M</th>
+        <th>Rec-L</th>
+        <th>Rec-V</th>
+
+    </tr>
+    </thead>
+    <tbody>
+         #foreach( $teamEntry in $teams )
+
+    #set ($team = $teamEntry.getValMap() )
+        <tr>
+            <td>$teamEntry.name</td>
+            <td>$team.get("T-points").val</td>
+            <td>$team.get("T-points").valL</td>
+            <td>$team.get("T-points").valV</td>
+            <td>$team.get("T-points").valRec</td>
+            <td>$team.get("T-points").valRecL</td>
+            <td>$team.get("T-points").valRecV</td>
+
+
+        </tr>
+      #end
+    </tbody>
+    </table>
+
+
+
+
+</body>
+</html>
+
+
+

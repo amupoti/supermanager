@@ -34,7 +34,18 @@ public class RDMTeamDataService implements TeamDataService {
     private static final String VAL_VISITOR_RECEIVED = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[8]/td[5]";
     private static final String VAL = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[8]/td[6]";
     private static final String VAL_RECEIVED = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[8]/td[7]";
+
+    private static final String POINTS_LOCAL = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[9]/td[2]";
+    private static final String POINTS_LOCAL_RECEIVED = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[9]/td[3]";
+    private static final String POINTS_VISITOR = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[9]/td[4]";
+    private static final String POINTS_VISITOR_RECEIVED = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[9]/td[5]";
+    private static final String POINTS = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[9]/td[6]";
+    private static final String POINTS_RECEIVED = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[9]/td[7]";
+
+
     public static final String TEAM_PAGE = "http://www.rincondelmanager.com/smgr/team.php?equipo=";
+
+
     /**
      * String containing the HTML code of the page
      */
@@ -70,6 +81,37 @@ public class RDMTeamDataService implements TeamDataService {
     public String getTeamMeanVisitorReceived(String teamName,PlayerPosition position) {
         return getValue(teamName,position,VAL_VISITOR_RECEIVED);
     }
+
+    @Override
+    public String getTeamMeanPoints(String teamName, PlayerPosition position) {
+        return getValue(teamName,position,POINTS);
+    }
+
+    @Override
+    public String getTeamMeanPointsReceived(String teamName, PlayerPosition position) {
+        return getValue(teamName,position,POINTS_RECEIVED);
+    }
+
+    @Override
+    public String getTeamMeanPointsLocal(String teamName, PlayerPosition position) {
+        return getValue(teamName,position,POINTS_LOCAL);
+    }
+
+    @Override
+    public String getTeamMeanPointsVisitor(String teamName, PlayerPosition position) {
+        return getValue(teamName,position,POINTS_VISITOR);
+    }
+
+    @Override
+    public String getTeamMeanPointsLocalReceived(String teamName, PlayerPosition position) {
+        return getValue(teamName,position,POINTS_LOCAL_RECEIVED);
+    }
+
+    @Override
+    public String getTeamMeanPointsVisitorReceived(String teamName, PlayerPosition position) {
+        return getValue(teamName,position,POINTS_VISITOR_RECEIVED);
+    }
+
 
     /**
      * Obtains the value of applying the given XPATH to the provided HTML page

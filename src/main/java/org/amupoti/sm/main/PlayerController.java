@@ -55,6 +55,13 @@ public class PlayerController {
         return "teams";
     }
 
+    @RequestMapping(value = "/teams/scores.html")
+    public String getTeamScores(Model model) throws IOException, XPatherException, URISyntaxException, InterruptedException, ExecutionException {
+
+        Iterable<TeamEntity> teamList =  teamService.getTeams();
+        model.addAttribute("teams", teamList);
+        return "teamScores";
+    }
 
     @RequestMapping(value = "/populate/{match}")
     public String populateData(@PathVariable(value = "match") Integer match) throws IOException, XPatherException, InterruptedException, ExecutionException, URISyntaxException {

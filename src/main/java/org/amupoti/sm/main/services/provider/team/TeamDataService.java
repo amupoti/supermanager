@@ -20,5 +20,19 @@ public interface TeamDataService {
 
     String getTeamMeanVisitorReceived(String teamName, PlayerPosition position);
 
+
+    String getTeamMeanPoints(String teamName,PlayerPosition position);
+
+    String getTeamMeanPointsReceived(String teamName,PlayerPosition position);
+
+    String getTeamMeanPointsLocal(String teamName,PlayerPosition position);
+
+    String getTeamMeanPointsVisitor(String teamName,PlayerPosition position);
+
+    String getTeamMeanPointsLocalReceived(String teamName,PlayerPosition position);
+
+    String getTeamMeanPointsVisitorReceived(String teamName,PlayerPosition position);
+
+
     String[] getTeamIds();
 }
