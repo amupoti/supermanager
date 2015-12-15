@@ -6,7 +6,7 @@ import lombok.Data;
  * Created by Marcel on 30/09/2015.
  */
 @Data
-public class SMDataBean {
+public class SMPlayerDataBean {
 
     /*
      * Player related data

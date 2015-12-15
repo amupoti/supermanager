@@ -7,7 +7,9 @@ import org.amupoti.sm.main.services.MatchControlService;
 import org.amupoti.sm.main.services.PlayerService;
 import org.amupoti.sm.main.services.TeamService;
 import org.amupoti.sm.main.services.compute.ComputePlayerValuesService;
-import org.amupoti.sm.main.services.compute.bean.SMDataBean;
+import org.amupoti.sm.main.services.compute.ComputeTeamValuesService;
+import org.amupoti.sm.main.services.compute.bean.SMPlayerDataBean;
+import org.amupoti.sm.main.services.compute.bean.SMTeamDataBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.htmlcleaner.XPatherException;
@@ -44,6 +46,9 @@ public class PlayerController {
     private ComputePlayerValuesService computePlayerValuesService;
 
     @Autowired
+    private ComputeTeamValuesService computeTeamValuesService;
+
+    @Autowired
     private MatchControlService matchControlService;
 
 
@@ -58,8 +63,8 @@ public class PlayerController {
     @RequestMapping(value = "/teams/scores.html")
     public String getTeamScores(Model model) throws IOException, XPatherException, URISyntaxException, InterruptedException, ExecutionException {
 
-        Iterable<TeamEntity> teamList =  teamService.getTeams();
-        model.addAttribute("teams", teamList);
+        List<SMTeamDataBean> teamPoints = computeTeamValuesService.getTeamPoints();
+        model.addAttribute("teams", teamPoints);
         return "teamScores";
     }
 
@@ -76,13 +81,13 @@ public class PlayerController {
     public String getSupermagerInfo(Model model) throws URISyntaxException, ExecutionException, XPatherException, InterruptedException, IOException {
 
         Iterable<PlayerEntity> playerList =  playerService.getPlayers();
-        List<SMDataBean> smDataList = new LinkedList<>();
+        List<SMPlayerDataBean> smDataList = new LinkedList<>();
         for (PlayerEntity playerEntity:playerList){
-            SMDataBean smDataBean = new SMDataBean();
-            computePlayerValuesService.addPlayerData(playerEntity, smDataBean);
-            computePlayerValuesService.addTeamData(playerEntity,smDataBean);
+            SMPlayerDataBean smPlayerDataBean = new SMPlayerDataBean();
+            computePlayerValuesService.addPlayerData(playerEntity, smPlayerDataBean);
+            computePlayerValuesService.addTeamData(playerEntity, smPlayerDataBean);
 
-            smDataList.add(smDataBean);
+            smDataList.add(smPlayerDataBean);
 
         }
         model.addAttribute("smDataList", smDataList);

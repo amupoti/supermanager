@@ -4,13 +4,11 @@ import org.amupoti.sm.main.bean.PlayerPosition;
 import org.amupoti.sm.main.repository.entity.MatchEntity;
 import org.amupoti.sm.main.repository.entity.TeamEntity;
 import org.amupoti.sm.main.services.TeamService;
+import org.amupoti.sm.main.services.compute.bean.DataUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.Locale;
 
 /**
  * Created by Marcel on 05/10/2015.
@@ -43,7 +41,7 @@ public class DataBoostService {
             valRec = teamService.getTeam(matchEntity.getLocal()).getValMap().get(playerPosition.getId()).getValRecL();
 
         }
-        return format(parseVal(valRec));
+        return DataUtils.format(parseVal(valRec));
     }
 
     /**
@@ -73,20 +71,11 @@ public class DataBoostService {
         //Get the ranking mean
         ranking = ranking.divide(new BigDecimal(matchesAhead+1),BigDecimal.ROUND_HALF_EVEN);
 
-        //return ranking.setScale(2).toString();
-
-        return format(ranking);
+        return DataUtils.format(ranking);
 
 
     }
 
-    private String format(BigDecimal ranking) {
-        DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.getDefault());
-        otherSymbols.setDecimalSeparator('.');
-        otherSymbols.setGroupingSeparator(',');
-        DecimalFormat df = new DecimalFormat("#0.00", otherSymbols);
-        return df.format(ranking);
-    }
 
     private BigDecimal parseVal(String valRec) {
 
