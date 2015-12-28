@@ -45,6 +45,9 @@ public class RDMPlayerDataServiceTest {
     @Injectable
     private PlayerRepository playerRepository;
 
+    @Injectable
+    private MatchControlService matchControlService;
+
     @Test
     public void testPlayerLoad() throws IOException, XPatherException, URISyntaxException {
 
@@ -61,7 +64,9 @@ public class RDMPlayerDataServiceTest {
             htmlProviderService.getPlayerURL(playerId);
             returns(html);
             teamService.getTeam(anyString);
-            returns (teamEntity);
+            returns(teamEntity);
+            matchControlService.getMatchNumber();
+            returns (6);
         }
         };
         List<PlayerEntity> playersData = rdmPlayerDataService.getPlayersData(playerIds);
@@ -75,8 +80,8 @@ public class RDMPlayerDataServiceTest {
         Assert.assertEquals(1877361.0, playerEntity.getBroker(),0.1);
         Assert.assertEquals(12.90, playerEntity.getKeepBroker(),0.1);
 //TODO: implement local and visitor mean for player
-//        Assert.assertEquals(28.30, playerEntity.getLocalMean(),0.1);
-//        Assert.assertEquals(19.35, playerEntity.getVisitorMean(),0.1);
+        Assert.assertEquals(40.80, playerEntity.getLocalMean(),0.1);
+        Assert.assertEquals(26.80, playerEntity.getVisitorMean(),0.1);
 
     }
 }

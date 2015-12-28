@@ -24,8 +24,8 @@ $(document).ready(function()
         <th>Jugador</th>
         <th>Posición</th>
         <th>Equipo</th>
-     <!--   <th>Val-L</th> -->
-     <!--   <th>Val-V</th> -->
+        <th>Val-L</th>
+        <th>Val-V</th>
         <th>Local?</th>
         <th>Contra?</th>
 
@@ -51,8 +51,8 @@ $(document).ready(function()
             <td>$smData.playerId</td>
             <td>$smData.playerPosition</td>
             <td>$smData.teamName</td>
-          <!--  <td>$smData.playerLocalVal</td> -->
-          <!--  <td>$smData.playerVisitorVal</td> -->
+           <td>$smData.playerLocalVal</td>
+           <td>$smData.playerVisitorVal</td>
             <td>$smData.localOrVisitor</td>
             <td>$smData.otherTeamName</td>
 
