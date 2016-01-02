@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src="/js/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.tablesorter.js"></script>
+    <link rel="stylesheet" href="/css/style.css" type="text/css" id="" media="print, projection, screen">
+<script>
+$(document).ready(function()
+    {
+        $("#myTable").tablesorter({
+            widgets: ['zebra']
+            });
+    }
+);
+
+</script>
+</head>
+<body>
+    <h1>Anotación de los equipos</h1>
+
+    <table id="myTable" class="tablesorter">
+    <thead>
+    <tr>
+        <th>Equipo</th>
+        <th>Juega Contra</th>
+        <th>Puntos Local</th>
+        <th>Puntos Rec Local</th>
+        <th>Puntos Visitante</th>
+        <th>Puntos Rec Visitante</th>
+        <th>Prev a favor</th>
+        <th>Prev en contra</th>
+
+    </tr>
+    </thead>
+    <tbody>
+         #foreach( $teamEntry in $teams )
+
+        <tr>
+            <td>$teamEntry.team</td>
+            <td>$teamEntry.teamVs</td>
+            <td>$teamEntry.pointsLocal</td>
+            <td>$teamEntry.pointsReceivedLocal</td>
+            <td>$teamEntry.pointsVisitor</td>
+            <td>$teamEntry.pointsReceivedVisitor</td>
+            <td>$teamEntry.pointsExpected</td>
+            <td>$teamEntry.pointsReceivedExpected</td>
+
+        </tr>
+      #end
+    </tbody>
+    </table>
+
+
+
+
+</body>
+</html>
+
+
+
