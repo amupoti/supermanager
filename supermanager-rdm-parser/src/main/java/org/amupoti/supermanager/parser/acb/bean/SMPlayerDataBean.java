@@ -1,4 +1,4 @@
-package org.amupoti.sm.main.services.compute.bean;
+package org.amupoti.supermanager.parser.acb.bean;
 
 import lombok.Data;
 
