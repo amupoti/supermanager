@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src="/js/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.tablesorter.js"></script>
+    <link rel="stylesheet" href="/css/style.css" type="text/css" id="" media="print, projection, screen">
+<script>
+ $(document).ready(function() {
+   $('.container').each(function(i) {
+     $(this).children(".tablesorter")
+       .tablesorter({
+         widthFixed: true,
+         widgets: ['zebra']
+       });
+   });
+
+ });
+
+</script>
+</head>
+<body>
+    <div class="container">
+    <h1>Supermanager - Previsión para la jornada $matchNumber</h1>
+
+    #set ($map = $teamMap)
+    #foreach( $key in $map.keySet())
+        #set ($smDataList = $map.get($key))
+        <h2>$key</h2>
+        <table id="myTable-$key" class="tablesorter">
+        <thead>
+        <tr>
+            <th>Jugador</th>
+            <th>Posición</th>
+            <th>Equipo</th>
+            <th>Val-L</th>
+            <th>Val-V</th>
+            <th>Local?</th>
+            <th>Contra?</th>
+
+            <th>Broker</th>
+            <th>Broker =</th>
+            <th>Media Equipo como L/V</th>
+            <th>Media Rec Rival como L/V</th>
+
+            #set ($matchNumberPreview = $$matchNumber + 2)
+            #foreach ($number in [$matchNumber..$matchNumberPreview])
+                <th>Media Rec Posi Rival J. $number</th>
+            #end
+
+            <th>Media Rec Rival siguientes 3</th>
+
+        </tr>
+        </thead>
+        <tbody>
+
+
+         #foreach( $smData in $smDataList )
+            <tr>
+                <td>$smData.playerId</td>
+                <td>$smData.playerPosition</td>
+                <td>$smData.teamName</td>
+               <td>$smData.playerLocalVal</td>
+               <td>$smData.playerVisitorVal</td>
+                <td>$smData.localOrVisitor</td>
+                <td>$smData.otherTeamName</td>
+
+                <td>$smData.broker</td>
+                <td>$smData.keepBroker</td>
+                <td>$smData.teamValAsLV</td>
+                <td>$smData.otherTeamReceivedValAsLV</td>
+
+                <td>$smData.playerOtherTeamReceivedValShort</td>
+                <td>$smData.playerOtherTeamReceivedValMedium</td>
+                <td>$smData.playerOtherTeamReceivedValLong</td>
+
+                <td>$smData.playerOtherNextMatchesVal</td>
+
+            </tr>
+        #end
+
+        </tbody>
+        </table>
+    #end
+
+    </div>
+</body>
+</html>
+
+
+

@@ -30,8 +30,19 @@ public class ACBTeamServiceTest {
 
 
         List<ACBSupermanagerTeam> teams = acbTeamsService.getTeamsByCredentials(USER, PASSWORD);
-        Assert.assertEquals(1,teams.size());
+        Assert.assertEquals(2,teams.size());
         Assert.assertEquals("El Equipo 1",teams.get(0).getName());
+        Assert.assertEquals("El Equipo 2",teams.get(0).getName());
+
+
+    }
+
+    @Test
+    public void getPlayers() throws XPatherException {
+
+
+        List<ACBSupermanagerTeam> teams = acbTeamsService.getTeamsByCredentials(USER, PASSWORD);
+        Assert.assertEquals(11, teams.get(0).getPlayers().size());
 
     }
 }

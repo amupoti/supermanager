@@ -1,5 +1,6 @@
 package org.amupoti.supermanager.parser.acb;
 
+import org.amupoti.supermanager.parser.acb.beans.ACBPlayer;
 import org.amupoti.supermanager.parser.acb.beans.ACBSupermanagerTeam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,6 +24,7 @@ import java.util.List;
 public class ACBTeamServiceDefault implements ACBTeamService {
 
     private static final String URL_FORM = "http://supermanager.acb.com/index/identificar";
+    private static final String BASE_URL = "http://supermanager.acb.com";
     Log log = LogFactory.getLog(ACBTeamServiceDefault.class);
     private static final String URL_ENTRY = "http://supermanager.acb.com/";
     private static final String URL_LOGGED_IN = "http://supermanager.acb.com/equipos/listado";
@@ -68,10 +70,29 @@ public class ACBTeamServiceDefault implements ACBTeamService {
         String pageBody = exchange.getBody();
 
         List<ACBSupermanagerTeam> teams = getTeams(pageBody);
+        for (ACBSupermanagerTeam team:teams){
+            exchange = restTemplate.exchange(BASE_URL+team.getUrl(), HttpMethod.GET, httpEntity, String.class);
+            team.setPlayers(getPlayers(exchange.getBody()));
+        }
 
 
-
+        log.debug("Teams found: "+teams);
         return teams;
+    }
+
+    private List<ACBPlayer> getPlayers(String html) throws XPatherException {
+        TagNode node = htmlCleaner.clean(html);
+        String xPathExpression = "//*[@id=\"puesto$row\"]/td[3]/span/a";
+        List<ACBPlayer> players = new LinkedList<>();
+        for (int i = 1; i <= 11; i++) {
+            Object[] objects = node.evaluateXPath(xPathExpression.replace("$row",""+i));
+            String name = ((TagNode) objects[0]).getAllChildren().get(0).toString();
+            ACBPlayer player = new ACBPlayer();
+            player.setName(name);
+            player.setPosition(""+i);
+            players.add(player);
+        }
+    return players;
     }
 
     private List<ACBSupermanagerTeam> getTeams(String html) {

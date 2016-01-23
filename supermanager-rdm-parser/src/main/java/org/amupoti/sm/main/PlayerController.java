@@ -2,12 +2,8 @@ package org.amupoti.sm.main;
 
 import org.amupoti.sm.main.repository.entity.PlayerEntity;
 import org.amupoti.sm.main.repository.entity.TeamEntity;
-import org.amupoti.sm.main.services.DataPopulationService;
-import org.amupoti.sm.main.services.MatchControlService;
-import org.amupoti.sm.main.services.PlayerService;
-import org.amupoti.sm.main.services.TeamService;
-import org.amupoti.supermanager.parser.acb.ComputePlayerValuesService;
-import org.amupoti.supermanager.parser.acb.ComputeTeamValuesService;
+import org.amupoti.sm.main.services.*;
+import org.amupoti.supermanager.parser.acb.ACBTeamService;
 import org.amupoti.supermanager.parser.acb.bean.SMPlayerDataBean;
 import org.amupoti.supermanager.parser.acb.bean.SMTeamDataBean;
 import org.apache.commons.logging.Log;
@@ -50,6 +46,11 @@ public class PlayerController {
 
     @Autowired
     private MatchControlService matchControlService;
+
+    @Autowired
+    private ACBTeamService acbTeamService;
+
+
 
 
     @RequestMapping(value = "/teams/")

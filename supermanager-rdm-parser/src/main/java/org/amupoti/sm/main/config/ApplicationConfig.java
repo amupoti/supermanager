@@ -5,6 +5,8 @@ import org.amupoti.sm.main.services.provider.HTMLProviderService;
 import org.amupoti.sm.main.services.provider.player.PlayerDataService;
 import org.amupoti.sm.main.services.provider.player.RDMPlayerDataService;
 import org.amupoti.sm.main.services.provider.team.RDMTeamDataService;
+import org.amupoti.supermanager.parser.acb.ACBTeamService;
+import org.amupoti.supermanager.parser.acb.ACBTeamServiceDefault;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
@@ -50,6 +52,11 @@ public class ApplicationConfig {
     @Bean
     public RestTemplate getRestTemplate(){
         return new RestTemplate();
+    }
+
+    @Bean
+    public ACBTeamService getAcbTeamService(){
+        return new ACBTeamServiceDefault();
     }
 }
 
