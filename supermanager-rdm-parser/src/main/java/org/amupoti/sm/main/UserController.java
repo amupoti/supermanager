@@ -76,6 +76,11 @@ public class UserController {
                 log.debug("Getting data for player with name " + player.getName());
                 PlayerEntity playerEntity = playerService.getPlayer(new PlayerId(player.getName()));
                 log.debug("Got data for player  " + playerEntity);
+                if (playerEntity==null){
+                    log.error("Could not find player "+player.getName()+" in database. Player will not be added to the team.");
+                            continue;
+                }
+
                 SMPlayerDataBean smPlayerDataBean = new SMPlayerDataBean();
                 computePlayerValuesService.addPlayerData(playerEntity, smPlayerDataBean);
                 computePlayerValuesService.addTeamData(playerEntity, smPlayerDataBean);
