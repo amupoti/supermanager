@@ -1,5 +1,7 @@
 package org.amupoti.sm.main.config;
 
+import org.apache.velocity.app.event.implement.IncludeRelativePath;
+import org.apache.velocity.runtime.RuntimeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -41,6 +43,8 @@ public class VelocityAutoConfiguration {
       Properties props = new Properties();
       props.setProperty( "input.encoding", "UTF-8" );
       props.setProperty( "output.encoding", "UTF-8" );
+      props.setProperty(RuntimeConstants.EVENTHANDLER_INCLUDE, IncludeRelativePath.class.getName());
+
 
       cfg.setVelocityProperties(props);
       return cfg;

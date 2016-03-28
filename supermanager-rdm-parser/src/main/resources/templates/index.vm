@@ -2,15 +2,19 @@
 <html>
 <head>
     <title>SuperManager</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    #parse( "./include/header.vm" )
 </head>
 <body>
-	<h1>Índice</h1>
-    <ul>
-        <li> <a href="/users/teams.html">Listado de tus equipos</a></li>
-        <li> <a href="/teams/scores.html">Predicción de puntuación de los equipos</a></li>
-        <li> <a href="/wizard/">Listado de todos los jugadores</a></li>
+    <div class="container">
+        <div class="twelve columns">
+            <h1>Índice</h1>
+            <ul>
+                <li> <a href="/users/teams.html">Listado de tus equipos</a></li>
+                <li> <a href="/teams/scores.html">Predicción de puntuación de los equipos</a></li>
+                <li> <a href="/wizard/">Listado de todos los jugadores</a></li>
 
-    </ul>
+            </ul>
+        </div>
+    </div>
 </body>
 </html>
