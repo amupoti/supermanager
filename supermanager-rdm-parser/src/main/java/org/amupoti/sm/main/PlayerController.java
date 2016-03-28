@@ -97,9 +97,9 @@ public class PlayerController {
     }
 
     @RequestMapping(value = "/")
-    public String rootRedirect(Model model) throws URISyntaxException, ExecutionException, XPatherException, InterruptedException, IOException {
+    public String root(Model model) {
 
-        return "redirect:/wizard/";
+        return "index";
     }
 
 
