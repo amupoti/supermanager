@@ -4,7 +4,7 @@
 #parse( "./include/header.vm" )
 <script>
  $(document).ready(function() {
-   $('.container').each(function(i) {
+   $('.containerts').each(function(i) {
      $(this).children(".tablesorter")
        .tablesorter({
          widthFixed: true,
@@ -17,7 +17,7 @@
 </script>
 </head>
 <body>
-    <div class="container">
+    <div class="containerts">
     <h1>Supermanager - Previsión para la jornada $matchNumber</h1>
 
     #set ($map = $teamMap)
