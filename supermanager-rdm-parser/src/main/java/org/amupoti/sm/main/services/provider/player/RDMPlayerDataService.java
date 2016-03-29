@@ -4,11 +4,12 @@ import org.amupoti.sm.main.bean.PlayerPosition;
 import org.amupoti.sm.main.repository.PlayerRepository;
 import org.amupoti.sm.main.repository.entity.PlayerEntity;
 import org.amupoti.sm.main.repository.entity.PlayerId;
+import org.amupoti.sm.main.repository.entity.TeamEntity;
 import org.amupoti.sm.main.services.MatchControlService;
 import org.amupoti.sm.main.services.TeamService;
 import org.amupoti.sm.main.services.exception.PlayerException;
 import org.amupoti.sm.main.services.provider.HTMLProviderService;
-import org.amupoti.sm.main.repository.entity.TeamEntity;
+import org.amupoti.supermanager.parser.acb.bean.DataUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.htmlcleaner.HtmlCleaner;
@@ -36,26 +37,19 @@ public class RDMPlayerDataService implements PlayerDataService {
     public static final int ROW_VAL_MEDIA_LOCAL = 1;
     public static final int ROW_VAL_MEDIA_VISITANTE = 2;
     private static final int OFFSET_ROW_TABLE = 3;
+    public static final int MEAN_LAST_MATCHES = 5;
+
     public static final String BASE_VAL_MEDIA = "//*[@id=\"sm_central\"]/div[2]/table/tbody/tr[row]/td[10]/b";
+    public static final String LAST_STATS = "//*[@id=\"sm_central\"]/div[2]/table/tbody/tr[row]/td[12]/b";
     public static final String VAL_MANTENER_BROKER = "//*[@id=\"sm_central\"]/div[3]/table/tbody/tr[6]/td[2]";
     public static final String ALL_PLAYERS = "//*[@id=\"sm_central\"]/div/table/tbody/tr/td[1]/a";
     private static final String BROKER = "//*[@id=\"sm_central\"]/div[3]/table/tbody/tr[6]/td[4]";
-
     private static final String FIRST_GAME_PLAYED = "//*[@id=\"sm_central\"]/div[2]/table/tbody/tr[3]/td[1]/b";
-    //*[@id="pr"]/div/table/tbody/tr[4]/td[2]/a
-    //public static final String ALL_PLAYERS = "//*[@id=\"sm_central\"]/div/table/tbody/tr/td[1]/a";
     public static final String PLAYER_TEAM = "//*[@id=\"sm_central\"]/div[2]/table/tbody/tr[1]/td/b";
-
-
-    public static final String BASE = "B";
-    public static final String ALERO = "A";
-    public static final String PIVOT = "P";
-
-
 
     private HtmlCleaner cleaner;
 
-    private static final Log LOG = LogFactory.getLog(RDMPlayerDataService.class);
+    private static final Log log = LogFactory.getLog(RDMPlayerDataService.class);
 
     @Autowired
     private HTMLProviderService htmlProviderService;
@@ -71,7 +65,6 @@ public class RDMPlayerDataService implements PlayerDataService {
 
     public RDMPlayerDataService() {
         cleaner = new HtmlCleaner();
-
     }
 
     private HashMap<PlayerId,PlayerPosition> playerPositionMap =new HashMap<>();
@@ -89,7 +82,7 @@ public class RDMPlayerDataService implements PlayerDataService {
 
         PlayerPosition[] positions = {PlayerPosition.BASE,PlayerPosition.ALERO,PlayerPosition.PIVOT};
         for (PlayerPosition playerPosition:positions) {
-            LOG.info("Getting playerIds for position "+playerPosition);
+            log.info("Getting playerIds for position " + playerPosition);
             String html = htmlProviderService.getAllPlayersURL(playerPosition);
             playerIds.addAll(getPlayerIdsPerPosition(html, playerPosition));
         }
@@ -121,7 +114,7 @@ public class RDMPlayerDataService implements PlayerDataService {
         int num =0;
         for (PlayerId playerId:playerIds){
             num++;
-            LOG.info("Getting data for player "+playerId+ ". "+num+" out of "+playerIds.size()+" processed.");
+            log.info("Getting data for player " + playerId + ". " + num + " out of " + playerIds.size() + " processed.");
 
             Future<PlayerEntity> playerData = null;
             try {
@@ -129,22 +122,22 @@ public class RDMPlayerDataService implements PlayerDataService {
                 futurePlayerDataList.add(playerData);
                 sleep(50);
             } catch (PlayerException e) {
-                LOG.error("Could not get data for player " + playerId);
+                log.error("Could not get data for player " + playerId);
             }
         }
 
         for (int i=0;i<futurePlayerDataList.size();i++){
             if (!futurePlayerDataList.get(i).isDone()){
-                LOG.info("Player "+i+" not ready, waiting...");
+                log.info("Player " + i + " not ready, waiting...");
                 sleep(50);
                 i--;
             }
             else{
                 try {
                     playerDataList.add(futurePlayerDataList.get(i).get());
-                    LOG.info("Processed " + (i + 1) + " players out of " + futurePlayerDataList.size());
+                    log.info("Processed " + (i + 1) + " players out of " + futurePlayerDataList.size());
                 } catch (ExecutionException |InterruptedException e) {
-                    LOG.error("Could not process player number "+(i+1));
+                    log.error("Could not process player number " + (i + 1));
                     e.printStackTrace();
                 }
             }
@@ -180,10 +173,12 @@ public class RDMPlayerDataService implements PlayerDataService {
         try {
             html = htmlProviderService.getPlayerURL(playerId);
 
-            String localMean = getValueViaLabel(html, RDMPlayerDataService.ROW_VAL_MEDIA_LOCAL);
-            String visitorMean = getValueViaLabel(html, RDMPlayerDataService.ROW_VAL_MEDIA_VISITANTE);
+            String localMean = getValueViaLabelForPlayerMeans(html, RDMPlayerDataService.ROW_VAL_MEDIA_LOCAL);
+            String visitorMean = getValueViaLabelForPlayerMeans(html, RDMPlayerDataService.ROW_VAL_MEDIA_VISITANTE);
             String keepBroker = getValueViaXPath(html, RDMPlayerDataService.VAL_MANTENER_BROKER);
             String broker = getValueViaXPath(html, RDMPlayerDataService.BROKER).replace(",","");
+            String meanLastMatches = getValueViaLabelForLastResults(html);
+            log.debug("Mean of lastMatches for player "+playerId+" is "+meanLastMatches);
 
             //Parse team and store in player data
             String team = getValueViaXPath(html, RDMPlayerDataService.PLAYER_TEAM);
@@ -196,6 +191,7 @@ public class RDMPlayerDataService implements PlayerDataService {
             playerEntity.setKeepBroker(Float.parseFloat(keepBroker));
             playerEntity.setPlayerPosition(playerPositionMap.get(playerId));
             playerEntity.setBroker(Float.parseFloat(broker));
+            playerEntity.setMeanLastMatches(Float.parseFloat(meanLastMatches));
             playerEntity.setTeam(teamEntity);
         } catch (IOException | URISyntaxException | XPatherException e) {
             throw new PlayerException("A problem ocurred during HTML parsing",e);
@@ -225,21 +221,70 @@ public class RDMPlayerDataService implements PlayerDataService {
         }
         catch (Exception e){
             //TODO: this is a poor way to handle any problem we may have during parsing.
-            LOG.warn("Could not get value from html with xPathExpression: " + xPathExpression);
+            log.warn("Could not get value from html with xPathExpression: " + xPathExpression);
             return "-1";
         }
     }
 
-    public String getValueViaLabel(String html, int row) throws XPatherException {
+    public String getValueViaLabelForLastResults(String html) throws XPatherException {
+        try {
+
+
+            TagNode node = cleaner.clean(html);
+            int firstGamePlayed = getFirstGamePlayed(node);
+            //Get how many matches the player played so we can know how many we can include in the mean of last stats
+            int matchesPlayed = matchControlService.getMatchNumber()-firstGamePlayed;
+
+            int matchesForMean;
+            if (matchesPlayed> MEAN_LAST_MATCHES)
+                matchesForMean = MEAN_LAST_MATCHES;
+            else
+                matchesForMean = matchesPlayed;
+
+            float total = 0.0f;
+            Object[] objects;
+            String s;
+            int computedMatches = 0;
+            for (int i=0;i<matchesForMean;i++){
+                int rowMean = matchesPlayed+OFFSET_ROW_TABLE-i-1;
+                String pathExpression = LAST_STATS.replace("row", "" + rowMean);
+                objects = node.evaluateXPath(pathExpression);
+                s = ((TagNode) objects[0]).getAllChildren().get(0).toString();
+                float matchValue;
+                if (org.apache.commons.lang.math.NumberUtils.isNumber(s)){
+                    matchValue = Float.parseFloat(s);
+                    computedMatches++;
+                    total+=matchValue;
+                }
+
+
+
+            }
+            Float result;
+            if (computedMatches>0){
+                result = (total / computedMatches);
+            }else{
+                result = -1.0f;
+            }
+            String formattedResult = DataUtils.format(result);
+            return formattedResult;
+        }
+        catch (Exception e){
+            //TODO: this is a poor way to handle any problem we may have during parsing.
+            log.warn("Could not get value via label for last results");
+            return "-1";
+        }
+
+    }
+    public String getValueViaLabelForPlayerMeans(String html, int row) throws XPatherException {
 
         try {
 
 
             TagNode node = cleaner.clean(html);
-            Object[] objects = node.evaluateXPath(FIRST_GAME_PLAYED);
-            //We need to add here the number of the current match to get the
-            String s = ((TagNode) objects[0]).getAllChildren().get(0).toString();
-            int firstGamePlayed = Integer.parseInt(s);
+            int firstGamePlayed = getFirstGamePlayed(node);
+            Object[] objects;
+            String s;
             //current row to apply xpath is: last game with stats - first game with stats +1 (since we want to obtain the next row)
             int matchNumber = matchControlService.getMatchNumber() - firstGamePlayed + OFFSET_ROW_TABLE + row;
             String pathExpression = BASE_VAL_MEDIA.replace("row", "" + matchNumber);
@@ -249,9 +294,16 @@ public class RDMPlayerDataService implements PlayerDataService {
         }
         catch (Exception e){
             //TODO: this is a poor way to handle any problem we may have during parsing.
-            LOG.warn("Could not get value via label for row "+row);
+            log.warn("Could not get value via label for row " + row);
             return "-1";
         }
+    }
+
+    private int getFirstGamePlayed(TagNode node) throws XPatherException {
+        Object[] objects = node.evaluateXPath(FIRST_GAME_PLAYED);
+        //We need to add here the number of the current match to get the
+        String s = ((TagNode) objects[0]).getAllChildren().get(0).toString();
+        return Integer.parseInt(s);
     }
 
 

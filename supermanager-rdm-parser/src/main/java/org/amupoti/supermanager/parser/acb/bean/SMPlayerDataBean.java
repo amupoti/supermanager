@@ -35,6 +35,7 @@ public class SMPlayerDataBean {
     Float calendarBoostShort;
     Float calendarBoostMedium;
     Float calendarBoostLong;
+    Float meanLastMatches;
     String teamName;
     String otherTeamName;
 

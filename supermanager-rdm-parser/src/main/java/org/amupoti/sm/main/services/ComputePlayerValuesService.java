@@ -94,6 +94,7 @@ public class ComputePlayerValuesService {
         smPlayerDataBean.setPlayerPosition(playerEntity.getPlayerPosition().name());
         smPlayerDataBean.setPlayerLocalVal(playerEntity.getLocalMean());
         smPlayerDataBean.setPlayerVisitorVal(playerEntity.getVisitorMean());
+        smPlayerDataBean.setMeanLastMatches(playerEntity.getMeanLastMatches());
         smPlayerDataBean.setKeepBroker(playerEntity.getKeepBroker());
         smPlayerDataBean.setBroker(playerEntity.getBroker());
         smPlayerDataBean.setTeamName(playerEntity.getTeam().getName());

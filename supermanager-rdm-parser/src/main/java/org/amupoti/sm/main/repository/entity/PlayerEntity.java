@@ -24,6 +24,7 @@ public class PlayerEntity {
     private Float visitorMean;
     private Float keepBroker;
     private Float broker;
+    private Float meanLastMatches;
     private PlayerPosition playerPosition;
     @OneToOne
     private TeamEntity team;
