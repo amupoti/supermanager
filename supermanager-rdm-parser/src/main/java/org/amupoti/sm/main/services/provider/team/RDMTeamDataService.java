@@ -23,6 +23,7 @@ import java.util.List;
  */
 public class RDMTeamDataService implements TeamDataService {
 
+    public static final String INVALID_VALUE = "-100";
     private HtmlCleaner cleaner;
 
     /**
@@ -134,7 +135,7 @@ public class RDMTeamDataService implements TeamDataService {
         }
         catch (Exception e){
             //TODO: this is a poor way to handle any problem we may have during parsing, but won't break data
-            return "-1";
+            return INVALID_VALUE;
         }
     }
 

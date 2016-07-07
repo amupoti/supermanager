@@ -249,15 +249,21 @@ public class DataPopulationService {
     private void populateMatchesByTeam(String teamName) throws IOException, XPatherException {
         TeamEntity teamEntity = teamRepository.findByName(teamName);
 
-        //TODO: get from repo if already there
-        LOG.info("Getting matches for team " + teamName);
-        Iterable<MatchEntity> matchEntities = matchDataProvider.getTeamMatches(teamName);
-        matchRepository.save(matchEntities);
+        if (teamEntity.getMatchMap()==null || teamEntity.getMatchMap().keySet().size()==0) {
 
-        for (MatchEntity matchEntity:matchEntities){
+            LOG.info("Getting matches for team " + teamName);
+            Iterable<MatchEntity> matchEntities = matchDataProvider.getTeamMatches(teamName);
+            matchRepository.save(matchEntities);
 
-            teamEntity.getMatchMap().put(matchEntity.getNumber(), matchEntity);
+            for (MatchEntity matchEntity : matchEntities) {
+
+                teamEntity.getMatchMap().put(matchEntity.getNumber(), matchEntity);
+            }
         }
+        else{
+            LOG.info("Matches were already populated in DB");
+        }
+
         teamRepository.save(teamEntity);
     }
 

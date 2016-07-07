@@ -26,6 +26,8 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import static org.amupoti.sm.main.services.provider.team.RDMTeamDataService.INVALID_VALUE;
+
 /**
  * Loads data from www.elrincondelmanager.es so it can be loaded in the local database
  * Data is obtained by retrieveing the full HTML page and performing Xpath transformations
@@ -222,7 +224,7 @@ public class RDMPlayerDataService implements PlayerDataService {
         catch (Exception e){
             //TODO: this is a poor way to handle any problem we may have during parsing.
             log.warn("Could not get value from html with xPathExpression: " + xPathExpression);
-            return "-1";
+            return INVALID_VALUE;
         }
     }
 
@@ -272,7 +274,7 @@ public class RDMPlayerDataService implements PlayerDataService {
         catch (Exception e){
             //TODO: this is a poor way to handle any problem we may have during parsing.
             log.warn("Could not get value via label for last results");
-            return "-1";
+            return INVALID_VALUE;
         }
 
     }
@@ -286,7 +288,7 @@ public class RDMPlayerDataService implements PlayerDataService {
             Object[] objects;
             String s;
             //current row to apply xpath is: last game with stats - first game with stats +1 (since we want to obtain the next row)
-            int matchNumber = matchControlService.getMatchNumber() - firstGamePlayed + OFFSET_ROW_TABLE + row;
+            int matchNumber = matchControlService.getMatchNumber() - firstGamePlayed + OFFSET_ROW_TABLE + row +1;
             String pathExpression = BASE_VAL_MEDIA.replace("row", "" + matchNumber);
             objects = node.evaluateXPath(pathExpression);
             s = ((TagNode) objects[0]).getAllChildren().get(0).toString();
@@ -295,7 +297,7 @@ public class RDMPlayerDataService implements PlayerDataService {
         catch (Exception e){
             //TODO: this is a poor way to handle any problem we may have during parsing.
             log.warn("Could not get value via label for row " + row);
-            return "-1";
+            return INVALID_VALUE;
         }
     }
 
