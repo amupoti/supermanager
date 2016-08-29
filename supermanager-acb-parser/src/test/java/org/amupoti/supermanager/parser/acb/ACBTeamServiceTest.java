@@ -4,6 +4,7 @@ import org.amupoti.supermanager.parser.acb.beans.ACBSupermanagerTeam;
 import org.amupoti.supermanager.parser.acb.config.TestConfig;
 import org.htmlcleaner.XPatherException;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import java.util.List;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
+@Ignore("Ignoring until teams are available again")
 public class ACBTeamServiceTest {
 
     private static final String PASSWORD = "testsm_testsm";

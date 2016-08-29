@@ -50,9 +50,6 @@ public class PlayerController {
     @Autowired
     private ACBTeamService acbTeamService;
 
-
-
-
     @RequestMapping(value = "/teams/")
     public String getTeams(Model model) throws IOException, XPatherException, URISyntaxException, InterruptedException, ExecutionException {
 

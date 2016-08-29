@@ -33,8 +33,6 @@ public class UserController {
 
     private final static Log log = LogFactory.getLog(UserController.class);
 
-
-
     @Autowired
     private PlayerService playerService;
 
@@ -44,11 +42,8 @@ public class UserController {
     @Autowired
     private MatchControlService matchControlService;
 
-
-
     @Autowired
     private ACBTeamService acbTeamService;
-
 
     @RequestMapping(value="/teams.html", method= RequestMethod.GET)
     public String getUserTeamsForm(Model model) {
@@ -58,7 +53,6 @@ public class UserController {
 
     @RequestMapping(value="/teams.html", method=RequestMethod.POST)
     public String getUserTeams(@ModelAttribute SMUser  user, Model model) throws XPatherException {
-
 
         HashMap<String,List<SMPlayerDataBean>> teamMap = new HashMap<>();
         if (user!=null){
