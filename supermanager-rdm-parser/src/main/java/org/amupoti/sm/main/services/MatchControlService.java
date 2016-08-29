@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class MatchControlService {
 
     private static final String CONTROL = "CONTROL_MATCH";
+
     @Autowired
     private ControlRepository controlRepository;
 

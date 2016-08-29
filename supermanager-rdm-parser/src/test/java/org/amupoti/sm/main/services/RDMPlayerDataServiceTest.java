@@ -10,6 +10,7 @@ import org.amupoti.sm.main.repository.entity.PlayerId;
 import org.amupoti.sm.main.repository.entity.TeamEntity;
 import org.amupoti.sm.main.services.provider.HTMLProviderService;
 import org.amupoti.sm.main.services.provider.player.RDMPlayerDataService;
+import org.amupoti.sm.main.services.repository.TeamService;
 import org.apache.commons.io.FileUtils;
 import org.htmlcleaner.XPatherException;
 import org.junit.Assert;

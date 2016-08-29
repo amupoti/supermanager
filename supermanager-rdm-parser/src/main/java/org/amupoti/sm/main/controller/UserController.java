@@ -1,11 +1,11 @@
-package org.amupoti.sm.main;
+package org.amupoti.sm.main.controller;
 
 import org.amupoti.sm.main.bean.SMUser;
 import org.amupoti.sm.main.repository.entity.PlayerEntity;
 import org.amupoti.sm.main.repository.entity.PlayerId;
 import org.amupoti.sm.main.services.ComputePlayerValuesService;
 import org.amupoti.sm.main.services.MatchControlService;
-import org.amupoti.sm.main.services.PlayerService;
+import org.amupoti.sm.main.services.repository.PlayerService;
 import org.amupoti.supermanager.parser.acb.ACBTeamService;
 import org.amupoti.supermanager.parser.acb.bean.SMPlayerDataBean;
 import org.amupoti.supermanager.parser.acb.beans.ACBPlayer;

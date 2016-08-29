@@ -1,8 +1,10 @@
-package org.amupoti.sm.main;
+package org.amupoti.sm.main.controller;
 
 import org.amupoti.sm.main.repository.entity.PlayerEntity;
 import org.amupoti.sm.main.repository.entity.TeamEntity;
 import org.amupoti.sm.main.services.*;
+import org.amupoti.sm.main.services.repository.PlayerService;
+import org.amupoti.sm.main.services.repository.TeamService;
 import org.amupoti.supermanager.parser.acb.ACBTeamService;
 import org.amupoti.supermanager.parser.acb.bean.SMPlayerDataBean;
 import org.amupoti.supermanager.parser.acb.bean.SMTeamDataBean;

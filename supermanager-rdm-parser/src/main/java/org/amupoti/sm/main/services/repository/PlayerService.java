@@ -1,4 +1,4 @@
-package org.amupoti.sm.main.services;
+package org.amupoti.sm.main.services.repository;
 
 import org.amupoti.sm.main.repository.PlayerRepository;
 import org.amupoti.sm.main.repository.entity.PlayerEntity;
@@ -13,10 +13,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class PlayerService {
 
-
     @Autowired
     private PlayerRepository playerRepository;
-
 
     public Iterable<PlayerEntity> getPlayers() {
         return playerRepository.findAll();

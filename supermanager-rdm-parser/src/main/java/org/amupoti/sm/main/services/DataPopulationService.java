@@ -7,8 +7,8 @@ import org.amupoti.sm.main.repository.TeamRepository;
 import org.amupoti.sm.main.repository.ValueRepository;
 import org.amupoti.sm.main.repository.entity.*;
 import org.amupoti.sm.main.services.provider.match.MatchDataProvider;
-import org.amupoti.sm.main.services.provider.team.TeamDataService;
 import org.amupoti.sm.main.services.provider.player.PlayerDataService;
+import org.amupoti.sm.main.services.provider.team.TeamDataService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.htmlcleaner.XPatherException;
@@ -29,10 +29,7 @@ import java.util.concurrent.ExecutionException;
 @Service
 public class DataPopulationService {
 
-    private static final int NUM_MATCHES = 34;
-
     private final static Log LOG = LogFactory.getLog(DataPopulationService.class);
-
 
     @Autowired
     private PlayerRepository playerRepository;
@@ -57,14 +54,13 @@ public class DataPopulationService {
 
 
     /**
-     * Populates the data from the web if necessary
+     * Populates the data from the website: teams, players and calendar
      * @return
-     * @throws IOException
-     * @throws XPatherException
      */
 
     public void populate() throws IOException, XPatherException, URISyntaxException, InterruptedException, ExecutionException {
 
+        LOG.info("Starting data load");
         populateTeams();
         populatePlayers();
         populateMatches();
@@ -81,8 +77,6 @@ public class DataPopulationService {
         }
 
     }
-
-
 
     /**
      * Populates data from player pages
@@ -172,9 +166,8 @@ public class DataPopulationService {
         if (teamEntity.getValMap().get(id)!=null){
             valueEntity = teamEntity.getValMap().get(id);
         }
-        else{
-            valueEntity = new ValueEntity();
-        }
+        else  valueEntity = new ValueEntity();
+
         doPopulateVal(teamId, p, valueEntity);
 
         valueEntity = valueRepository.save(valueEntity);

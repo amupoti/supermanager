@@ -8,7 +8,7 @@ import org.amupoti.sm.main.repository.entity.PlayerEntity;
 import org.amupoti.sm.main.repository.entity.PlayerId;
 import org.amupoti.sm.main.repository.entity.TeamEntity;
 import org.amupoti.sm.main.services.MatchControlService;
-import org.amupoti.sm.main.services.TeamService;
+import org.amupoti.sm.main.services.repository.TeamService;
 import org.amupoti.sm.main.services.provider.HTMLProviderService;
 import org.amupoti.sm.main.services.provider.player.RDMPlayerDataService;
 import org.apache.commons.io.IOUtils;
