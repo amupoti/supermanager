@@ -31,6 +31,7 @@ $(document).ready(function()
         <th>Broker</th>
         <th>Broker =</th>
         <th>Media últ. 5</th>
+        <th>MVP</th>
         <th>Media Equipo como L/V</th>
         <th>Media Rec Rival como L/V</th>
 
@@ -56,6 +57,7 @@ $(document).ready(function()
             <td>$smData.broker</td>
             <td>$smData.keepBroker</td>
             <td>$smData.meanLastMatches</td>
+            <td>$smData.mvp</td>
             <td>$smData.teamValAsLV</td>
             <td>$smData.otherTeamReceivedValAsLV</td>
 

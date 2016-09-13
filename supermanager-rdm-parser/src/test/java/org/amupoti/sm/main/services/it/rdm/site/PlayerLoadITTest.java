@@ -14,6 +14,7 @@ import org.amupoti.sm.main.services.provider.player.RDMPlayerDataService;
 import org.apache.commons.io.IOUtils;
 import org.htmlcleaner.XPatherException;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -46,6 +47,7 @@ public class PlayerLoadITTest {
     private MatchControlService matchControlService;
 
     @Test
+    @Ignore
     public void testPlayerLoadFromWeb() throws IOException, XPatherException, URISyntaxException {
 
         //Given

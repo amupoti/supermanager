@@ -16,6 +16,7 @@ public class SMPlayerDataBean {
     Float playerVisitorVal;
     String playerPosition;
 
+    //TODO: change to ints
     String playerOtherTeamReceivedValShort;
     String playerOtherTeamReceivedValMedium;
     String playerOtherTeamReceivedValLong;
@@ -32,14 +33,13 @@ public class SMPlayerDataBean {
 
     Float broker;
     Float keepBroker;
-    Float calendarBoostShort;
-    Float calendarBoostMedium;
-    Float calendarBoostLong;
     Float meanLastMatches;
     String teamName;
     String otherTeamName;
 
     //TODO: position values
     String otherTeamPositionReceivedVal;
+
+    String mvp;
 }
 

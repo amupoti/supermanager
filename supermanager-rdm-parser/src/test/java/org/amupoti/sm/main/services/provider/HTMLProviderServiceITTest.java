@@ -4,6 +4,7 @@ import org.amupoti.sm.main.TestConfig;
 import org.amupoti.sm.main.bean.PlayerPosition;
 import org.amupoti.sm.main.repository.entity.PlayerId;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,20 +25,21 @@ public class HTMLProviderServiceITTest {
     HTMLProviderService htmlProviderService;
 
     @Test
+    @Ignore("Add back when Match 1 is computed")
     public void testParsingPlayersUTF8() throws IOException {
         String html = htmlProviderService.getAllPlayersURL(PlayerPosition.BASE);
-        Assert.assertTrue(html.contains("Rodríguez, Sergio"));
+        Assert.assertTrue(html.contains("Llull, Sergio"));
     }
 
     @Test
     public void testParsingPlayerPage() throws IOException, URISyntaxException {
-        String html = htmlProviderService.getPlayerURL(new PlayerId("Rodríguez, Sergio"));
+        String html = htmlProviderService.getPlayerURL(new PlayerId("Llull, Sergio"));
         Assert.assertTrue(html.contains("(RMA)"));
     }
 
     @Test
     public void testParsingPlayerMeans() throws IOException, URISyntaxException {
-        String html = htmlProviderService.getPlayerURL(new PlayerId("Rodríguez, Sergio"));
+        String html = htmlProviderService.getPlayerURL(new PlayerId("Llull, Sergio"));
         Assert.assertTrue(html.contains("(RMA)"));
     }
 }

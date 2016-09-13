@@ -58,7 +58,6 @@ public class ComputeTeamValuesService {
             String pointsTeamReceivedExpected;
             if (isLocal) {
                 otherTeam = teamService.getTeam(matchEntity.getVisitor());
-
                 points = Float.parseFloat(team.getValMap().get(getPointsId()).getValL());
                 pointsRec = Float.parseFloat(team.getValMap().get(getPointsId()).getValRecL());
                 pointsRecOtherTeam = Float.parseFloat(otherTeam.getValMap().get(getPointsId()).getValRecV());

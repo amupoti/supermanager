@@ -7,11 +7,15 @@ import org.amupoti.sm.main.repository.entity.MatchEntity;
 import org.amupoti.sm.main.repository.entity.TeamEntity;
 import org.amupoti.sm.main.repository.entity.ValueEntity;
 import org.amupoti.sm.main.services.repository.TeamService;
+import org.amupoti.supermanager.parser.acb.bean.DataUtils;
 import org.amupoti.supermanager.parser.acb.bean.SMPlayerDataBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import static org.apache.commons.lang.math.NumberUtils.toFloat;
+import static org.apache.commons.lang.math.NumberUtils.toInt;
 
 /**
  * Created by Marcel on 18/11/2015.
@@ -100,6 +104,16 @@ public class ComputePlayerValuesService {
         smPlayerDataBean.setBroker(playerEntity.getBroker());
         smPlayerDataBean.setTeamName(playerEntity.getTeam().getName());
 
+
+    }
+
+    public void addMvpData(SMPlayerDataBean smPlayerDataBean) {
+
+        float meanNoNegative = smPlayerDataBean.getMeanLastMatches()+20;
+        float mvpVal = meanNoNegative + toFloat(smPlayerDataBean.getPlayerOtherTeamReceivedValShort()) +
+                toInt(smPlayerDataBean.getOtherTeamReceivedVal())/2 + toInt(smPlayerDataBean.getTeamValAsLV())/2;
+
+        smPlayerDataBean.setMvp(DataUtils.format(mvpVal));
 
     }
 

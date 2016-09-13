@@ -32,7 +32,10 @@ public class DataBoostService {
      */
     public String getCalendar(TeamEntity team, int matchNumber, int matchesAhead, PlayerPosition playerPosition) {
 
+
         int match = matchesAhead+matchNumber;
+        if (match>MAX_GAMES) return "0";
+
         MatchEntity matchEntity = team.getMatchMap().get(match);
         String valRec;
         if (matchEntity.isLocal(team.getName())) {
