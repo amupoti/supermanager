@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
+import static org.amupoti.sm.main.config.SMConstants.MAX_GAMES;
+
 /**
  * Created by Marcel on 05/10/2015.
  */
@@ -19,8 +21,6 @@ public class DataBoostService {
 
     @Autowired
     private TeamService teamService;
-
-    private static final int MAX_GAMES = 34;
 
     /**
      *

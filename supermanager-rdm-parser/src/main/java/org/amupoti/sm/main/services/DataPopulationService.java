@@ -1,6 +1,7 @@
 package org.amupoti.sm.main.services;
 
 import org.amupoti.sm.main.bean.PlayerPosition;
+import org.amupoti.sm.main.config.SMConstants;
 import org.amupoti.sm.main.repository.MatchRepository;
 import org.amupoti.sm.main.repository.PlayerRepository;
 import org.amupoti.sm.main.repository.TeamRepository;
@@ -104,10 +105,8 @@ public class DataPopulationService {
 
     private void populateTeams() throws IOException, XPatherException {
         LOG.info("Populating teams");
-        //Load from static data
-        String[] teamIds = teamDataService.getTeamIds();
         //Load from web, load players + calendarBoost
-        populateTeamData(teamIds);
+        populateTeamData(SMConstants.teamIds);
     }
 
 

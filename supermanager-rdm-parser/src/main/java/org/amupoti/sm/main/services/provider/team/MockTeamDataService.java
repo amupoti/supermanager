@@ -72,12 +72,6 @@ public class MockTeamDataService implements TeamDataService{
         return getRand();
     }
 
-    @Override
-    public String[] getTeamIds() {
-
-        String[] teamIds={"AND","BLB","CAI","CAN","EST","FCB","FUE","GBC","GCA","JOV","LAB","MAN","MUR","OBR","RMA","SEV","UNI","VBC"};
-        return teamIds;
-    }
 
     private String getRand(){
         return String.valueOf(random.nextInt(20)-2);
