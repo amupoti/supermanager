@@ -6,7 +6,7 @@ import org.amupoti.sm.main.repository.PlayerRepository;
 import org.amupoti.sm.main.repository.TeamRepository;
 import org.amupoti.sm.main.repository.ValueRepository;
 import org.amupoti.sm.main.repository.entity.*;
-import org.amupoti.sm.main.services.provider.match.MatchDataProvider;
+import org.amupoti.sm.main.services.provider.match.MatchDataScraper;
 import org.amupoti.sm.main.services.provider.player.PlayerDataService;
 import org.amupoti.sm.main.services.provider.team.TeamDataService;
 import org.apache.commons.logging.Log;
@@ -50,7 +50,7 @@ public class DataPopulationService {
     private TeamDataService teamDataService;
 
     @Autowired
-    private MatchDataProvider matchDataProvider;
+    private MatchDataScraper matchDataScraper;
 
 
     /**
@@ -213,7 +213,7 @@ public class DataPopulationService {
         //Get page for the given position
 
         //Obtain values via XPath
-        String value = teamDataService.getTeamMeanPoints(teamName, position);// RDMPlayerDataService.VAL);
+        String value = teamDataService.getTeamMeanPoints(teamName, position);// RDMPlayerDataScraper.VAL);
         String valueReceived = teamDataService.getTeamMeanPointsReceived(teamName, position);
         String valueLocal = teamDataService.getTeamMeanPointsLocal(teamName, position);
         String valueVisitor = teamDataService.getTeamMeanPointsVisitor(teamName, position);
@@ -245,7 +245,7 @@ public class DataPopulationService {
         if (teamEntity.getMatchMap()==null || teamEntity.getMatchMap().keySet().size()==0) {
 
             LOG.info("Getting matches for team " + teamName);
-            Iterable<MatchEntity> matchEntities = matchDataProvider.getTeamMatches(teamName);
+            Iterable<MatchEntity> matchEntities = matchDataScraper.getTeamMatches(teamName);
             matchRepository.save(matchEntities);
 
             for (MatchEntity matchEntity : matchEntities) {
@@ -254,7 +254,7 @@ public class DataPopulationService {
             }
         }
         else{
-            LOG.info("Matches were already populated in DB");
+            LOG.info("Matches were already populated in DB for team "+teamName);
         }
 
         teamRepository.save(teamEntity);

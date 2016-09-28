@@ -17,7 +17,7 @@ import java.util.LinkedHashSet;
  */
 @Service
 
-public class MatchDataProvider {
+public class MatchDataScraper {
 
     @Autowired
     private HTMLProviderService htmlProviderService;

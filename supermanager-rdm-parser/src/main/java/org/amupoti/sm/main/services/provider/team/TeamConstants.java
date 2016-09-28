@@ -7,6 +7,7 @@ import lombok.Getter;
  */
 public class TeamConstants {
 
+    //TODO: create enums
     public static final String VISITOR = "Visitante";
     public static final String LOCAL = "Local";
     @Getter

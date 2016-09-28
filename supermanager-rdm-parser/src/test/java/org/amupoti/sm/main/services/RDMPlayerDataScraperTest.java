@@ -9,7 +9,7 @@ import org.amupoti.sm.main.repository.entity.PlayerEntity;
 import org.amupoti.sm.main.repository.entity.PlayerId;
 import org.amupoti.sm.main.repository.entity.TeamEntity;
 import org.amupoti.sm.main.services.provider.HTMLProviderService;
-import org.amupoti.sm.main.services.provider.player.RDMPlayerDataService;
+import org.amupoti.sm.main.services.provider.player.RDMPlayerDataScraper;
 import org.amupoti.sm.main.services.repository.TeamService;
 import org.apache.commons.io.FileUtils;
 import org.htmlcleaner.XPatherException;
@@ -32,10 +32,10 @@ import java.util.Set;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
 
-public class RDMPlayerDataServiceTest {
+public class RDMPlayerDataScraperTest {
 
     @Tested
-    private RDMPlayerDataService rdmPlayerDataService;
+    private RDMPlayerDataScraper rdmPlayerDataScraper;
 
     @Injectable
     private HTMLProviderService htmlProviderService;
@@ -70,7 +70,7 @@ public class RDMPlayerDataServiceTest {
             returns (34);
         }
         };
-        List<PlayerEntity> playersData = rdmPlayerDataService.getPlayersData(playerIds);
+        List<PlayerEntity> playersData = rdmPlayerDataScraper.getPlayersData(playerIds);
 
 
         //Then

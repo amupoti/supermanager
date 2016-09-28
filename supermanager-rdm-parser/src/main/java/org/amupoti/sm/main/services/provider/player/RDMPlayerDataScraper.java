@@ -34,7 +34,7 @@ import static org.amupoti.sm.main.services.provider.team.RDMTeamDataService.INVA
  * Created by Marcel on 17/08/2015.
  */
 
-public class RDMPlayerDataService implements PlayerDataService {
+public class RDMPlayerDataScraper implements PlayerDataService {
 
     public static final int ROW_VAL_MEDIA_LOCAL = 1;
     public static final int ROW_VAL_MEDIA_VISITANTE = 2;
@@ -51,7 +51,7 @@ public class RDMPlayerDataService implements PlayerDataService {
 
     private HtmlCleaner cleaner;
 
-    private static final Log log = LogFactory.getLog(RDMPlayerDataService.class);
+    private static final Log log = LogFactory.getLog(RDMPlayerDataScraper.class);
 
     @Autowired
     private HTMLProviderService htmlProviderService;
@@ -65,7 +65,7 @@ public class RDMPlayerDataService implements PlayerDataService {
     @Autowired
     private MatchControlService matchControlService;
 
-    public RDMPlayerDataService() {
+    public RDMPlayerDataScraper() {
         cleaner = new HtmlCleaner();
     }
 
@@ -94,7 +94,7 @@ public class RDMPlayerDataService implements PlayerDataService {
     private List<PlayerId> getPlayerIdsPerPosition(String html, PlayerPosition playerPosition) throws IOException, XPatherException {
         List<PlayerId> playerIds = new LinkedList<>();
         TagNode node = cleaner.clean(html);
-        Object[] objects = node.evaluateXPath(RDMPlayerDataService.ALL_PLAYERS);
+        Object[] objects = node.evaluateXPath(RDMPlayerDataScraper.ALL_PLAYERS);
         for (int i = 0; i < objects.length; i++) {
             TagNode tagNode = (TagNode) objects[i];
             String name = tagNode.getAllChildren().get(0).toString();
@@ -175,15 +175,15 @@ public class RDMPlayerDataService implements PlayerDataService {
         try {
             html = htmlProviderService.getPlayerURL(playerId);
 
-            String localMean = getValueViaLabelForPlayerMeans(html, RDMPlayerDataService.ROW_VAL_MEDIA_LOCAL);
-            String visitorMean = getValueViaLabelForPlayerMeans(html, RDMPlayerDataService.ROW_VAL_MEDIA_VISITANTE);
-            String keepBroker = getValueViaXPath(html, RDMPlayerDataService.VAL_MANTENER_BROKER);
-            String broker = getValueViaXPath(html, RDMPlayerDataService.BROKER).replace(",","");
+            String localMean = getValueViaLabelForPlayerMeans(html, RDMPlayerDataScraper.ROW_VAL_MEDIA_LOCAL);
+            String visitorMean = getValueViaLabelForPlayerMeans(html, RDMPlayerDataScraper.ROW_VAL_MEDIA_VISITANTE);
+            String keepBroker = getValueViaXPath(html, RDMPlayerDataScraper.VAL_MANTENER_BROKER);
+            String broker = getValueViaXPath(html, RDMPlayerDataScraper.BROKER).replace(",","");
             String meanLastMatches = getValueViaLabelForLastResults(html);
             log.debug("Mean of lastMatches for player "+playerId+" is "+meanLastMatches);
 
             //Parse team and store in player data
-            String team = getValueViaXPath(html, RDMPlayerDataService.PLAYER_TEAM);
+            String team = getValueViaXPath(html, RDMPlayerDataScraper.PLAYER_TEAM);
             team=parseTeam(team);
             TeamEntity teamEntity = teamService.getTeam(team);
 
