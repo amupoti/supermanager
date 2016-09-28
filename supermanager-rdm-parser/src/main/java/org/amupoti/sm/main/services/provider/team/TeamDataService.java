@@ -33,6 +33,4 @@ public interface TeamDataService {
 
     String getTeamMeanPointsVisitorReceived(String teamName,PlayerPosition position);
 
-
-    String[] getTeamIds();
 }

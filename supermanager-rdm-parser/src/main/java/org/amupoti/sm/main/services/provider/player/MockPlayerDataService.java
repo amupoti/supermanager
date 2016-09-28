@@ -1,9 +1,9 @@
 package org.amupoti.sm.main.services.provider.player;
 
+import org.amupoti.sm.main.config.SMConstants;
 import org.amupoti.sm.main.repository.TeamRepository;
 import org.amupoti.sm.main.repository.entity.PlayerEntity;
 import org.amupoti.sm.main.repository.entity.PlayerId;
-import org.amupoti.sm.main.services.provider.team.TeamConstants;
 import org.amupoti.sm.main.repository.entity.TeamEntity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,7 +55,7 @@ public class MockPlayerDataService implements PlayerDataService{
             Random r = new Random();
             int team = r.nextInt(18);
 
-            TeamEntity teamEntity = teamRepository.findByName(TeamConstants.getTeamIds()[team]);
+            TeamEntity teamEntity = teamRepository.findByName(SMConstants.teamIds[team]);
             playerEntity.setTeam(teamEntity);
             playerDataList.add(playerEntity);
 

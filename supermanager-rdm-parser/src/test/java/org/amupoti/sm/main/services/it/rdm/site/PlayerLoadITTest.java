@@ -10,7 +10,7 @@ import org.amupoti.sm.main.repository.entity.TeamEntity;
 import org.amupoti.sm.main.services.MatchControlService;
 import org.amupoti.sm.main.services.repository.TeamService;
 import org.amupoti.sm.main.services.provider.HTMLProviderService;
-import org.amupoti.sm.main.services.provider.player.RDMPlayerDataService;
+import org.amupoti.sm.main.services.provider.player.RDMPlayerDataScraper;
 import org.apache.commons.io.IOUtils;
 import org.htmlcleaner.XPatherException;
 import org.junit.Assert;
@@ -32,7 +32,7 @@ import static org.amupoti.sm.main.services.provider.team.RDMTeamDataService.INVA
 public class PlayerLoadITTest {
 
     @Tested
-    private RDMPlayerDataService rdmPlayerDataService;
+    private RDMPlayerDataScraper rdmPlayerDataScraper;
 
     @Injectable
     private HTMLProviderService htmlProviderService;
@@ -68,7 +68,7 @@ public class PlayerLoadITTest {
             returns (34);
         }
         };
-        List<PlayerEntity> playersData = rdmPlayerDataService.getPlayersData(playerIds);
+        List<PlayerEntity> playersData = rdmPlayerDataScraper.getPlayersData(playerIds);
 
 
         //Then

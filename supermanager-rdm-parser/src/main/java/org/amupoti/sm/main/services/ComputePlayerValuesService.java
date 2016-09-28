@@ -1,9 +1,9 @@
 package org.amupoti.sm.main.services;
 
 import org.amupoti.sm.main.bean.PlayerPosition;
-import org.amupoti.sm.main.repository.entity.PlayerEntity;
-import org.amupoti.sm.main.services.provider.team.TeamConstants;
+import org.amupoti.sm.main.config.SMConstants;
 import org.amupoti.sm.main.repository.entity.MatchEntity;
+import org.amupoti.sm.main.repository.entity.PlayerEntity;
 import org.amupoti.sm.main.repository.entity.TeamEntity;
 import org.amupoti.sm.main.repository.entity.ValueEntity;
 import org.amupoti.sm.main.services.repository.TeamService;
@@ -71,14 +71,14 @@ public class ComputePlayerValuesService {
             otherTeam = teamService.getTeam(matchEntity.getVisitor());
             otherTeamValues = otherTeam.getValMap().get(PlayerPosition.TOTAL.getId());
             smPlayerDataBean.setOtherTeamReceivedValAsLV(otherTeamValues.getValRecV());
-            smPlayerDataBean.setLocalOrVisitor(TeamConstants.LOCAL);
+            smPlayerDataBean.setLocalOrVisitor(SMConstants.LOCAL);
         } else {
 
             teamVal = teamValues.getValV();
             otherTeam = teamService.getTeam(matchEntity.getLocal());
             otherTeamValues = otherTeam.getValMap().get(PlayerPosition.TOTAL.getId());
             smPlayerDataBean.setOtherTeamReceivedValAsLV(otherTeamValues.getValRecL());
-            smPlayerDataBean.setLocalOrVisitor(TeamConstants.VISITOR);
+            smPlayerDataBean.setLocalOrVisitor(SMConstants.VISITOR);
         }
         smPlayerDataBean.setTeamValAsLV(teamVal);
         smPlayerDataBean.setOtherTeamReceivedVal(otherTeamValues.getValRec());

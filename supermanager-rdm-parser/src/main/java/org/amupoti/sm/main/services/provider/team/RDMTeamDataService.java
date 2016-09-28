@@ -178,13 +178,4 @@ public class RDMTeamDataService implements TeamDataService {
 
     }
 
-    /**
-     * Returns an array with the team identifiers
-     * @return
-     */
-    public String[] getTeamIds() {
-
-
-        return TeamConstants.getTeamIds();
-    }
 }
