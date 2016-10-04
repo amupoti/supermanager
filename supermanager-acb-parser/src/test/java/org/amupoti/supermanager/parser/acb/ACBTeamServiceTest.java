@@ -2,9 +2,9 @@ package org.amupoti.supermanager.parser.acb;
 
 import org.amupoti.supermanager.parser.acb.beans.ACBSupermanagerTeam;
 import org.amupoti.supermanager.parser.acb.config.TestConfig;
+import org.hamcrest.core.StringContains;
 import org.htmlcleaner.XPatherException;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,6 @@ import java.util.List;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
-@Ignore("Ignoring until teams are available again")
 public class ACBTeamServiceTest {
 
     private static final String PASSWORD = "testsm_testsm";
@@ -33,9 +32,8 @@ public class ACBTeamServiceTest {
 
         List<ACBSupermanagerTeam> teams = acbTeamsService.getTeamsByCredentials(USER, PASSWORD);
         Assert.assertEquals(2,teams.size());
-        Assert.assertEquals("El Equipo 1",teams.get(0).getName());
-        Assert.assertEquals("El Equipo 2",teams.get(1).getName());
-
+        Assert.assertThat(teams.get(0).getName()+teams.get(1).getName(),StringContains.containsString("El equipo 1"));
+        Assert.assertThat(teams.get(0).getName()+teams.get(1).getName(),StringContains.containsString("El equipo 2"));
 
     }
 
