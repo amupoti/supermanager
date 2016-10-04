@@ -8,6 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import static org.amupoti.sm.main.config.SMConstants.NOT_PLAYING_MATCH;
+
 /**
  * Created by Marcel on 16/08/2015.
  */
@@ -26,6 +28,10 @@ public class MatchEntity {
 
     public boolean isLocal(String teamName){
         return teamName.equals(local);
+    }
+
+    public boolean isNotPlayingMatch(){
+        return local.equals(NOT_PLAYING_MATCH) || visitor.equals(NOT_PLAYING_MATCH);
     }
 
 }

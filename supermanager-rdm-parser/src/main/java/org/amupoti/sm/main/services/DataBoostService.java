@@ -19,6 +19,7 @@ import static org.amupoti.sm.main.config.SMConstants.MAX_GAMES;
 public class DataBoostService {
 
 
+    public static final String NO_VALUE = "0";
     @Autowired
     private TeamService teamService;
 
@@ -37,6 +38,7 @@ public class DataBoostService {
         if (match>MAX_GAMES) return "0";
 
         MatchEntity matchEntity = team.getMatchMap().get(match);
+        if (matchEntity.isNotPlayingMatch()) return NO_VALUE;
         String valRec;
         if (matchEntity.isLocal(team.getName())) {
             valRec = teamService.getTeam(matchEntity.getVisitor()).getValMap().get(playerPosition.getId()).getValRecV();
@@ -59,8 +61,12 @@ public class DataBoostService {
 
         BigDecimal ranking = new BigDecimal(0);
         int matchesAheadLimit = matchesAhead+matchNumber;
+        int matchesComputed=0;
         for (int i=matchNumber;i<=MAX_GAMES && i<=matchesAheadLimit;i++) {
             MatchEntity matchEntity = team.getMatchMap().get(i);
+            if (matchEntity.isNotPlayingMatch()) continue;
+            else matchesComputed++;
+
             String valRec;
             if (matchEntity.isLocal(team.getName())) {
                 valRec = teamService.getTeam(matchEntity.getVisitor()).getValMap().get(playerPosition.getId()).getValRecV();
@@ -72,7 +78,7 @@ public class DataBoostService {
         }
 
         //Get the ranking mean
-        ranking = ranking.divide(new BigDecimal(matchesAhead+1),BigDecimal.ROUND_HALF_EVEN);
+        ranking = ranking.divide(new BigDecimal(matchesComputed+1),BigDecimal.ROUND_HALF_EVEN);
 
         return DataUtils.format(ranking);
 
