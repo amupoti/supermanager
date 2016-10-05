@@ -50,43 +50,67 @@ public class ComputePlayerValuesService {
 
         TeamEntity teamEntity = playerEntity.getTeam();
 
-        smPlayerDataBean.setPlayerOtherTeamReceivedValShort(dataBoostService.getCalendar(teamEntity, matchNumber, SHORT_TERM, playerEntity.getPlayerPosition()));
-        smPlayerDataBean.setPlayerOtherTeamReceivedValMedium(dataBoostService.getCalendar(teamEntity,matchNumber, MEDIUM_TERM, playerEntity.getPlayerPosition()));
-        smPlayerDataBean.setPlayerOtherTeamReceivedValLong(dataBoostService.getCalendar(teamEntity,matchNumber, LONG_TERM, playerEntity.getPlayerPosition()));
-        smPlayerDataBean.setPlayerOtherNextMatchesVal(dataBoostService.getCalendarSum(teamEntity,matchNumber, LONG_TERM, playerEntity.getPlayerPosition()));
+        addFollowingMatchesData(playerEntity, smPlayerDataBean, matchNumber, teamEntity);
 
         /*
          * Get mean values depending if local or visitor
          */
         ValueEntity teamValues = teamEntity.getValMap().get(PlayerPosition.TOTAL.getId());
         MatchEntity matchEntity = teamEntity.getMatchMap().get(matchNumber);
+
         boolean isLocal = matchEntity.isLocal(teamEntity.getName());
 
-        smPlayerDataBean.setTeamVal(teamValues.getVal());
-        TeamEntity otherTeam;
-        ValueEntity otherTeamValues;
-        String teamVal;
-        if (isLocal) {
-            teamVal  = teamValues.getValL();
-            otherTeam = teamService.getTeam(matchEntity.getVisitor());
-            otherTeamValues = otherTeam.getValMap().get(PlayerPosition.TOTAL.getId());
-            smPlayerDataBean.setOtherTeamReceivedValAsLV(otherTeamValues.getValRecV());
-            smPlayerDataBean.setLocalOrVisitor(SMConstants.LOCAL);
-        } else {
 
-            teamVal = teamValues.getValV();
-            otherTeam = teamService.getTeam(matchEntity.getLocal());
-            otherTeamValues = otherTeam.getValMap().get(PlayerPosition.TOTAL.getId());
-            smPlayerDataBean.setOtherTeamReceivedValAsLV(otherTeamValues.getValRecL());
-            smPlayerDataBean.setLocalOrVisitor(SMConstants.VISITOR);
+        if (matchEntity.isNotPlayingMatch()){
+
+            setEmptyDataForNoMatch(smPlayerDataBean);
         }
-        smPlayerDataBean.setTeamValAsLV(teamVal);
-        smPlayerDataBean.setOtherTeamReceivedVal(otherTeamValues.getValRec());
-        smPlayerDataBean.setOtherTeamName(otherTeam.getName());
-        /*
-         *  Get mean values depending on player position
-         */
-        //TODO: load players with position so we can add value for that position
+        else{
+
+            TeamEntity otherTeam;
+            ValueEntity otherTeamValues;
+            String teamVal;
+            String otherTeamValAsLV;
+            String localOrVisitor;
+
+            if (isLocal) {
+                teamVal  = teamValues.getValL();
+                otherTeam = teamService.getTeam(matchEntity.getVisitor());
+                otherTeamValues = otherTeam.getValMap().get(PlayerPosition.TOTAL.getId());
+                otherTeamValAsLV = otherTeamValues.getValRecV();
+                localOrVisitor = SMConstants.LOCAL;
+            } else {
+                teamVal = teamValues.getValV();
+                otherTeam = teamService.getTeam(matchEntity.getLocal());
+                otherTeamValues = otherTeam.getValMap().get(PlayerPosition.TOTAL.getId());
+                otherTeamValAsLV = otherTeamValues.getValRecL();
+                localOrVisitor = SMConstants.VISITOR;
+            }
+            smPlayerDataBean.setOtherTeamReceivedVal(otherTeamValues.getValRec());
+            smPlayerDataBean.setOtherTeamName(otherTeam.getName());
+            smPlayerDataBean.setTeamValAsLV(teamVal);
+            smPlayerDataBean.setOtherTeamReceivedValAsLV(otherTeamValAsLV);
+            smPlayerDataBean.setLocalOrVisitor(localOrVisitor);
+            smPlayerDataBean.setTeamVal(teamValues.getVal());
+        }
+
+    }
+
+    private void setEmptyDataForNoMatch(SMPlayerDataBean smPlayerDataBean) {
+        smPlayerDataBean.setOtherTeamReceivedVal("0");
+        smPlayerDataBean.setOtherTeamName(SMConstants.NOT_PLAYING_MATCH);
+        smPlayerDataBean.setTeamVal("0");
+        smPlayerDataBean.setTeamValAsLV("0");
+        smPlayerDataBean.setOtherTeamReceivedValAsLV("0");
+        smPlayerDataBean.setLocalOrVisitor("Descansa");
+
+    }
+
+    private void addFollowingMatchesData(PlayerEntity playerEntity, SMPlayerDataBean smPlayerDataBean, int matchNumber, TeamEntity teamEntity) {
+        smPlayerDataBean.setPlayerOtherTeamReceivedValShort(dataBoostService.getCalendar(teamEntity, matchNumber, SHORT_TERM, playerEntity.getPlayerPosition()));
+        smPlayerDataBean.setPlayerOtherTeamReceivedValMedium(dataBoostService.getCalendar(teamEntity,matchNumber, MEDIUM_TERM, playerEntity.getPlayerPosition()));
+        smPlayerDataBean.setPlayerOtherTeamReceivedValLong(dataBoostService.getCalendar(teamEntity,matchNumber, LONG_TERM, playerEntity.getPlayerPosition()));
+        smPlayerDataBean.setPlayerOtherNextMatchesVal(dataBoostService.getCalendarSum(teamEntity,matchNumber, LONG_TERM, playerEntity.getPlayerPosition()));
     }
 
     /**
