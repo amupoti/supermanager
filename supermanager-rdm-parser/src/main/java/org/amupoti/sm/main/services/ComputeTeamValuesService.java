@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.amupoti.sm.main.config.SMConstants.NOT_PLAYING_MATCH_TEXT;
+
 /**
  */
 @Service
@@ -49,32 +51,43 @@ public class ComputeTeamValuesService {
             MatchEntity matchEntity = team.getMatchMap().get(matchNumber);
             boolean isLocal = matchEntity.isLocal(team.getName());
 
+
+            //TODO: consider if team does not play
             TeamEntity otherTeam;
             Float pointsRecOtherTeam;
             Float pointsOtherTeam;
             Float pointsRec;
             Float points;
-            String pointsTeamExpected;
-            String pointsTeamReceivedExpected;
-            if (isLocal) {
-                otherTeam = teamService.getTeam(matchEntity.getVisitor());
-                points = Float.parseFloat(team.getValMap().get(getPointsId()).getValL());
-                pointsRec = Float.parseFloat(team.getValMap().get(getPointsId()).getValRecL());
-                pointsRecOtherTeam = Float.parseFloat(otherTeam.getValMap().get(getPointsId()).getValRecV());
-                pointsOtherTeam = Float.parseFloat(otherTeam.getValMap().get(getPointsId()).getValV());
-                pointsTeamExpected= DataUtils.format(points * FACTOR + pointsRecOtherTeam * (1 - FACTOR));
-                pointsTeamReceivedExpected= DataUtils.format(pointsRec * FACTOR + pointsOtherTeam * (1 - FACTOR));
-            } else {
-                otherTeam = teamService.getTeam(matchEntity.getLocal());
-                points = Float.parseFloat(team.getValMap().get(getPointsId()).getValV());
-                pointsRec = Float.parseFloat(team.getValMap().get(getPointsId()).getValRecV());
-                pointsRecOtherTeam = Float.parseFloat(otherTeam.getValMap().get(getPointsId()).getValRecL());
-                pointsOtherTeam = Float.parseFloat(otherTeam.getValMap().get(getPointsId()).getValL());
-                pointsTeamExpected= DataUtils.format(points * (1 - FACTOR) + pointsRecOtherTeam * (FACTOR));
-                pointsTeamReceivedExpected= DataUtils.format(pointsRec *  (1 - FACTOR) + pointsOtherTeam * (FACTOR));
-
+            String pointsTeamExpected = "0";
+            String pointsTeamReceivedExpected= "0";
+            String teamName;
+            if (matchEntity.isNotPlayingMatch()){
+                teamName = NOT_PLAYING_MATCH_TEXT;
             }
-            smTeamDataBean.setTeamVs(otherTeam.getName());
+            else {
+                if (isLocal) {
+                    otherTeam = teamService.getTeam(matchEntity.getVisitor());
+                    points = Float.parseFloat(team.getValMap().get(getPointsId()).getValL());
+                    pointsRec = Float.parseFloat(team.getValMap().get(getPointsId()).getValRecL());
+                    pointsRecOtherTeam = Float.parseFloat(otherTeam.getValMap().get(getPointsId()).getValRecV());
+                    pointsOtherTeam = Float.parseFloat(otherTeam.getValMap().get(getPointsId()).getValV());
+                    pointsTeamExpected= DataUtils.format(points * FACTOR + pointsRecOtherTeam * (1 - FACTOR));
+                    pointsTeamReceivedExpected= DataUtils.format(pointsRec * FACTOR + pointsOtherTeam * (1 - FACTOR));
+                } else {
+                    otherTeam = teamService.getTeam(matchEntity.getLocal());
+                    points = Float.parseFloat(team.getValMap().get(getPointsId()).getValV());
+                    pointsRec = Float.parseFloat(team.getValMap().get(getPointsId()).getValRecV());
+                    pointsRecOtherTeam = Float.parseFloat(otherTeam.getValMap().get(getPointsId()).getValRecL());
+                    pointsOtherTeam = Float.parseFloat(otherTeam.getValMap().get(getPointsId()).getValL());
+                    pointsTeamExpected= DataUtils.format(points * (1 - FACTOR) + pointsRecOtherTeam * (FACTOR));
+                    pointsTeamReceivedExpected= DataUtils.format(pointsRec *  (1 - FACTOR) + pointsOtherTeam * (FACTOR));
+
+                }
+                teamName = otherTeam.getName();
+            }
+
+
+            smTeamDataBean.setTeamVs(teamName);
             smTeamDataBean.setPointsExpected(pointsTeamExpected.toString());
             smTeamDataBean.setPointsReceivedExpected(pointsTeamReceivedExpected);
             list.add(smTeamDataBean);

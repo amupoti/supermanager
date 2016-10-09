@@ -14,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import static org.amupoti.sm.main.config.SMConstants.NOT_PLAYING_MATCH_TEXT;
 import static org.apache.commons.lang.math.NumberUtils.toFloat;
 import static org.apache.commons.lang.math.NumberUtils.toInt;
 
@@ -102,7 +103,7 @@ public class ComputePlayerValuesService {
         smPlayerDataBean.setTeamVal("0");
         smPlayerDataBean.setTeamValAsLV("0");
         smPlayerDataBean.setOtherTeamReceivedValAsLV("0");
-        smPlayerDataBean.setLocalOrVisitor("Descansa");
+        smPlayerDataBean.setLocalOrVisitor(NOT_PLAYING_MATCH_TEXT);
 
     }
 
@@ -133,9 +134,9 @@ public class ComputePlayerValuesService {
 
     public void addMvpData(SMPlayerDataBean smPlayerDataBean) {
 
-        float meanNoNegative = smPlayerDataBean.getMeanLastMatches()+20;
+        float meanNoNegative = (smPlayerDataBean.getMeanLastMatches()+20)*5;
         float mvpVal = meanNoNegative + toFloat(smPlayerDataBean.getPlayerOtherTeamReceivedValShort()) +
-                toInt(smPlayerDataBean.getOtherTeamReceivedVal())/2 + toInt(smPlayerDataBean.getTeamValAsLV())/2;
+                toInt(smPlayerDataBean.getOtherTeamReceivedVal())/2 + toInt(smPlayerDataBean.getTeamValAsLV())/3;
 
         smPlayerDataBean.setMvp(DataUtils.format(mvpVal));
 
