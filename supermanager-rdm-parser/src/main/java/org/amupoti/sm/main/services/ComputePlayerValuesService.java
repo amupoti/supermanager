@@ -132,13 +132,27 @@ public class ComputePlayerValuesService {
 
     }
 
-    public void addMvpData(SMPlayerDataBean smPlayerDataBean) {
+    /**
+     * Adds data to the player bean which has been computed from raw stats
+     * @param smPlayerDataBean
+     */
+    public void addPlayerComputedData(SMPlayerDataBean smPlayerDataBean) {
 
         float meanNoNegative = (smPlayerDataBean.getMeanLastMatches()+20)*5;
         float mvpVal = meanNoNegative + toFloat(smPlayerDataBean.getPlayerOtherTeamReceivedValShort()) +
                 toInt(smPlayerDataBean.getOtherTeamReceivedVal())/2 + toInt(smPlayerDataBean.getTeamValAsLV())/3;
 
         smPlayerDataBean.setMvp(DataUtils.format(mvpVal));
+
+        float playerValue =
+                meanNoNegative*5 +
+                toFloat(smPlayerDataBean.getPlayerOtherTeamReceivedValShort())*4 +
+                toFloat(smPlayerDataBean.getPlayerOtherTeamReceivedValMedium())*3 +
+                toFloat(smPlayerDataBean.getPlayerOtherTeamReceivedValLong())*2 +
+                toInt(smPlayerDataBean.getOtherTeamReceivedVal())/2 +
+                toInt(smPlayerDataBean.getTeamValAsLV())/3;
+
+        smPlayerDataBean.setRanking(DataUtils.format(playerValue));
 
     }
 

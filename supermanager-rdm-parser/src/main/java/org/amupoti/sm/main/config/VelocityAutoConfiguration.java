@@ -44,8 +44,6 @@ public class VelocityAutoConfiguration {
       props.setProperty( "input.encoding", "UTF-8" );
       props.setProperty( "output.encoding", "UTF-8" );
       props.setProperty(RuntimeConstants.EVENTHANDLER_INCLUDE, IncludeRelativePath.class.getName());
-
-
       cfg.setVelocityProperties(props);
       return cfg;
     }

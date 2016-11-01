@@ -41,5 +41,6 @@ public class SMPlayerDataBean {
     String otherTeamPositionReceivedVal;
 
     String mvp;
+    String ranking;
 }
 

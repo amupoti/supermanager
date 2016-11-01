@@ -86,7 +86,7 @@ public class PlayerController {
             SMPlayerDataBean smPlayerDataBean = new SMPlayerDataBean();
             computePlayerValuesService.addPlayerData(playerEntity, smPlayerDataBean);
             computePlayerValuesService.addTeamData(playerEntity, smPlayerDataBean);
-            computePlayerValuesService.addMvpData(smPlayerDataBean);
+            computePlayerValuesService.addPlayerComputedData(smPlayerDataBean);
 
             smDataList.add(smPlayerDataBean);
 

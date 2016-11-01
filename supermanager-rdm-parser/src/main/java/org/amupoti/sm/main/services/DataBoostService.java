@@ -19,7 +19,7 @@ import static org.amupoti.sm.main.config.SMConstants.MAX_GAMES;
 public class DataBoostService {
 
 
-    public static final String NO_VALUE = "0";
+    public static final String NO_VALUE = "50.99";
     @Autowired
     private TeamService teamService;
 
