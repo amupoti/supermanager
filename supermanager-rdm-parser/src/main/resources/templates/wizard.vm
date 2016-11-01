@@ -16,64 +16,9 @@ $(document).ready(function()
 </head>
 <body>
     <h1>Supermanager - Previsión para la jornada $matchNumber</h1>
-
-    <table id="myTable" class="tablesorter">
-    <thead>
-    <tr>
-        <th>Jugador</th>
-        <th>Posición</th>
-        <th>Equipo</th>
-        <th>Val-L</th>
-        <th>Val-V</th>
-        <th>Local?</th>
-        <th>Contra?</th>
-
-        <th>Broker</th>
-        <th>Broker =</th>
-        <th>Media últ. 5</th>
-        <th>MVP</th>
-        <th>Media Equipo como L/V</th>
-        <th>Media Rec Rival como L/V</th>
-
-        #set ($matchNumberPreview = $$matchNumber + 2)
-        #foreach ($number in [$matchNumber..$matchNumberPreview])
-            <th>Media Rec Posi Rival J. $number</th>
-        #end
-
-        <th>Media Rec Rival siguientes 3</th>
-
-    </tr>
-    </thead>
-    <tbody>
-         #foreach( $smData in $smDataList )
-        <tr>
-            <td>$smData.playerId</td>
-            <td>$smData.playerPosition</td>
-            <td>$smData.teamName</td>
-            <td>$smData.playerLocalVal</td>
-            <td>$smData.playerVisitorVal</td>
-            <td>$smData.localOrVisitor</td>
-            <td>$smData.otherTeamName</td>
-            <td>$smData.broker</td>
-            <td>$smData.keepBroker</td>
-            <td>$smData.meanLastMatches</td>
-            <td>$smData.mvp</td>
-            <td>$smData.teamValAsLV</td>
-            <td>$smData.otherTeamReceivedValAsLV</td>
-
-            <td>$smData.playerOtherTeamReceivedValShort</td>
-            <td>$smData.playerOtherTeamReceivedValMedium</td>
-            <td>$smData.playerOtherTeamReceivedValLong</td>
-
-            <td>$smData.playerOtherNextMatchesVal</td>
-
-        </tr>
-      #end
-    </tbody>
-    </table>
-
-
-
+        <table id="myTable" class="tablesorter">
+            #parse("./include/playersTable.vm")
+        </table>
 </body>
 </html>
 
