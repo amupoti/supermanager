@@ -13,11 +13,11 @@ public class SMTeamDataBean {
     //TODO: simplify structure to store data
     private String team;
     private String teamVs;
-    private String pointsLocal;
-    private String pointsReceivedLocal;
-    private String pointsVisitor;
-    private String pointsReceivedVisitor;
-    private String pointsExpected;
-    private String pointsReceivedExpected;
+    private Float pointsLocal;
+    private Float pointsReceivedLocal;
+    private Float pointsVisitor;
+    private Float pointsReceivedVisitor;
+    private Float pointsExpected;
+    private Float pointsReceivedExpected;
 
 }
