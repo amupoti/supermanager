@@ -77,9 +77,21 @@ public class PlayerController {
     }
 
 
-    @RequestMapping(value = "/wizard/")
+    @RequestMapping(value = "/players/table.html")
     public String getSupermagerInfo(Model model) throws URISyntaxException, ExecutionException, XPatherException, InterruptedException, IOException {
 
+        populatePlayerData(model);
+        return "wizard";
+    }
+
+    @RequestMapping(value = "/players/simple.html")
+    public String getSimpleSupermagerInfo(Model model) throws URISyntaxException, ExecutionException, XPatherException, InterruptedException, IOException {
+
+        populatePlayerData(model);
+        return "simple";
+    }
+
+    private void populatePlayerData(Model model) {
         Iterable<PlayerEntity> playerList =  playerService.getPlayers();
         List<SMPlayerDataBean> smDataList = new LinkedList<>();
         for (PlayerEntity playerEntity:playerList){
@@ -93,7 +105,6 @@ public class PlayerController {
         }
         model.addAttribute("smDataList", smDataList);
         model.addAttribute("matchNumber", matchControlService.getMatchNumber());
-        return "wizard";
     }
 
     @RequestMapping(value = "/")

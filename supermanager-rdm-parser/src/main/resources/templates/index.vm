@@ -12,7 +12,8 @@
                 <ul>
                     <li> <a href="/users/teams.html"  class="btn btn-info" role="button">Listado de tus equipos</a></li>
                     <li> <a href="/teams/scores.html"  class="btn btn-info" role="button">Predicción de puntuación de los equipos</a></li>
-                    <li> <a href="/wizard/"  class="btn btn-info" role="button">Listado de todos los jugadores</a></li>
+                    <li> <a href="/players/table.html"  class="btn btn-info" role="button">Listado de todos los jugadores (completo)</a></li>
+                    <li> <a href="/players/simple.html"  class="btn btn-info" role="button">Listado de todos los jugadores (simplificado)</a></li>
                 </ul>
             </div>
          </div>
