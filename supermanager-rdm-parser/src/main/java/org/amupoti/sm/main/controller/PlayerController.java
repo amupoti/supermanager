@@ -2,7 +2,10 @@ package org.amupoti.sm.main.controller;
 
 import org.amupoti.sm.main.repository.entity.PlayerEntity;
 import org.amupoti.sm.main.repository.entity.TeamEntity;
-import org.amupoti.sm.main.services.*;
+import org.amupoti.sm.main.services.ComputePlayerValuesService;
+import org.amupoti.sm.main.services.ComputeTeamValuesService;
+import org.amupoti.sm.main.services.DataPopulationService;
+import org.amupoti.sm.main.services.MatchControlService;
 import org.amupoti.sm.main.services.repository.PlayerService;
 import org.amupoti.sm.main.services.repository.TeamService;
 import org.amupoti.supermanager.parser.acb.ACBTeamService;
@@ -95,14 +98,11 @@ public class PlayerController {
         Iterable<PlayerEntity> playerList =  playerService.getPlayers();
         List<SMPlayerDataBean> smDataList = new LinkedList<>();
         for (PlayerEntity playerEntity:playerList){
-            SMPlayerDataBean smPlayerDataBean = new SMPlayerDataBean();
-            computePlayerValuesService.addPlayerData(playerEntity, smPlayerDataBean);
-            computePlayerValuesService.addTeamData(playerEntity, smPlayerDataBean);
-            computePlayerValuesService.addPlayerComputedData(smPlayerDataBean);
-
+            SMPlayerDataBean smPlayerDataBean = computePlayerValuesService.addPlayerData(playerEntity);
             smDataList.add(smPlayerDataBean);
 
         }
+
         model.addAttribute("smDataList", smDataList);
         model.addAttribute("matchNumber", matchControlService.getMatchNumber());
     }
