@@ -102,7 +102,8 @@ public class PlayerController {
             smDataList.add(smPlayerDataBean);
 
         }
-
+        //TODO: compute max and min values
+        //TODO: create list with percentage values
         model.addAttribute("smDataList", smDataList);
         model.addAttribute("matchNumber", matchControlService.getMatchNumber());
     }

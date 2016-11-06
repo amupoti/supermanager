@@ -17,7 +17,6 @@ import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 
@@ -162,7 +161,6 @@ public class RDMPlayerDataScraper implements PlayerDataService {
      * @throws IOException
      * @throws XPatherException
      */
-    @Cacheable("playerData")
     @Async
     private Future<PlayerEntity> populatePlayerData(PlayerId playerId) throws PlayerException {
 

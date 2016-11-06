@@ -1,5 +1,6 @@
 package org.amupoti.sm.main.services;
 
+import lombok.extern.slf4j.Slf4j;
 import org.amupoti.sm.main.bean.PlayerPosition;
 import org.amupoti.sm.main.config.SMConstants;
 import org.amupoti.sm.main.repository.entity.MatchEntity;
@@ -20,6 +21,7 @@ import static org.amupoti.supermanager.parser.acb.bean.DataUtils.toFloat;
  * Created by Marcel on 18/11/2015.
  */
 @Service
+@Slf4j
 public class ComputePlayerValuesService {
 
 
@@ -117,7 +119,7 @@ public class ComputePlayerValuesService {
      * @param playerEntity
      * @param smPlayerDataBean
      */
-    public void addPlayerData(PlayerEntity playerEntity, SMPlayerDataBean smPlayerDataBean) {
+    public void addRawPlayerData(PlayerEntity playerEntity, SMPlayerDataBean smPlayerDataBean) {
         smPlayerDataBean.setPlayerId(playerEntity.getPlayerId().toString());
         smPlayerDataBean.setPlayerPosition(playerEntity.getPlayerPosition().name());
         smPlayerDataBean.setPlayerLocalVal(playerEntity.getLocalMean());
@@ -126,7 +128,6 @@ public class ComputePlayerValuesService {
         smPlayerDataBean.setKeepBroker(playerEntity.getKeepBroker());
         smPlayerDataBean.setBroker(playerEntity.getBroker());
         smPlayerDataBean.setTeamName(playerEntity.getTeam().getName());
-
 
     }
 
@@ -154,4 +155,13 @@ public class ComputePlayerValuesService {
 
     }
 
+    public SMPlayerDataBean addPlayerData(PlayerEntity playerEntity) {
+        //TODO: add cache for this method
+        SMPlayerDataBean smPlayerDataBean = new SMPlayerDataBean();
+        addRawPlayerData(playerEntity, smPlayerDataBean);
+        addTeamData(playerEntity, smPlayerDataBean);
+        addPlayerComputedData(smPlayerDataBean);
+        return smPlayerDataBean;
+
+    }
 }

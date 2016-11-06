@@ -75,10 +75,7 @@ public class UserController {
                             continue;
                 }
 
-                SMPlayerDataBean smPlayerDataBean = new SMPlayerDataBean();
-                computePlayerValuesService.addPlayerData(playerEntity, smPlayerDataBean);
-                computePlayerValuesService.addTeamData(playerEntity, smPlayerDataBean);
-                computePlayerValuesService.addPlayerComputedData(smPlayerDataBean);
+                SMPlayerDataBean smPlayerDataBean = computePlayerValuesService.addPlayerData(playerEntity);
                 playerList.add(smPlayerDataBean);
 
             }
