@@ -62,7 +62,7 @@ public class DataBoostService {
         BigDecimal ranking = new BigDecimal(0);
         int matchesAheadLimit = matchesAhead+matchNumber;
         int matchesComputed=0;
-        for (int i=matchNumber;i<=MAX_GAMES && i<=matchesAheadLimit;i++) {
+        for (int i = matchNumber; i <= MAX_GAMES && i < matchesAheadLimit; i++) {
             MatchEntity matchEntity = team.getMatchMap().get(i);
             if (matchEntity.isNotPlayingMatch()) continue;
             else matchesComputed++;
@@ -78,7 +78,8 @@ public class DataBoostService {
         }
 
         //Get the ranking mean
-        ranking = ranking.divide(new BigDecimal(matchesComputed+1),BigDecimal.ROUND_HALF_EVEN);
+        if (matchesComputed != 0)
+            ranking = ranking.divide(new BigDecimal(matchesComputed), BigDecimal.ROUND_HALF_EVEN);
 
         return DataUtils.toFloat(ranking);
 
