@@ -6,9 +6,10 @@ import org.amupoti.sm.main.repository.entity.PlayerEntity;
 import org.amupoti.sm.main.repository.entity.PlayerId;
 import org.amupoti.sm.main.repository.entity.TeamEntity;
 import org.amupoti.sm.main.services.MatchControlService;
-import org.amupoti.sm.main.services.repository.TeamService;
+import org.amupoti.sm.main.services.exception.DataParsingException;
 import org.amupoti.sm.main.services.exception.PlayerException;
 import org.amupoti.sm.main.services.provider.HTMLProviderService;
+import org.amupoti.sm.main.services.repository.TeamService;
 import org.amupoti.supermanager.parser.acb.bean.DataUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,7 +17,6 @@ import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 
@@ -25,8 +25,6 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
-import static org.amupoti.sm.main.services.provider.team.RDMTeamDataService.INVALID_VALUE;
 
 /**
  * Loads data from www.elrincondelmanager.es so it can be loaded in the local database
@@ -163,7 +161,6 @@ public class RDMPlayerDataScraper implements PlayerDataService {
      * @throws IOException
      * @throws XPatherException
      */
-    @Cacheable("playerData")
     @Async
     private Future<PlayerEntity> populatePlayerData(PlayerId playerId) throws PlayerException {
 
@@ -195,8 +192,8 @@ public class RDMPlayerDataScraper implements PlayerDataService {
             playerEntity.setBroker(Float.parseFloat(broker));
             playerEntity.setMeanLastMatches(Float.parseFloat(meanLastMatches));
             playerEntity.setTeam(teamEntity);
-        } catch (IOException | URISyntaxException | XPatherException e) {
-            throw new PlayerException("A problem ocurred during HTML parsing",e);
+        } catch (DataParsingException | URISyntaxException | IOException e) {
+            throw new PlayerException("A problem ocurred while populating player " + playerId, e);
         }
         return new AsyncResult<>(playerEntity);
     }
@@ -214,21 +211,19 @@ public class RDMPlayerDataScraper implements PlayerDataService {
 
     }
 
-    private String getValueViaXPath(String html, String xPathExpression) {
+    private String getValueViaXPath(String html, String xPathExpression) throws DataParsingException {
         try{
             TagNode node = cleaner.clean(html);
             Object[] objects = node.evaluateXPath(xPathExpression);
             String s = ((TagNode) objects[0]).getAllChildren().get(0).toString();
-            return s;
+            return DataUtils.format(s);
         }
         catch (Exception e){
-            //TODO: this is a poor way to handle any problem we may have during parsing.
-            log.warn("Could not get value from html with xPathExpression: " + xPathExpression);
-            return INVALID_VALUE;
+            throw new DataParsingException("Could not get value from html with xPathExpression: " + xPathExpression, e);
         }
     }
 
-    public String getValueViaLabelForLastResults(String html) throws XPatherException {
+    public String getValueViaLabelForLastResults(String html) throws DataParsingException {
         try {
 
 
@@ -258,9 +253,6 @@ public class RDMPlayerDataScraper implements PlayerDataService {
                     computedMatches++;
                     total+=matchValue;
                 }
-
-
-
             }
             Float result;
             if (computedMatches>0){
@@ -272,16 +264,14 @@ public class RDMPlayerDataScraper implements PlayerDataService {
             return formattedResult;
         }
         catch (Exception e){
-            //TODO: this is a poor way to handle any problem we may have during parsing.
-            log.warn("Could not get value via label for last results");
-            return INVALID_VALUE;
+            throw new DataParsingException("Could not get value via label for last results", e);
         }
 
     }
-    public String getValueViaLabelForPlayerMeans(String html, int row) throws XPatherException {
+
+    public String getValueViaLabelForPlayerMeans(String html, int row) throws DataParsingException {
 
         try {
-
 
             TagNode node = cleaner.clean(html);
             int firstGamePlayed = getFirstGamePlayed(node);
@@ -292,12 +282,10 @@ public class RDMPlayerDataScraper implements PlayerDataService {
             String pathExpression = BASE_VAL_MEDIA.replace("row", "" + matchNumber);
             objects = node.evaluateXPath(pathExpression);
             s = ((TagNode) objects[0]).getAllChildren().get(0).toString();
-            return s;
+            return DataUtils.format(s);
         }
         catch (Exception e){
-            //TODO: this is a poor way to handle any problem we may have during parsing.
-            log.warn("Could not get value via label for row " + row);
-            return INVALID_VALUE;
+            throw new DataParsingException("Could not get value via label for row " + row, e);
         }
     }
 

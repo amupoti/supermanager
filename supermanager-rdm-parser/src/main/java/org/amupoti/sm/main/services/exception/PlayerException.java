@@ -3,12 +3,12 @@ package org.amupoti.sm.main.services.exception;
 /**
  * Created by Marcel on 12/11/2015.
  */
-public class PlayerException extends Throwable {
-    public PlayerException(Exception e) {
+public class PlayerException extends Exception {
+    public PlayerException(Throwable e) {
         super(e);
     }
 
-    public PlayerException(String message, Exception e) {
+    public PlayerException(String message, Throwable e) {
         super(message,e);
     }
 }

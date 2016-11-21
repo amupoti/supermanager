@@ -1,5 +1,6 @@
 package org.amupoti.sm.main.services;
 
+import lombok.extern.slf4j.Slf4j;
 import org.amupoti.sm.main.bean.PlayerPosition;
 import org.amupoti.sm.main.config.SMConstants;
 import org.amupoti.sm.main.repository.entity.MatchEntity;
@@ -7,7 +8,6 @@ import org.amupoti.sm.main.repository.entity.PlayerEntity;
 import org.amupoti.sm.main.repository.entity.TeamEntity;
 import org.amupoti.sm.main.repository.entity.ValueEntity;
 import org.amupoti.sm.main.services.repository.TeamService;
-import org.amupoti.supermanager.parser.acb.bean.DataUtils;
 import org.amupoti.supermanager.parser.acb.bean.SMPlayerDataBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -15,13 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import static org.amupoti.sm.main.config.SMConstants.NOT_PLAYING_MATCH_TEXT;
-import static org.apache.commons.lang.math.NumberUtils.toFloat;
-import static org.apache.commons.lang.math.NumberUtils.toInt;
+import static org.amupoti.supermanager.parser.acb.bean.DataUtils.toFloat;
 
 /**
  * Created by Marcel on 18/11/2015.
  */
 @Service
+@Slf4j
 public class ComputePlayerValuesService {
 
 
@@ -87,22 +87,22 @@ public class ComputePlayerValuesService {
                 otherTeamValAsLV = otherTeamValues.getValRecL();
                 localOrVisitor = SMConstants.VISITOR;
             }
-            smPlayerDataBean.setOtherTeamReceivedVal(otherTeamValues.getValRec());
+            smPlayerDataBean.setOtherTeamReceivedVal(toFloat(otherTeamValues.getValRec()));
             smPlayerDataBean.setOtherTeamName(otherTeam.getName());
-            smPlayerDataBean.setTeamValAsLV(teamVal);
-            smPlayerDataBean.setOtherTeamReceivedValAsLV(otherTeamValAsLV);
+            smPlayerDataBean.setTeamValAsLV(toFloat(teamVal));
+            smPlayerDataBean.setOtherTeamReceivedValAsLV(toFloat(otherTeamValAsLV));
             smPlayerDataBean.setLocalOrVisitor(localOrVisitor);
-            smPlayerDataBean.setTeamVal(teamValues.getVal());
+            smPlayerDataBean.setTeamVal(toFloat(teamValues.getVal()));
         }
 
     }
 
     private void setEmptyDataForNoMatch(SMPlayerDataBean smPlayerDataBean) {
-        smPlayerDataBean.setOtherTeamReceivedVal("0");
+        smPlayerDataBean.setOtherTeamReceivedVal(0.0f);
         smPlayerDataBean.setOtherTeamName(SMConstants.NOT_PLAYING_MATCH);
-        smPlayerDataBean.setTeamVal("0");
-        smPlayerDataBean.setTeamValAsLV("0");
-        smPlayerDataBean.setOtherTeamReceivedValAsLV("0");
+        smPlayerDataBean.setTeamVal(0.0f);
+        smPlayerDataBean.setTeamValAsLV(0.0f);
+        smPlayerDataBean.setOtherTeamReceivedValAsLV(0.0f);
         smPlayerDataBean.setLocalOrVisitor(NOT_PLAYING_MATCH_TEXT);
 
     }
@@ -119,7 +119,7 @@ public class ComputePlayerValuesService {
      * @param playerEntity
      * @param smPlayerDataBean
      */
-    public void addPlayerData(PlayerEntity playerEntity, SMPlayerDataBean smPlayerDataBean) {
+    public void addRawPlayerData(PlayerEntity playerEntity, SMPlayerDataBean smPlayerDataBean) {
         smPlayerDataBean.setPlayerId(playerEntity.getPlayerId().toString());
         smPlayerDataBean.setPlayerPosition(playerEntity.getPlayerPosition().name());
         smPlayerDataBean.setPlayerLocalVal(playerEntity.getLocalMean());
@@ -128,7 +128,6 @@ public class ComputePlayerValuesService {
         smPlayerDataBean.setKeepBroker(playerEntity.getKeepBroker());
         smPlayerDataBean.setBroker(playerEntity.getBroker());
         smPlayerDataBean.setTeamName(playerEntity.getTeam().getName());
-
 
     }
 
@@ -139,21 +138,30 @@ public class ComputePlayerValuesService {
     public void addPlayerComputedData(SMPlayerDataBean smPlayerDataBean) {
 
         float meanNoNegative = (smPlayerDataBean.getMeanLastMatches()+20)*5;
-        float mvpVal = meanNoNegative + toFloat(smPlayerDataBean.getPlayerOtherTeamReceivedValShort()) +
-                toInt(smPlayerDataBean.getOtherTeamReceivedVal())/2 + toInt(smPlayerDataBean.getTeamValAsLV())/3;
+        float mvpVal = meanNoNegative + (smPlayerDataBean.getPlayerOtherTeamReceivedValShort()) +
+                (smPlayerDataBean.getOtherTeamReceivedVal()) / 2 + (smPlayerDataBean.getTeamValAsLV()) / 3;
 
-        smPlayerDataBean.setMvp(DataUtils.format(mvpVal));
+        smPlayerDataBean.setMvp(toFloat(mvpVal));
 
         float playerValue =
                 meanNoNegative*5 +
-                toFloat(smPlayerDataBean.getPlayerOtherTeamReceivedValShort())*4 +
-                toFloat(smPlayerDataBean.getPlayerOtherTeamReceivedValMedium())*3 +
-                toFloat(smPlayerDataBean.getPlayerOtherTeamReceivedValLong())*2 +
-                toInt(smPlayerDataBean.getOtherTeamReceivedVal())/2 +
-                toInt(smPlayerDataBean.getTeamValAsLV())/3;
+                        (smPlayerDataBean.getPlayerOtherTeamReceivedValShort()) * 4 +
+                        (smPlayerDataBean.getPlayerOtherTeamReceivedValMedium()) * 3 +
+                        (smPlayerDataBean.getPlayerOtherTeamReceivedValLong()) * 2 +
+                        (smPlayerDataBean.getOtherTeamReceivedVal()) / 2 +
+                        (smPlayerDataBean.getTeamValAsLV()) / 3;
 
-        smPlayerDataBean.setRanking(DataUtils.format(playerValue));
+        smPlayerDataBean.setRanking(toFloat(playerValue));
 
     }
 
+    public SMPlayerDataBean addPlayerData(PlayerEntity playerEntity) {
+        //TODO: add cache for this method
+        SMPlayerDataBean smPlayerDataBean = new SMPlayerDataBean();
+        addRawPlayerData(playerEntity, smPlayerDataBean);
+        addTeamData(playerEntity, smPlayerDataBean);
+        addPlayerComputedData(smPlayerDataBean);
+        return smPlayerDataBean;
+
+    }
 }

@@ -19,7 +19,7 @@ import static org.amupoti.sm.main.config.SMConstants.MAX_GAMES;
 public class DataBoostService {
 
 
-    public static final String NO_VALUE = "50.99";
+    public static final Float NO_VALUE = 50.99f;
     @Autowired
     private TeamService teamService;
 
@@ -31,11 +31,11 @@ public class DataBoostService {
      * @param playerPosition
      * @return
      */
-    public String getCalendar(TeamEntity team, int matchNumber, int matchesAhead, PlayerPosition playerPosition) {
+    public Float getCalendar(TeamEntity team, int matchNumber, int matchesAhead, PlayerPosition playerPosition) {
 
 
         int match = matchesAhead+matchNumber;
-        if (match>MAX_GAMES) return "0";
+        if (match > MAX_GAMES) return 0.0f;
 
         MatchEntity matchEntity = team.getMatchMap().get(match);
         if (matchEntity.isNotPlayingMatch()) return NO_VALUE;
@@ -46,7 +46,7 @@ public class DataBoostService {
             valRec = teamService.getTeam(matchEntity.getLocal()).getValMap().get(playerPosition.getId()).getValRecL();
 
         }
-        return DataUtils.format(parseVal(valRec));
+        return DataUtils.toFloat(parseVal(valRec));
     }
 
     /**
@@ -57,7 +57,7 @@ public class DataBoostService {
      * @param playerPosition
      * @return
      */
-    public String getCalendarSum(TeamEntity team, int matchNumber,int matchesAhead,PlayerPosition playerPosition) {
+    public Float getCalendarSum(TeamEntity team, int matchNumber, int matchesAhead, PlayerPosition playerPosition) {
 
         BigDecimal ranking = new BigDecimal(0);
         int matchesAheadLimit = matchesAhead+matchNumber;
@@ -80,7 +80,7 @@ public class DataBoostService {
         //Get the ranking mean
         ranking = ranking.divide(new BigDecimal(matchesComputed+1),BigDecimal.ROUND_HALF_EVEN);
 
-        return DataUtils.format(ranking);
+        return DataUtils.toFloat(ranking);
 
 
     }

@@ -1,11 +1,11 @@
 package org.amupoti.sm.main.services;
 
 import org.amupoti.sm.main.bean.PlayerPosition;
+import org.amupoti.sm.main.repository.entity.MatchEntity;
+import org.amupoti.sm.main.repository.entity.TeamEntity;
 import org.amupoti.sm.main.repository.entity.ValueEntity;
 import org.amupoti.sm.main.services.repository.TeamService;
 import org.amupoti.supermanager.parser.acb.bean.DataUtils;
-import org.amupoti.sm.main.repository.entity.MatchEntity;
-import org.amupoti.sm.main.repository.entity.TeamEntity;
 import org.amupoti.supermanager.parser.acb.bean.SMTeamDataBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.amupoti.sm.main.config.SMConstants.NOT_PLAYING_MATCH_TEXT;
+import static org.apache.commons.lang.math.NumberUtils.toFloat;
 
 /**
  */
@@ -41,10 +42,10 @@ public class ComputeTeamValuesService {
             SMTeamDataBean smTeamDataBean = new SMTeamDataBean();
             smTeamDataBean.setTeam(team.getName());
             ValueEntity valueEntity = team.getValMap().get(getPointsId());
-            smTeamDataBean.setPointsLocal(valueEntity.getValL());
-            smTeamDataBean.setPointsReceivedLocal(valueEntity.getValRecL());
-            smTeamDataBean.setPointsVisitor(valueEntity.getValV());
-            smTeamDataBean.setPointsReceivedVisitor(valueEntity.getValRecV());
+            smTeamDataBean.setPointsLocal(toFloat(valueEntity.getValL()));
+            smTeamDataBean.setPointsReceivedLocal(toFloat(valueEntity.getValRecL()));
+            smTeamDataBean.setPointsVisitor(toFloat(valueEntity.getValV()));
+            smTeamDataBean.setPointsReceivedVisitor(toFloat(valueEntity.getValRecV()));
 
             int matchNumber = matchControlService.getMatchNumber();
             LOG.debug("Computing team data for team " + team);
@@ -58,8 +59,8 @@ public class ComputeTeamValuesService {
             Float pointsOtherTeam;
             Float pointsRec;
             Float points;
-            String pointsTeamExpected = "0";
-            String pointsTeamReceivedExpected= "0";
+            Float pointsTeamExpected = 0.0f;
+            Float pointsTeamReceivedExpected = 0.0f;
             String teamName;
             if (matchEntity.isNotPlayingMatch()){
                 teamName = NOT_PLAYING_MATCH_TEXT;
@@ -71,16 +72,16 @@ public class ComputeTeamValuesService {
                     pointsRec = Float.parseFloat(team.getValMap().get(getPointsId()).getValRecL());
                     pointsRecOtherTeam = Float.parseFloat(otherTeam.getValMap().get(getPointsId()).getValRecV());
                     pointsOtherTeam = Float.parseFloat(otherTeam.getValMap().get(getPointsId()).getValV());
-                    pointsTeamExpected= DataUtils.format(points * FACTOR + pointsRecOtherTeam * (1 - FACTOR));
-                    pointsTeamReceivedExpected= DataUtils.format(pointsRec * FACTOR + pointsOtherTeam * (1 - FACTOR));
+                    pointsTeamExpected = DataUtils.toFloat(points * FACTOR + pointsRecOtherTeam * (1 - FACTOR));
+                    pointsTeamReceivedExpected = DataUtils.toFloat(pointsRec * FACTOR + pointsOtherTeam * (1 - FACTOR));
                 } else {
                     otherTeam = teamService.getTeam(matchEntity.getLocal());
                     points = Float.parseFloat(team.getValMap().get(getPointsId()).getValV());
                     pointsRec = Float.parseFloat(team.getValMap().get(getPointsId()).getValRecV());
                     pointsRecOtherTeam = Float.parseFloat(otherTeam.getValMap().get(getPointsId()).getValRecL());
                     pointsOtherTeam = Float.parseFloat(otherTeam.getValMap().get(getPointsId()).getValL());
-                    pointsTeamExpected= DataUtils.format(points * (1 - FACTOR) + pointsRecOtherTeam * (FACTOR));
-                    pointsTeamReceivedExpected= DataUtils.format(pointsRec *  (1 - FACTOR) + pointsOtherTeam * (FACTOR));
+                    pointsTeamExpected = DataUtils.toFloat(points * (1 - FACTOR) + pointsRecOtherTeam * (FACTOR));
+                    pointsTeamReceivedExpected = DataUtils.toFloat(pointsRec * (1 - FACTOR) + pointsOtherTeam * (FACTOR));
 
                 }
                 teamName = otherTeam.getName();
@@ -88,7 +89,7 @@ public class ComputeTeamValuesService {
 
 
             smTeamDataBean.setTeamVs(teamName);
-            smTeamDataBean.setPointsExpected(pointsTeamExpected.toString());
+            smTeamDataBean.setPointsExpected(pointsTeamExpected);
             smTeamDataBean.setPointsReceivedExpected(pointsTeamReceivedExpected);
             list.add(smTeamDataBean);
         }
