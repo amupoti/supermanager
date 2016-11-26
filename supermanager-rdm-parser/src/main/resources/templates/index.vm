@@ -14,6 +14,7 @@
                     <li> <a href="/teams/scores.html"  class="btn btn-info" role="button">Predicción de puntuación de los equipos</a></li>
                     <li> <a href="/players/table.html"  class="btn btn-info" role="button">Listado de todos los jugadores (completo)</a></li>
                     <li> <a href="/players/simple.html"  class="btn btn-info" role="button">Listado de todos los jugadores (simplificado)</a></li>
+                    <li> <a href="/players/news.html"  class="btn btn-info" role="button">Dudas/Bajas de última hora</a></li>
                 </ul>
             </div>
          </div>

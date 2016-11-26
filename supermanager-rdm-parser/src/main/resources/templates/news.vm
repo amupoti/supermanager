@@ -1,0 +1,19 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>SuperManager</title>
+    #parse( "./include/header.vm" )
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="twelve columns">
+                <h1>Bajas y dudas</h1>
+            <a class="twitter-timeline"  data-width="600" data-height="900" href="https://twitter.com/search?q=list%3Asm_bajas%2Fsupermanager%20baja%20OR%20duda" data-widget-id="802300211594985472">Tuits sobre list:sm_bajas/supermanager duda OR baja</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+            </div>
+         </div>
+    </div>
+</body>
+</html>

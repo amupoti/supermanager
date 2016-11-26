@@ -114,6 +114,13 @@ public class PlayerController {
         return "index";
     }
 
+    @RequestMapping(value = "/players/news.html")
+    public String getPLayerNews(Model model) throws URISyntaxException, ExecutionException, XPatherException, InterruptedException, IOException {
+
+        populatePlayerData(model);
+        return "news";
+    }
+
 
 
 }
