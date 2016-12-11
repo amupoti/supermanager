@@ -22,8 +22,9 @@
 
     #set ($map = $teamMap)
     #foreach( $key in $map.keySet())
-        #set ($smDataList = $map.get($key))
-        <h2>$key</h2>
+        #set ($smDataList = $map.get($key).playerList)
+        #set ($score = $map.get($key).score)
+        <h2>$key - $score puntos</h2>
         <table id="myTable-$key" class="tablesorter">
             #parse("./include/playersTable.vm")
         </table>

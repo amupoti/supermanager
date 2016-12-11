@@ -17,4 +17,5 @@ public class ACBSupermanagerTeam {
     private String name;
     private String url;
     private List<ACBPlayer> players;
+    private Float score;
 }

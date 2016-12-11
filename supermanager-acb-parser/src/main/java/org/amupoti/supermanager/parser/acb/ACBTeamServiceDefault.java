@@ -42,46 +42,60 @@ public class ACBTeamServiceDefault implements ACBTeamService {
     @Override
     public List<ACBSupermanagerTeam> getTeamsByCredentials(String user, String password) throws XPatherException {
 
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Host","supermanager.acb.com");
-        httpHeaders.add(HttpHeaders.ACCEPT,"*/*");
-        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        httpHeaders.add(HttpHeaders.REFERER,"http://supermanager.acb.com/index/identificar");
-
+        //Get cookie
+        HttpHeaders httpHeaders = prepareHeaders();
         restTemplate.getMessageConverters().add(new FormHttpMessageConverter() );
-
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("email",user);
-        params.add("clave",password);
-        params.add("entrar", "Entrar");
-
+        MultiValueMap<String, String> params = addFormParams(user, password);
         HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<MultiValueMap<String, String>>(params, httpHeaders);
-
         ResponseEntity<String> exchange = restTemplate.postForEntity(URL_FORM, httpEntity, String.class,params);
         log.info("Post to "+URL_FORM+ " with headers "+httpHeaders);
         log.info(exchange.getStatusCode());
         log.info(exchange.getHeaders());
-        httpHeaders.add("Cookie", exchange.getHeaders().get("Set-Cookie").toString().replace("[","").split(";")[0]);
-        httpEntity = new HttpEntity<MultiValueMap<String, String>>(params, httpHeaders);
+
+        String cookie = exchange.getHeaders().get("Set-Cookie").toString().replace("[", "").split(";")[0];
+        httpHeaders.add("Cookie", cookie);
+        httpEntity = new HttpEntity<>(params, httpHeaders);
         exchange = restTemplate.exchange(URL_LOGGED_IN, HttpMethod.GET, httpEntity, String.class);
-        log.info("Get to "+ URL_LOGGED_IN);
-        log.info(exchange.getStatusCode());
-        log.info(exchange.getHeaders());
+        log.info("Get to " + URL_LOGGED_IN + " with code " + exchange.getStatusCode());
+        log.debug("Headers:" + exchange.getHeaders());
+
         String pageBody = exchange.getBody();
 
         List<ACBSupermanagerTeam> teams = getTeams(pageBody);
         for (ACBSupermanagerTeam team:teams){
             exchange = restTemplate.exchange(BASE_URL+team.getUrl(), HttpMethod.GET, httpEntity, String.class);
-            team.setPlayers(getPlayers(exchange.getBody()));
+            populateTeam(exchange.getBody(), team);
         }
-
 
         log.debug("Teams found: "+teams);
         return teams;
     }
 
-    private List<ACBPlayer> getPlayers(String html) throws XPatherException {
+    private MultiValueMap<String, String> addFormParams(String user, String password) {
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("email", user);
+        params.add("clave", password);
+        params.add("entrar", "Entrar");
+        return params;
+    }
+
+    private HttpHeaders prepareHeaders() {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Host", "supermanager.acb.com");
+        httpHeaders.add(HttpHeaders.ACCEPT, "*/*");
+        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        httpHeaders.add(HttpHeaders.REFERER, "http://supermanager.acb.com/index/identificar");
+        return httpHeaders;
+    }
+
+    private void populateTeam(String html, ACBSupermanagerTeam team) throws XPatherException {
         TagNode node = htmlCleaner.clean(html);
+        addPlayers(team, node);
+        addTotalScore(team, node);
+
+    }
+
+    private void addPlayers(ACBSupermanagerTeam team, TagNode node) throws XPatherException {
         String xPathExpression = "//*[@id=\"puesto$row\"]/td[3]/span/a";
         List<ACBPlayer> players = new LinkedList<>();
         for (int i = 1; i <= 11; i++) {
@@ -92,7 +106,20 @@ public class ACBTeamServiceDefault implements ACBTeamService {
             player.setPosition(""+i);
             players.add(player);
         }
-    return players;
+        team.setPlayers(players);
+    }
+
+    private void addTotalScore(ACBSupermanagerTeam team, TagNode node) throws XPatherException {
+        String xpathScore = "//*[@id=\"valoracion_total\"]";
+        Object[] objects = node.evaluateXPath(xpathScore);
+        String score = ((TagNode) objects[0]).getAllChildren().get(0).toString();
+        try {
+            //TODO: use DataUtils, which needs to be moved into a util package
+            team.setScore(Float.parseFloat(score.replace(",", ".")));
+
+        } catch (NumberFormatException e) {
+            team.setScore(-1.0f);
+        }
     }
 
     private List<ACBSupermanagerTeam> getTeams(String html) {

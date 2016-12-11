@@ -8,6 +8,7 @@ import org.amupoti.sm.main.services.MatchControlService;
 import org.amupoti.sm.main.services.repository.PlayerService;
 import org.amupoti.supermanager.parser.acb.ACBTeamService;
 import org.amupoti.supermanager.parser.acb.bean.SMPlayerDataBean;
+import org.amupoti.supermanager.parser.acb.bean.SMUserTeamDataBean;
 import org.amupoti.supermanager.parser.acb.beans.ACBPlayer;
 import org.amupoti.supermanager.parser.acb.beans.ACBSupermanagerTeam;
 import org.apache.commons.logging.Log;
@@ -54,7 +55,7 @@ public class UserController {
     @RequestMapping(value="/teams.html", method=RequestMethod.POST)
     public String getUserTeams(@ModelAttribute SMUser  user, Model model) throws XPatherException {
 
-        HashMap<String,List<SMPlayerDataBean>> teamMap = new HashMap<>();
+        HashMap<String, SMUserTeamDataBean> teamMap = new HashMap<>();
         if (user!=null){
             log.info("Getting teams for user "+user.getLogin());
         }
@@ -65,7 +66,7 @@ public class UserController {
         List<ACBSupermanagerTeam> teamsByCredentials = acbTeamService.getTeamsByCredentials(user.getLogin(), user.getPassword());
         for (ACBSupermanagerTeam team:teamsByCredentials){
             List<SMPlayerDataBean> playerList = new LinkedList<>();
-            teamMap.put(team.getName(),playerList);
+
             for (ACBPlayer player: team.getPlayers()){
                 log.debug("Getting data for player with name " + player.getName());
                 PlayerEntity playerEntity = playerService.getPlayer(new PlayerId(player.getName()));
@@ -79,6 +80,9 @@ public class UserController {
                 playerList.add(smPlayerDataBean);
 
             }
+
+            teamMap.put(team.getName(), new SMUserTeamDataBean(playerList, team.getScore()));
+
         }
 
         model.addAttribute("teamMap", teamMap);
