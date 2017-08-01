@@ -10,7 +10,7 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>supermanager-acb-parser</module>
-        <module>supermanager-rdm-parser</module>
+        <module>supermanager-viewer</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

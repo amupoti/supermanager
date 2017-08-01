@@ -18,7 +18,7 @@
 </head>
 <body>
     <div class="containerts">
-    <h1>Supermanager - Previsión para la jornada $matchNumber</h1>
+    <h1>Jornada Actual</h1>
 
     #set ($map = $teamMap)
     #foreach( $key in $map.keySet())

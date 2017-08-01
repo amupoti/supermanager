@@ -1,0 +1,15 @@
+
+    <thead>
+    <tr>
+        <th>Jugador</th>
+        <th>Posición</th>
+    </tr>
+    </thead>
+    <tbody>
+         #foreach( $smData in $smDataList )
+        <tr>
+            <td>$smData.name</td>
+            <td>$smData.position</td>
+        </tr>
+      #end
+    </tbody>

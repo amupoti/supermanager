@@ -1,1 +1,1 @@
-web: java -jar supermanager-rdm-parser/target/supermanager-rdm-parser-1.0-SNAPSHOT.jar --server.port=$PORT
+web: java -jar supermanager-viewer/target/supermanager-viewer-1.0-SNAPSHOT.jar --server.port=$PORT

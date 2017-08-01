@@ -10,7 +10,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ACBPlayer {
+public class SmPlayer {
     String name;
     String position;
 }

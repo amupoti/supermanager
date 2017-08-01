@@ -12,10 +12,10 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class ACBSupermanagerTeam {
+public class SmTeam {
 
     private String name;
     private String url;
-    private List<ACBPlayer> players;
+    private List<SmPlayer> playerList;
     private Float score;
 }
