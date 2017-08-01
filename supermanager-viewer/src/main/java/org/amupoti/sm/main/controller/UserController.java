@@ -3,7 +3,6 @@ package org.amupoti.sm.main.controller;
 import org.amupoti.sm.main.bean.SMUser;
 import org.amupoti.sm.main.model.UserTeamBean;
 import org.amupoti.supermanager.parser.acb.ACBTeamService;
-import org.amupoti.supermanager.parser.acb.beans.SmPlayer;
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -47,23 +45,12 @@ public class UserController {
             log.info("Login was not found. Cannot provide team data");
         }
 
-        List<SmTeam> teamsByCredentials = acbTeamService.getTeamsByCredentials(user.getLogin(), user.getPassword());
-        for (SmTeam team : teamsByCredentials) {
-            List<SmPlayer> playerList = new LinkedList<>();
-
-            for (SmPlayer player : team.getPlayerList()) {
-                //TODO: add correct player to the list
-                //SMPlayerDataBean smPlayerDataBean = computePlayerValuesService.addPlayerData(playerEntity);
-                //  playerList.add(smPlayerDataBean);
-
-            }
-
-            teamMap.put(team.getName(), new UserTeamBean(playerList, team.getScore()));
-
+        List<SmTeam> userTeams = acbTeamService.getTeamsByCredentials(user.getLogin(), user.getPassword());
+        for (SmTeam team : userTeams) {
+            teamMap.put(team.getName(), new UserTeamBean(team.getPlayerList(), team.getScore()));
         }
 
         model.addAttribute("teamMap", teamMap);
-
         return "userTeams";
 
     }
