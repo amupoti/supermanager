@@ -1,6 +1,8 @@
 package org.amupoti.supermanager.parser.acb;
 
+import org.amupoti.supermanager.parser.acb.beans.PlayerPosition;
 import org.amupoti.supermanager.parser.acb.beans.SmPlayer;
+import org.amupoti.supermanager.parser.acb.beans.SmPlayerStatus;
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.annotation.PostConstruct;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Marcel on 02/01/2016.
@@ -98,16 +101,68 @@ public class ACBTeamServiceDefault implements ACBTeamService {
 
     private void addPlayers(SmTeam team, TagNode node) throws XPatherException {
         String xPathExpression = "//*[@id=\"puesto$row\"]/td[3]/span/a";
+        String xPathExpressionScore = "//*[@id=\"puesto$row\"]/td[9]";
+        String xPathExpressionIcons = "//*[@id=\"puesto$row\"]/td[1]";
+
         List<SmPlayer> players = new LinkedList<>();
         for (int i = 1; i <= 11; i++) {
-            Object[] objects = node.evaluateXPath(xPathExpression.replace("$row", "" + i));
+            Object[] objects = getObjectsFromExpression(node, xPathExpression.replace("$row", "" + i));
             String name = ((TagNode) objects[0]).getAllChildren().get(0).toString();
-            SmPlayer player = new SmPlayer();
-            player.setName(name);
-            player.setPosition("" + i);
+
+            objects = node.evaluateXPath(xPathExpressionScore.replace("$row", "" + i));
+            String score = ((TagNode) objects[0]).getAllChildren().get(0).toString();
+
+            objects = node.evaluateXPath(xPathExpressionIcons.replace("$row", "" + i));
+            List<String> statuses = getStatusesAsStrings(objects[0]);
+            SmPlayerStatus sps = parseStatuses(statuses);
+
+            //Build object
+            SmPlayer player = SmPlayer.builder()
+                    .name(name)
+                    .position(PlayerPosition.getFromRowId(i).name())
+                    .score(score)
+                    .status(sps)
+                    .build();
+
+
             players.add(player);
         }
         team.setPlayerList(players);
+    }
+
+    private SmPlayerStatus parseStatuses(List<String> statuses) {
+        boolean active = true;
+        if (statuses.contains("Icono de inactivo")) active = false;
+        boolean spanish = false;
+        if (statuses.contains("Icono de español")) spanish = true;
+        boolean foreign = false;
+        if (statuses.contains("Icono de extracomunitario")) foreign = true;
+        boolean info = false;
+        if (statuses.contains("Icono de más información")) info = true;
+        boolean injured = false;
+        if (statuses.contains("Icono de lesionado")) injured = true;
+
+        return SmPlayerStatus.builder()
+                .active(active)
+                .spanish(spanish)
+                .foreign(foreign)
+                .injured(injured)
+                .info(info)
+                .build();
+
+    }
+
+    private List<String> getStatusesAsStrings(Object object) {
+        return ((TagNode) object).getAllChildren().stream()
+                .filter(TagNode.class::isInstance)
+                .map(s -> {
+                    TagNode t = (TagNode) s;
+                    return t.getAttributeByName("alt");
+                }).collect(Collectors.toList());
+    }
+
+    private Object[] getObjectsFromExpression(TagNode node, String $row) throws XPatherException {
+        return node.evaluateXPath($row);
     }
 
     private void addTotalScore(SmTeam team, TagNode node) throws XPatherException {
