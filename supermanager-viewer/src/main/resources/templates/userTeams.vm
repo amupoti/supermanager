@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+#parse( "./include/header.vm" )
+<script>
+ $(document).ready(function() {
+   $('.containerts').each(function(i) {
+     $(this).children(".tablesorter")
+       .tablesorter({
+         widthFixed: true,
+         widgets: ['zebra']
+       });
+   });
+
+ });
+
+</script>
+</head>
+<body>
+    <div class="containerts">
+    <h1>Jornada Actual</h1>
+
+    #set ($map = $teamMap)
+    #foreach( $key in $map.keySet())
+        #set ($smDataList = $map.get($key).playerList)
+        #set ($score = $map.get($key).score)
+        <h2>$key - $score puntos</h2>
+        <table id="myTable-$key" class="tablesorter">
+            #parse("./include/playersTable.vm")
+        </table>
+    #end
+
+    </div>
+</body>
+</html>
+
+
+

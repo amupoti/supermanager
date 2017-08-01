@@ -1,7 +1,9 @@
 package org.amupoti.supermanager.parser.acb;
 
-import org.amupoti.supermanager.parser.acb.beans.ACBPlayer;
-import org.amupoti.supermanager.parser.acb.beans.ACBSupermanagerTeam;
+import org.amupoti.supermanager.parser.acb.beans.PlayerPosition;
+import org.amupoti.supermanager.parser.acb.beans.SmPlayer;
+import org.amupoti.supermanager.parser.acb.beans.SmPlayerStatus;
+import org.amupoti.supermanager.parser.acb.beans.SmTeam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.htmlcleaner.HtmlCleaner;
@@ -17,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import javax.annotation.PostConstruct;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by Marcel on 02/01/2016.
@@ -39,16 +42,17 @@ public class ACBTeamServiceDefault implements ACBTeamService {
         htmlCleaner = new HtmlCleaner();
 
     }
+
     @Override
-    public List<ACBSupermanagerTeam> getTeamsByCredentials(String user, String password) throws XPatherException {
+    public List<SmTeam> getTeamsByCredentials(String user, String password) throws XPatherException {
 
         //Get cookie
         HttpHeaders httpHeaders = prepareHeaders();
-        restTemplate.getMessageConverters().add(new FormHttpMessageConverter() );
+        restTemplate.getMessageConverters().add(new FormHttpMessageConverter());
         MultiValueMap<String, String> params = addFormParams(user, password);
         HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<MultiValueMap<String, String>>(params, httpHeaders);
-        ResponseEntity<String> exchange = restTemplate.postForEntity(URL_FORM, httpEntity, String.class,params);
-        log.info("Post to "+URL_FORM+ " with headers "+httpHeaders);
+        ResponseEntity<String> exchange = restTemplate.postForEntity(URL_FORM, httpEntity, String.class, params);
+        log.info("Post to " + URL_FORM + " with headers " + httpHeaders);
         log.info(exchange.getStatusCode());
         log.info(exchange.getHeaders());
 
@@ -61,13 +65,13 @@ public class ACBTeamServiceDefault implements ACBTeamService {
 
         String pageBody = exchange.getBody();
 
-        List<ACBSupermanagerTeam> teams = getTeams(pageBody);
-        for (ACBSupermanagerTeam team:teams){
-            exchange = restTemplate.exchange(BASE_URL+team.getUrl(), HttpMethod.GET, httpEntity, String.class);
+        List<SmTeam> teams = getTeams(pageBody);
+        for (SmTeam team : teams) {
+            exchange = restTemplate.exchange(BASE_URL + team.getUrl(), HttpMethod.GET, httpEntity, String.class);
             populateTeam(exchange.getBody(), team);
         }
 
-        log.debug("Teams found: "+teams);
+        log.debug("Teams found: " + teams);
         return teams;
     }
 
@@ -88,28 +92,80 @@ public class ACBTeamServiceDefault implements ACBTeamService {
         return httpHeaders;
     }
 
-    private void populateTeam(String html, ACBSupermanagerTeam team) throws XPatherException {
+    private void populateTeam(String html, SmTeam team) throws XPatherException {
         TagNode node = htmlCleaner.clean(html);
         addPlayers(team, node);
         addTotalScore(team, node);
 
     }
 
-    private void addPlayers(ACBSupermanagerTeam team, TagNode node) throws XPatherException {
+    private void addPlayers(SmTeam team, TagNode node) throws XPatherException {
         String xPathExpression = "//*[@id=\"puesto$row\"]/td[3]/span/a";
-        List<ACBPlayer> players = new LinkedList<>();
+        String xPathExpressionScore = "//*[@id=\"puesto$row\"]/td[9]";
+        String xPathExpressionIcons = "//*[@id=\"puesto$row\"]/td[1]";
+
+        List<SmPlayer> players = new LinkedList<>();
         for (int i = 1; i <= 11; i++) {
-            Object[] objects = node.evaluateXPath(xPathExpression.replace("$row",""+i));
+            Object[] objects = getObjectsFromExpression(node, xPathExpression.replace("$row", "" + i));
             String name = ((TagNode) objects[0]).getAllChildren().get(0).toString();
-            ACBPlayer player = new ACBPlayer();
-            player.setName(name);
-            player.setPosition(""+i);
+
+            objects = node.evaluateXPath(xPathExpressionScore.replace("$row", "" + i));
+            String score = ((TagNode) objects[0]).getAllChildren().get(0).toString();
+
+            objects = node.evaluateXPath(xPathExpressionIcons.replace("$row", "" + i));
+            List<String> statuses = getStatusesAsStrings(objects[0]);
+            SmPlayerStatus sps = parseStatuses(statuses);
+
+            //Build object
+            SmPlayer player = SmPlayer.builder()
+                    .name(name)
+                    .position(PlayerPosition.getFromRowId(i).name())
+                    .score(score)
+                    .status(sps)
+                    .build();
+
+
             players.add(player);
         }
-        team.setPlayers(players);
+        team.setPlayerList(players);
     }
 
-    private void addTotalScore(ACBSupermanagerTeam team, TagNode node) throws XPatherException {
+    private SmPlayerStatus parseStatuses(List<String> statuses) {
+        boolean active = true;
+        if (statuses.contains("Icono de inactivo")) active = false;
+        boolean spanish = false;
+        if (statuses.contains("Icono de español")) spanish = true;
+        boolean foreign = false;
+        if (statuses.contains("Icono de extracomunitario")) foreign = true;
+        boolean info = false;
+        if (statuses.contains("Icono de más información")) info = true;
+        boolean injured = false;
+        if (statuses.contains("Icono de lesionado")) injured = true;
+
+        return SmPlayerStatus.builder()
+                .active(active)
+                .spanish(spanish)
+                .foreign(foreign)
+                .injured(injured)
+                .info(info)
+                .build();
+
+    }
+
+    private List<String> getStatusesAsStrings(Object object) {
+        return ((TagNode) object).getAllChildren().stream()
+                .filter(TagNode.class::isInstance)
+                .map(s -> {
+                    TagNode t = (TagNode) s;
+                    return t.getAttributeByName("alt");
+                }).collect(Collectors.toList());
+    }
+
+    private Object[] getObjectsFromExpression(TagNode node, String $row) throws XPatherException {
+        return node.evaluateXPath($row);
+    }
+
+    private void addTotalScore(SmTeam team, TagNode node) throws XPatherException {
         String xpathScore = "//*[@id=\"valoracion_total\"]";
         Object[] objects = node.evaluateXPath(xpathScore);
         String score = ((TagNode) objects[0]).getAllChildren().get(0).toString();
@@ -122,29 +178,28 @@ public class ACBTeamServiceDefault implements ACBTeamService {
         }
     }
 
-    private List<ACBSupermanagerTeam> getTeams(String html) {
+    private List<SmTeam> getTeams(String html) {
 
-        List<ACBSupermanagerTeam> teamList = new LinkedList<>();
+        List<SmTeam> teamList = new LinkedList<>();
 
         String xPathExpression = "//*[@id=\"contentmercado\"]/section/table[2]/tbody/tr";
-        try{
+        try {
             TagNode node = htmlCleaner.clean(html);
             Object[] objects = node.evaluateXPath(xPathExpression);
-            int rows= objects.length;
+            int rows = objects.length;
             for (int i = 1; i <= rows; i++) {
-                Object[] names = node.evaluateXPath(xPathExpression+"["+i+"]/td[2]");
+                Object[] names = node.evaluateXPath(xPathExpression + "[" + i + "]/td[2]");
                 String name = ((TagNode) names[0]).getChildTagList().get(0).getAllChildren().get(0).toString();
                 String url = ((TagNode) names[0]).getChildTagList().get(0).getAttributeByName("href");
-                ACBSupermanagerTeam team = new ACBSupermanagerTeam();
+                SmTeam team = new SmTeam();
                 team.setName(name);
                 team.setUrl(url);
-                log.info("Found team for user. Team: "+team);
+                log.info("Found team for user. Team: " + team);
                 teamList.add(team);
             }
 
             return teamList;
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             //TODO: this is a poor way to handle any problem we may have during parsing.
             log.warn("Could not get value from html with xPathExpression: " + xPathExpression);
             return null;

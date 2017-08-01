@@ -1,6 +1,6 @@
 package org.amupoti.supermanager.parser.acb;
 
-import org.amupoti.supermanager.parser.acb.beans.ACBSupermanagerTeam;
+import org.amupoti.supermanager.parser.acb.beans.SmTeam;
 import org.amupoti.supermanager.parser.acb.config.TestConfig;
 import org.hamcrest.core.StringContains;
 import org.htmlcleaner.XPatherException;
@@ -30,10 +30,10 @@ public class ACBTeamServiceTest {
     public void getTeams() throws XPatherException {
 
 
-        List<ACBSupermanagerTeam> teams = acbTeamsService.getTeamsByCredentials(USER, PASSWORD);
-        Assert.assertEquals(2,teams.size());
-        Assert.assertThat(teams.get(0).getName()+teams.get(1).getName(),StringContains.containsString("El equipo 1"));
-        Assert.assertThat(teams.get(0).getName()+teams.get(1).getName(),StringContains.containsString("El equipo 2"));
+        List<SmTeam> teams = acbTeamsService.getTeamsByCredentials(USER, PASSWORD);
+        Assert.assertEquals(2, teams.size());
+        Assert.assertThat(teams.get(0).getName() + teams.get(1).getName(), StringContains.containsString("El equipo 1"));
+        Assert.assertThat(teams.get(0).getName() + teams.get(1).getName(), StringContains.containsString("El equipo 2"));
 
     }
 
@@ -41,8 +41,8 @@ public class ACBTeamServiceTest {
     public void getPlayers() throws XPatherException {
 
 
-        List<ACBSupermanagerTeam> teams = acbTeamsService.getTeamsByCredentials(USER, PASSWORD);
-        Assert.assertEquals(11, teams.get(0).getPlayers().size());
+        List<SmTeam> teams = acbTeamsService.getTeamsByCredentials(USER, PASSWORD);
+        Assert.assertEquals(11, teams.get(0).getPlayerList().size());
 
     }
 }

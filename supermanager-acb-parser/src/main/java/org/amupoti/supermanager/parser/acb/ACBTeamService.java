@@ -1,6 +1,6 @@
 package org.amupoti.supermanager.parser.acb;
 
-import org.amupoti.supermanager.parser.acb.beans.ACBSupermanagerTeam;
+import org.amupoti.supermanager.parser.acb.beans.SmTeam;
 import org.htmlcleaner.XPatherException;
 
 import java.util.List;
@@ -10,5 +10,5 @@ import java.util.List;
  */
 public interface ACBTeamService {
 
-    List<ACBSupermanagerTeam> getTeamsByCredentials(String user, String password) throws XPatherException;
+    List<SmTeam> getTeamsByCredentials(String user, String password) throws XPatherException;
 }
