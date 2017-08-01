@@ -1,10 +1,5 @@
 package org.amupoti.sm.main.config;
 
-import org.amupoti.sm.main.services.provider.team.TeamDataService;
-import org.amupoti.sm.main.services.provider.HTMLProviderService;
-import org.amupoti.sm.main.services.provider.player.PlayerDataService;
-import org.amupoti.sm.main.services.provider.player.RDMPlayerDataScraper;
-import org.amupoti.sm.main.services.provider.team.RDMTeamDataService;
 import org.amupoti.supermanager.parser.acb.ACBTeamService;
 import org.amupoti.supermanager.parser.acb.ACBTeamServiceDefault;
 import org.springframework.cache.CacheManager;
@@ -30,23 +25,6 @@ public class ApplicationConfig {
     @Bean
     public PropertySourcesPlaceholderConfigurer getPropertySourcesPlaceholderConfigurer(){
         return new PropertySourcesPlaceholderConfigurer();
-    }
-
-
-    @Bean
-    public HTMLProviderService getHtmlProviderService(){
-        return new HTMLProviderService();
-    }
-
-    @Bean
-    public PlayerDataService getPlayerDataService(){
-        return new RDMPlayerDataScraper();
-        //return new MockPlayerDataService();
-    }
-
-    @Bean
-    public TeamDataService getTeamDataService(){
-        return new RDMTeamDataService();
     }
 
     @Bean
