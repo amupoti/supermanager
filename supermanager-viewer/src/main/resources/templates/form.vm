@@ -63,7 +63,7 @@ body {
 
 </form>
     <div class="wrapper">
-      <form action="#" method="post" class="form-signin">
+      <form action="dologin.html" method="post" class="form-signin">
         <h2 class="form-signin-heading">Acceso</h2>
         <input type="text" class="form-control" name="login" placeholder="Usuario de supermanager" id="login" required="" autofocus="" />
         <input type="password" class="form-control" name="password" placeholder="Password" id="p" required=""/>

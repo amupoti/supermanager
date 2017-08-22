@@ -3,7 +3,9 @@
 <head>
 #parse( "./include/header.vm" )
 <script>
+
  $(document).ready(function() {
+
    $('.containerts').each(function(i) {
      $(this).children(".tablesorter")
        .tablesorter({
@@ -12,13 +14,24 @@
        });
    });
 
+   (function countdown(remaining) {
+            if(remaining === 0)
+                location.reload(true);
+            document.getElementById('countdown').innerHTML = "Se actualizará en " + remaining + " segundos";
+            setTimeout(function(){ countdown(remaining - 1); }, 1000);
+        })(60);
+
  });
 
 </script>
 </head>
 <body>
+
     <div class="containerts">
     <h1>Jornada Actual</h1>
+
+    <div align="right" id="countdown">
+    </div>
 
     #set ($map = $teamMap)
     #foreach( $key in $map.keySet())
