@@ -72,13 +72,10 @@ public class UserController {
 
         List<SmTeam> userTeams = acbTeamService.getTeamsByCredentials(user.getLogin(), user.getPassword());
         for (SmTeam team : userTeams) {
-            teamMap.put(team.getName(), new UserTeamBean(team.getPlayerList(), team.getScore() + new Float(Math.random() * 100)));
+            teamMap.put(team.getName(), new UserTeamBean(team.getPlayerList(), team.getScore()));
         }
 
         model.addAttribute("teamMap", teamMap);
         return "userTeams";
-
     }
-
-
 }

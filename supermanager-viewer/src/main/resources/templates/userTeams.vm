@@ -21,31 +21,55 @@
             setTimeout(function(){ countdown(remaining - 1); }, 1000);
         })(60);
 
+        $("#myTable-overview").tablesorter({
+            sortInitialOrder: 'desc',
+            sortList: [[1,1]],
+            });
  });
 
 </script>
+    <style type="text/css">
+body{
+background-color: #f7f7f7
+}
+    </style>
 </head>
 <body>
 
-    <div class="containerts">
-    <h1>Jornada Actual</h1>
+<div align="right" id="countdown"></div>
 
-    <div align="right" id="countdown">
-    </div>
-
+<h1>Resumen de tus equipos</h1>
+<div align="center" class="containerts">
+    #set ($map = $teamMap)
+    <table style="width: 20%" id="myTable-overview" class="tablesorter">
+        <thead>
+        <tr>
+            <th>Equipo</th>
+            <th>Valoración</th>
+        </tr>
+        </thead>
+        #foreach( $key in $map.keySet())
+        <tr>
+            #set ($smDataList = $map.get($key).playerList)
+            #set ($score = $map.get($key).score)
+            <td>$key</td>
+            <td> $score puntos</td>
+        </tr>
+        #end
+    </table>
+</div>
+<h1>Detalle de tus equipos</h1>
+<div align="center" class="containerts">
     #set ($map = $teamMap)
     #foreach( $key in $map.keySet())
-        #set ($smDataList = $map.get($key).playerList)
-        #set ($score = $map.get($key).score)
-        <h2>$key - $score puntos</h2>
-        <table id="myTable-$key" class="tablesorter">
-            #parse("./include/playersTable.vm")
-        </table>
+    #set ($smDataList = $map.get($key).playerList)
+    #set ($score = $map.get($key).score)
+    <h3>$key - $score puntos</h3>
+    <table style="width: 90%" id="myTable-$key" class="tablesorter">
+        #parse("./include/playersTable.vm")
+    </table>
     #end
+</div>
 
-    </div>
 </body>
 </html>
-
-
-
