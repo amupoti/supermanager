@@ -3,7 +3,7 @@ package org.amupoti.sm.main.controller;
 import org.amupoti.sm.main.bean.SMUser;
 import org.amupoti.sm.main.model.UserTeamBean;
 import org.amupoti.sm.main.users.UserCredentialsHolder;
-import org.amupoti.supermanager.parser.acb.ACBTeamService;
+import org.amupoti.supermanager.parser.acb.SMUserTeamService;
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,7 +31,7 @@ public class UserController {
     private final static Log log = LogFactory.getLog(UserController.class);
 
     @Autowired
-    private ACBTeamService acbTeamService;
+    private SMUserTeamService SMUserTeamService;
 
     private UserCredentialsHolder userCredentialsHolder = new UserCredentialsHolder();
 
@@ -70,7 +70,7 @@ public class UserController {
             log.info("Login was not found. Cannot provide team data");
         }
 
-        List<SmTeam> userTeams = acbTeamService.getTeamsByCredentials(user.getLogin(), user.getPassword());
+        List<SmTeam> userTeams = SMUserTeamService.getTeamsByCredentials(user.getLogin(), user.getPassword());
         for (SmTeam team : userTeams) {
             teamMap.put(team.getName(), new UserTeamBean(team.getPlayerList(), team.getScore()));
         }

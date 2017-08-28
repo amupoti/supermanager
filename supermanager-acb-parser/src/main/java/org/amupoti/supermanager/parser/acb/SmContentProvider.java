@@ -16,22 +16,23 @@ import javax.annotation.PostConstruct;
 
 public class SmContentProvider {
 
-    private static final String ENTRY_URL = "http://supermanager.acb.com/index/identificar";
+    public static final String SUPERMANAGER_HOME_URL = "http://supermanager.acb.com/index/identificar";
     private static final String BASE_URL = "http://supermanager.acb.com";
-    private static final String EUROPEO = "http://supermanager.acb.com/europeo/";
     private static final String URL_TEAM_LIST = "http://supermanager.acb.com/equipos/listado";
+    public static final String EUROPEO_HOME_URL = "http://supermanager.acb.com/europeo/";
     private String competition;
 
     @Autowired
     private RestTemplate restTemplate;
 
+    public SmContentProvider(String competition) {
+        this.competition = competition;
+    }
+
     @PostConstruct
     public void init() {
         restTemplate.getMessageConverters().add(new FormHttpMessageConverter());
-        //TODO: add in properties file
-        competition = EUROPEO;
     }
-
 
     public String getTeamsPage(HttpHeaders httpHeaders) {
         ResponseEntity<String> exchange = restTemplate.exchange(URL_TEAM_LIST, HttpMethod.GET, new HttpEntity<>(null, httpHeaders), String.class);
@@ -43,15 +44,17 @@ public class SmContentProvider {
         HttpEntity<MultiValueMap<String, String>> httpEntity;
         MultiValueMap<String, String> params = addFormParams(user, password);
         httpEntity = new HttpEntity<>(params, httpHeaders);
-        ResponseEntity<String> exchange = restTemplate.postForEntity(ENTRY_URL, httpEntity, String.class, params);
+        ResponseEntity<String> exchange = restTemplate.postForEntity(SUPERMANAGER_HOME_URL, httpEntity, String.class, params);
     }
 
-    public String getCookieFromEntryPage(HttpEntity<MultiValueMap<String, String>> httpEntity) {
+    public void addCookieFromEntryPageToHeaders(HttpHeaders httpHeaders) {
+        HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(null, httpHeaders);
         ResponseEntity<String> exchange = restTemplate.exchange(competition, HttpMethod.GET, httpEntity, String.class);
-        return exchange.getHeaders().get("Set-Cookie").toString().replace("[", "").split(";")[0];
+        String cookie = exchange.getHeaders().get("Set-Cookie").toString().replace("[", "").split(";")[0];
+        httpHeaders.add("Cookie", cookie);
     }
 
-    public MultiValueMap<String, String> addFormParams(String user, String password) {
+    private MultiValueMap<String, String> addFormParams(String user, String password) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("email", user);
         params.add("clave", password);

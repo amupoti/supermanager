@@ -10,9 +10,7 @@ import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.util.MultiValueMap;
 
 import javax.annotation.PostConstruct;
 import java.util.LinkedList;
@@ -22,9 +20,9 @@ import java.util.stream.Collectors;
 /**
  * Created by Marcel on 02/01/2016.
  */
-public class ACBTeamServiceDefault implements ACBTeamService {
+public class SMUserTeamServiceImpl implements SMUserTeamService {
 
-    Log log = LogFactory.getLog(ACBTeamServiceDefault.class);
+    Log log = LogFactory.getLog(SMUserTeamServiceImpl.class);
 
     private HtmlCleaner htmlCleaner;
 
@@ -40,10 +38,8 @@ public class ACBTeamServiceDefault implements ACBTeamService {
     public List<SmTeam> getTeamsByCredentials(String user, String password) throws XPatherException {
 
         HttpHeaders httpHeaders = smContentProvider.prepareHeaders();
-        HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(null, httpHeaders);
 
-        String cookie = smContentProvider.getCookieFromEntryPage(httpEntity);
-        httpHeaders.add("Cookie", cookie);
+        smContentProvider.addCookieFromEntryPageToHeaders(httpHeaders);
         smContentProvider.authenticateUser(user, password, httpHeaders);
 
         String pageBody = smContentProvider.getTeamsPage(httpHeaders);
