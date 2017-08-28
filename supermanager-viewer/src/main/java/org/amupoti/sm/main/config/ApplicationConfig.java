@@ -2,6 +2,7 @@ package org.amupoti.sm.main.config;
 
 import org.amupoti.supermanager.parser.acb.ACBTeamService;
 import org.amupoti.supermanager.parser.acb.ACBTeamServiceDefault;
+import org.amupoti.supermanager.parser.acb.SmContentProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.cache.CacheManager;
@@ -45,6 +46,11 @@ public class ApplicationConfig {
     @Bean
     public ACBTeamService getAcbTeamService(){
         return new ACBTeamServiceDefault();
+    }
+
+    @Bean
+    public SmContentProvider getSmContentProvider() {
+        return new SmContentProvider();
     }
 }
 

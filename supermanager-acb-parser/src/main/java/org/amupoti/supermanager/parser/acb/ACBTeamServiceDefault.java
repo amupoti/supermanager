@@ -10,11 +10,9 @@ import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
-import org.springframework.http.converter.FormHttpMessageConverter;
-import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import java.util.LinkedList;
@@ -26,74 +24,40 @@ import java.util.stream.Collectors;
  */
 public class ACBTeamServiceDefault implements ACBTeamService {
 
-    private static final String URL_FORM = "http://supermanager.acb.com/index/identificar";
-    private static final String BASE_URL = "http://supermanager.acb.com";
-    private static final String EUROPEO = "http://supermanager.acb.com/europeo/";
     Log log = LogFactory.getLog(ACBTeamServiceDefault.class);
-    private static final String URL_LOGGED_IN = "http://supermanager.acb.com/equipos/listado";
-
-    @Autowired
-    private RestTemplate restTemplate;
 
     private HtmlCleaner htmlCleaner;
-    private String competition;
+
+    @Autowired
+    private SmContentProvider smContentProvider;
 
     @PostConstruct
     public void init() {
         htmlCleaner = new HtmlCleaner();
-        competition = EUROPEO;
-
     }
 
     @Override
     public List<SmTeam> getTeamsByCredentials(String user, String password) throws XPatherException {
 
-        restTemplate.getMessageConverters().add(new FormHttpMessageConverter());
-
-        //Get other competitions page, withtout following redirect
-        HttpHeaders httpHeaders = prepareHeaders();
+        HttpHeaders httpHeaders = smContentProvider.prepareHeaders();
         HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(null, httpHeaders);
 
-        ResponseEntity<String> exchange = restTemplate.exchange(competition, HttpMethod.GET, httpEntity, String.class);
-        String cookie = exchange.getHeaders().get("Set-Cookie").toString().replace("[", "").split(";")[0];
+        String cookie = smContentProvider.getCookieFromEntryPage(httpEntity);
         httpHeaders.add("Cookie", cookie);
+        smContentProvider.authenticateUser(user, password, httpHeaders);
 
-
-        MultiValueMap<String, String> params = addFormParams(user, password);
-        httpEntity = new HttpEntity<>(params, httpHeaders);
-        exchange = restTemplate.postForEntity(URL_FORM, httpEntity, String.class, params);
-
-        httpEntity = new HttpEntity<>(params, httpHeaders);
-        exchange = restTemplate.exchange(URL_LOGGED_IN, HttpMethod.GET, httpEntity, String.class);
-
-        String pageBody = exchange.getBody();
+        String pageBody = smContentProvider.getTeamsPage(httpHeaders);
 
         List<SmTeam> teams = getTeams(pageBody);
         for (SmTeam team : teams) {
-            exchange = restTemplate.exchange(BASE_URL + team.getUrl(), HttpMethod.GET, httpEntity, String.class);
-            populateTeam(exchange.getBody(), team);
+            String teamPage = smContentProvider.getTeamPage(httpHeaders, team);
+            populateTeam(teamPage, team);
         }
 
         log.debug("Teams found: " + teams);
         return teams;
     }
 
-    private MultiValueMap<String, String> addFormParams(String user, String password) {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("email", user);
-        params.add("clave", password);
-        params.add("entrar", "Entrar");
-        return params;
-    }
-
-    private HttpHeaders prepareHeaders() {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Host", "supermanager.acb.com");
-        httpHeaders.add(HttpHeaders.ACCEPT, "*/*");
-        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        httpHeaders.add(HttpHeaders.REFERER, "http://supermanager.acb.com/index/identificar");
-        return httpHeaders;
-    }
 
     private void populateTeam(String html, SmTeam team) throws XPatherException {
         TagNode node = htmlCleaner.clean(html);
