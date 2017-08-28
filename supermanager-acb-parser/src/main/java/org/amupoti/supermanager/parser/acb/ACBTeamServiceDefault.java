@@ -28,40 +28,43 @@ public class ACBTeamServiceDefault implements ACBTeamService {
 
     private static final String URL_FORM = "http://supermanager.acb.com/index/identificar";
     private static final String BASE_URL = "http://supermanager.acb.com";
+    private static final String EUROPEO = "http://supermanager.acb.com/europeo/";
     Log log = LogFactory.getLog(ACBTeamServiceDefault.class);
-    private static final String URL_ENTRY = "http://supermanager.acb.com/";
     private static final String URL_LOGGED_IN = "http://supermanager.acb.com/equipos/listado";
 
     @Autowired
     private RestTemplate restTemplate;
 
     private HtmlCleaner htmlCleaner;
+    private String competition;
 
     @PostConstruct
     public void init() {
         htmlCleaner = new HtmlCleaner();
+        competition = EUROPEO;
 
     }
 
     @Override
     public List<SmTeam> getTeamsByCredentials(String user, String password) throws XPatherException {
 
-        //Get cookie
-        HttpHeaders httpHeaders = prepareHeaders();
         restTemplate.getMessageConverters().add(new FormHttpMessageConverter());
-        MultiValueMap<String, String> params = addFormParams(user, password);
-        HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<MultiValueMap<String, String>>(params, httpHeaders);
-        ResponseEntity<String> exchange = restTemplate.postForEntity(URL_FORM, httpEntity, String.class, params);
-        log.info("Post to " + URL_FORM + " with headers " + httpHeaders);
-        log.info(exchange.getStatusCode());
-        log.info(exchange.getHeaders());
 
+        //Get other competitions page, withtout following redirect
+        HttpHeaders httpHeaders = prepareHeaders();
+        HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(null, httpHeaders);
+
+        ResponseEntity<String> exchange = restTemplate.exchange(competition, HttpMethod.GET, httpEntity, String.class);
         String cookie = exchange.getHeaders().get("Set-Cookie").toString().replace("[", "").split(";")[0];
         httpHeaders.add("Cookie", cookie);
+
+
+        MultiValueMap<String, String> params = addFormParams(user, password);
+        httpEntity = new HttpEntity<>(params, httpHeaders);
+        exchange = restTemplate.postForEntity(URL_FORM, httpEntity, String.class, params);
+
         httpEntity = new HttpEntity<>(params, httpHeaders);
         exchange = restTemplate.exchange(URL_LOGGED_IN, HttpMethod.GET, httpEntity, String.class);
-        log.info("Get to " + URL_LOGGED_IN + " with code " + exchange.getStatusCode());
-        log.debug("Headers:" + exchange.getHeaders());
 
         String pageBody = exchange.getBody();
 
