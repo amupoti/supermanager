@@ -1,4 +1,4 @@
-package org.amupoti.supermanager.parser.acb.bean;
+package org.amupoti.supermanager.parser.acb.utils;
 
 import org.apache.commons.lang.math.NumberUtils;
 
@@ -42,5 +42,10 @@ public class DataUtils {
 
     private static float round(Number number) {
         return Math.round(number.floatValue() * 100.0) / 100.0f;
+    }
+
+    public static Float getScoreFromStringValue(String scoreWithBonus) {
+        String score = scoreWithBonus.replace("(+)", "").replace(",", ".");
+        return toFloat(score);
     }
 }

@@ -1,0 +1,17 @@
+
+    <thead>
+    <tr>
+        <th>Val equipo</th>
+        <th>Val sumada equipo</th>
+        <th>Han jugado</th>
+        <th>Media por jugador</th>
+    </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>$teamData.score</td>
+            <td>$teamData.computedScore</td>
+            <td>$teamData.usedPlayers</td>
+            <td>$teamData.meanScorePerPlayer</td>
+        </tr>
+    </tbody>

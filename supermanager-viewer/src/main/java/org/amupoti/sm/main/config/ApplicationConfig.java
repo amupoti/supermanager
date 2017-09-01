@@ -2,6 +2,7 @@ package org.amupoti.sm.main.config;
 
 import org.amupoti.supermanager.parser.acb.SMUserTeamService;
 import org.amupoti.supermanager.parser.acb.SMUserTeamServiceImpl;
+import org.amupoti.supermanager.parser.acb.SmContentParser;
 import org.amupoti.supermanager.parser.acb.SmContentProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -40,7 +41,12 @@ public class ApplicationConfig {
 
     @Bean
     public SMUserTeamService getAcbTeamService() {
-        return new SMUserTeamServiceImpl();
+        return new SMUserTeamServiceImpl(getSmContentProvider(), getSmContentParser());
+    }
+
+    @Bean
+    public SmContentParser getSmContentParser() {
+        return new SmContentParser();
     }
 
     @Bean

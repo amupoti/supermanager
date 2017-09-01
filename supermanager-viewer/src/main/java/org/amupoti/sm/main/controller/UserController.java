@@ -1,7 +1,7 @@
 package org.amupoti.sm.main.controller;
 
 import org.amupoti.sm.main.bean.SMUser;
-import org.amupoti.sm.main.model.UserTeamBean;
+import org.amupoti.sm.main.model.UserTeamViewData;
 import org.amupoti.sm.main.users.UserCredentialsHolder;
 import org.amupoti.supermanager.parser.acb.SMUserTeamService;
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
@@ -62,7 +62,7 @@ public class UserController {
         }
 
         SMUser user = credentialsByKey.get();
-        HashMap<String, UserTeamBean> teamMap = new HashMap<>();
+        HashMap<String, UserTeamViewData> teamMap = new HashMap<>();
 
         if (user != null) {
             log.info("Getting teams for user " + user.getLogin());
@@ -72,7 +72,8 @@ public class UserController {
 
         List<SmTeam> userTeams = SMUserTeamService.getTeamsByCredentials(user.getLogin(), user.getPassword());
         for (SmTeam team : userTeams) {
-            teamMap.put(team.getName(), new UserTeamBean(team.getPlayerList(), team.getScore()));
+            teamMap.put(team.getName(), new UserTeamViewData(team.getPlayerList(), team.getScore(), team.getComputedScore(),
+                    team.getUsedPlayers(), team.getMeanScorePerPlayer(), team.getScorePrediction()));
         }
 
         model.addAttribute("teamMap", teamMap);
