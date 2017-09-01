@@ -18,13 +18,13 @@ import java.util.List;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
-public class ACBTeamServiceTest {
+public class SMUserTeamServiceTest {
 
     private static final String PASSWORD = "testsm_testsm";
     private static final String USER = "testsm_testsm";
 
     @Autowired
-    private ACBTeamService acbTeamsService;
+    private SMUserTeamService acbTeamsService;
 
     @Test
     public void getTeams() throws XPatherException {

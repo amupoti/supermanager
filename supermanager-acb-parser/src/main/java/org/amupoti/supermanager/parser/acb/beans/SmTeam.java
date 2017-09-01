@@ -18,4 +18,9 @@ public class SmTeam {
     private String url;
     private List<SmPlayer> playerList;
     private Float score;
+    private Float computedScore;
+    private int usedPlayers;
+    private Float meanScorePerPlayer;
+    private Float scorePrediction;
+
 }

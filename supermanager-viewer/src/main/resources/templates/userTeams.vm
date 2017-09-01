@@ -20,11 +20,6 @@
             document.getElementById('countdown').innerHTML = "Se actualizará en " + remaining + " segundos";
             setTimeout(function(){ countdown(remaining - 1); }, 1000);
         })(60);
-
-        $("#myTable-overview").tablesorter({
-            sortInitialOrder: 'desc',
-            sortList: [[1,1]],
-            });
  });
 
 </script>
@@ -41,19 +36,26 @@ background-color: #f7f7f7
 <h1>Resumen de tus equipos</h1>
 <div align="center" class="containerts">
     #set ($map = $teamMap)
-    <table style="width: 20%" id="myTable-overview" class="tablesorter">
+    <table style="width: 80%" id="myTable-overview" class="tablesorter">
         <thead>
         <tr>
             <th>Equipo</th>
             <th>Valoración</th>
+            <th>Valoración sumada</th>
+            <th>Han jugado</th>
+            <th>Media por jugador</th>
+            <th>Proyección</th>
         </tr>
         </thead>
         #foreach( $key in $map.keySet())
         <tr>
-            #set ($smDataList = $map.get($key).playerList)
-            #set ($score = $map.get($key).score)
-            <td>$key</td>
-            <td> $score puntos</td>
+            #set ($teamData = $map.get($key))
+                <td>$key</td>
+            <td>$teamData.score</td>
+            <td>$teamData.computedScore</td>
+            <td>$teamData.usedPlayers</td>
+            <td>$teamData.meanScorePerPlayer</td>
+            <td>$teamData.scorePrediction</td>
         </tr>
         #end
     </table>
@@ -62,12 +64,17 @@ background-color: #f7f7f7
 <div align="center" class="containerts">
     #set ($map = $teamMap)
     #foreach( $key in $map.keySet())
-    #set ($smDataList = $map.get($key).playerList)
-    #set ($score = $map.get($key).score)
-    <h3>$key - $score puntos</h3>
-    <table style="width: 90%" id="myTable-$key" class="tablesorter">
-        #parse("./include/playersTable.vm")
-    </table>
+        #set ($smDataList = $map.get($key).playerList)
+        #set ($teamData = $map.get($key))
+
+        <h3>$key - $teamData.score ($teamData.computedScore) </h3>
+        <table style="width: 80%" id="myTeamTable-$key" class="tablesorter">
+            #parse("./include/teamTable.vm")
+        </table>
+
+        <table style="width: 90%" id="myTable-$key" class="tablesorter">
+            #parse("./include/playersTable.vm")
+        </table>
     #end
 </div>
 
