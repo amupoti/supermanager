@@ -42,6 +42,7 @@ public class SmContentParser {
         List<SmPlayer> players = new LinkedList<>();
         for (int i = 1; i <= 11; i++) {
             Object[] objects = getObjectsFromExpression(node, xPathExpression.replace("$row", "" + i));
+            if (objects == null || objects.length == 0 || ((TagNode) objects[0]).getAllChildren().size() == 0) continue;
             String name = ((TagNode) objects[0]).getAllChildren().get(0).toString();
 
             objects = node.evaluateXPath(xPathExpressionScore.replace("$row", "" + i));
