@@ -59,7 +59,8 @@ public class SMUserTeamServiceImpl implements SMUserTeamService {
     }
 
     private float computeTeamScorePrediction(DoubleSummaryStatistics stats, SmTeam team) {
-        return (float) stats.getAverage() * team.getPlayerList().size();
+        return (float) stats.getAverage() * (team.getPlayerList().size()
+                - team.getPlayerList().stream().filter(p -> !p.getStatus().isActive() || p.getStatus().isInjured()).count());
     }
 
 }
