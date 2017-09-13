@@ -37,12 +37,5 @@ public class SMUserTeamServiceTest {
 
     }
 
-    @Test
-    public void getPlayers() throws XPatherException {
 
-
-        List<SmTeam> teams = acbTeamsService.getTeamsByCredentials(USER, PASSWORD);
-        Assert.assertEquals(11, teams.get(0).getPlayerList().size());
-
-    }
 }
