@@ -5,6 +5,7 @@ import org.amupoti.supermanager.parser.acb.beans.PlayerPosition;
 import org.amupoti.supermanager.parser.acb.beans.SmPlayer;
 import org.amupoti.supermanager.parser.acb.beans.SmPlayerStatus;
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
+import org.amupoti.supermanager.parser.acb.exception.SmParserException;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
@@ -132,13 +133,10 @@ public class SmContentParser {
                 log.info("Found team for user. Team: " + team);
                 teamList.add(team);
             }
-
-            return teamList;
         } catch (Exception e) {
-            //TODO: this is a poor way to handle any problem we may have during parsing.
-            log.warn("Could not get value from html with xPathExpression: " + xPathExpression);
-            return null;
+            throw new SmParserException("Could not get value from html with xPathExpression", "exception.parsing.teams", e);
         }
+        return teamList;
     }
 
 }
