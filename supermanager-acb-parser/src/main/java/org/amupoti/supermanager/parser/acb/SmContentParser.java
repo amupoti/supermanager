@@ -5,7 +5,8 @@ import org.amupoti.supermanager.parser.acb.beans.PlayerPosition;
 import org.amupoti.supermanager.parser.acb.beans.SmPlayer;
 import org.amupoti.supermanager.parser.acb.beans.SmPlayerStatus;
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
-import org.amupoti.supermanager.parser.acb.exception.SmParserException;
+import org.amupoti.supermanager.parser.acb.exception.ErrorCode;
+import org.amupoti.supermanager.parser.acb.exception.SmException;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
@@ -116,6 +117,9 @@ public class SmContentParser {
 
     public List<SmTeam> getTeams(String html) {
 
+        //if credentials are incorrect, no html is provided
+        if (html == null) throw new SmException(ErrorCode.INVALID_USER_PASS);
+
         List<SmTeam> teamList = new LinkedList<>();
 
         String xPathExpression = "//*[@id=\"contentmercado\"]/section/table[2]/tbody/tr";
@@ -134,9 +138,25 @@ public class SmContentParser {
                 teamList.add(team);
             }
         } catch (Exception e) {
-            throw new SmParserException("Could not get value from html with xPathExpression", "exception.parsing.teams", e);
+
+            parseContentToRaiseException(e, html);
         }
         return teamList;
     }
 
+    private void parseContentToRaiseException(Exception e, String html) {
+        String xPathExpression = "//*[@id=\"dialogo\"]/p/p";
+
+        try {
+            //TODO: test when the game is closed
+            //TagNode node = htmlCleaner.clean(html);
+            //Object[] objects = node.evaluateXPath(xPathExpression);
+            //String message =
+            //throw new SmException(message, e);
+        } catch (Exception ex) {
+            throw new SmException(ErrorCode.ERROR_PARSING_TEAMS, e);
+        }
+
+        throw new SmException(ErrorCode.ERROR_PARSING_TEAMS, e);
+    }
 }

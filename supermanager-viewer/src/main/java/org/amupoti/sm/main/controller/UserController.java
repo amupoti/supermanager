@@ -5,6 +5,8 @@ import org.amupoti.sm.main.model.UserTeamViewData;
 import org.amupoti.sm.main.users.UserCredentialsHolder;
 import org.amupoti.supermanager.parser.acb.SMUserTeamService;
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
+import org.amupoti.supermanager.parser.acb.exception.ErrorCode;
+import org.amupoti.supermanager.parser.acb.exception.SmException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.htmlcleaner.XPatherException;
@@ -58,7 +60,7 @@ public class UserController {
         //TODO: validate if null
         Optional<SMUser> credentialsByKey = userCredentialsHolder.getCredentialsByKey(id);
         if (!credentialsByKey.isPresent()) {
-            throw new IllegalArgumentException("user id not provided, try login again.");
+            throw new SmException(ErrorCode.INCORRECT_SESSION_ID);
         }
 
         SMUser user = credentialsByKey.get();
