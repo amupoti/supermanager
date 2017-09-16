@@ -22,9 +22,7 @@ import java.net.URISyntaxException;
 
 public class LoginTest {
 
-    private static final String URL_FORM = "http://supermanager.acb.com/index/identificar";
     Log log = LogFactory.getLog(LoginTest.class);
-    private static final String URL_LOGGED_IN = "http://supermanager.acb.com/inicio/index";
 
     @Autowired
     private SmContentProvider smContentProvider;
