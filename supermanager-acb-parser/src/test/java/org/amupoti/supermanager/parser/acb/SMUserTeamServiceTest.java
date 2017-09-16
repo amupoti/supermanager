@@ -38,4 +38,12 @@ public class SMUserTeamServiceTest {
     }
 
 
+    @Test
+    public void getPlayers() throws XPatherException {
+
+
+        List<SmTeam> teams = acbTeamsService.getTeamsByCredentials(USER, PASSWORD);
+        Assert.assertTrue(teams.get(0).getPlayerList().size() > 0);
+        teams.get(0).getPlayerList().stream().forEach(p -> System.out.println(p));
+    }
 }

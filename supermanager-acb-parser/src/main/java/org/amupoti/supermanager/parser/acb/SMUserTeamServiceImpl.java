@@ -15,8 +15,6 @@ import java.util.List;
 @Slf4j
 public class SMUserTeamServiceImpl implements SMUserTeamService {
 
-    private static final float NUM_PLAYERS = 11;
-
     private SmContentProvider smContentProvider;
     private SmContentParser smContentParser;
 
