@@ -36,15 +36,15 @@ public class SmContentProvider {
 
     public String getTeamsPage(HttpHeaders httpHeaders) {
         ResponseEntity<String> exchange = restTemplate.exchange(URL_TEAM_LIST, HttpMethod.GET, new HttpEntity<>(null, httpHeaders), String.class);
-
         return exchange.getBody();
     }
 
-    public void authenticateUser(String user, String password, HttpHeaders httpHeaders) {
+    public String authenticateUser(String user, String password, HttpHeaders httpHeaders) {
         HttpEntity<MultiValueMap<String, String>> httpEntity;
         MultiValueMap<String, String> params = addFormParams(user, password);
         httpEntity = new HttpEntity<>(params, httpHeaders);
         ResponseEntity<String> exchange = restTemplate.postForEntity(SUPERMANAGER_HOME_URL, httpEntity, String.class, params);
+        return exchange.getBody();
     }
 
     public void addCookieFromEntryPageToHeaders(HttpHeaders httpHeaders) {
