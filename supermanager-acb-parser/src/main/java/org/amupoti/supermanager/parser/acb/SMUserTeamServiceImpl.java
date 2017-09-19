@@ -29,10 +29,10 @@ public class SMUserTeamServiceImpl implements SMUserTeamService {
         HttpHeaders httpHeaders = smContentProvider.prepareHeaders();
 
         smContentProvider.addCookieFromEntryPageToHeaders(httpHeaders);
-        smContentProvider.authenticateUser(user, password, httpHeaders);
+        String loginPage = smContentProvider.authenticateUser(user, password, httpHeaders);
+        smContentParser.checkGameStatus(loginPage);
 
         String pageBody = smContentProvider.getTeamsPage(httpHeaders);
-
         List<SmTeam> teams = smContentParser.getTeams(pageBody);
         //no teams returned if game is closed
         for (SmTeam team : teams) {

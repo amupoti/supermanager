@@ -13,7 +13,7 @@ public class SmException extends RuntimeException {
         super(ErrorResolver.getMessageFromCode(code));
     }
 
-    public SmException(String message, Throwable t) {
-        super(message, t);
+    public SmException(String message) {
+        super(message);
     }
 }

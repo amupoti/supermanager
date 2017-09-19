@@ -117,8 +117,7 @@ public class SmContentParser {
 
     public List<SmTeam> getTeams(String html) {
 
-        //if credentials are incorrect, no html is provided
-        if (html == null) throw new SmException(ErrorCode.INVALID_USER_PASS);
+        if (html == null) throw new SmException(ErrorCode.ERROR_PARSING_TEAMS);
 
         List<SmTeam> teamList = new LinkedList<>();
 
@@ -139,24 +138,26 @@ public class SmContentParser {
             }
         } catch (Exception e) {
 
-            parseContentToRaiseException(e, html);
+            throw new SmException(ErrorCode.ERROR_PARSING_TEAMS, e);
         }
         return teamList;
     }
 
-    private void parseContentToRaiseException(Exception e, String html) {
-        String xPathExpression = "//*[@id=\"dialogo\"]/p/p";
 
+    public void checkGameStatus(String html) {
+        String errorMessage = null;
         try {
-            //TODO: test when the game is closed
-            //TagNode node = htmlCleaner.clean(html);
-            //Object[] objects = node.evaluateXPath(xPathExpression);
-            //String message =
-            //throw new SmException(message, e);
+            if (html != null && html.contains("mostrarMensajeModal")) {
+                errorMessage = extractErrorMessage(html);
+            }
         } catch (Exception ex) {
-            throw new SmException(ErrorCode.ERROR_PARSING_TEAMS, e);
+            throw new SmException(ErrorCode.ERROR_PARSING_TEAMS);
         }
 
-        throw new SmException(ErrorCode.ERROR_PARSING_TEAMS, e);
+        if (errorMessage != null) throw new SmException(errorMessage);
+    }
+
+    private String extractErrorMessage(String html) {
+        return html.split("mostrarMensajeModal\\('")[1].split("'")[0];
     }
 }
