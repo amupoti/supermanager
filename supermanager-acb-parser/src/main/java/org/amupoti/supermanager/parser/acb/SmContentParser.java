@@ -158,6 +158,7 @@ public class SmContentParser {
 
     @Cacheable("market")
     public PlayerMarketData providePlayerData(String html) {
+        log.info("Requesting market data");
         PlayerMarketData playerMarketData = new PlayerMarketData();
 
         try {
