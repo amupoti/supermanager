@@ -7,7 +7,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -29,10 +28,9 @@ public class LoginTest {
     @Test
     public void testLogin() throws IOException, URISyntaxException {
 
-        HttpHeaders httpHeaders = smContentProvider.prepareHeaders();
-        smContentProvider.addCookieFromEntryPageToHeaders(httpHeaders);
-        smContentProvider.authenticateUser("testsm_testsm", "testsm_testsm", httpHeaders);
-        String teamsPage = smContentProvider.getTeamsPage(httpHeaders);
+
+        smContentProvider.authenticateUser("testsm_testsm", "testsm_testsm");
+        String teamsPage = smContentProvider.getTeamsPage();
         Assert.assertTrue(teamsPage.contains("crear equipo"));
     }
 

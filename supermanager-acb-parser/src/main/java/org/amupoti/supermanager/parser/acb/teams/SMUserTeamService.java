@@ -1,4 +1,4 @@
-package org.amupoti.supermanager.parser.acb;
+package org.amupoti.supermanager.parser.acb.teams;
 
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
 import org.htmlcleaner.XPatherException;

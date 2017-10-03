@@ -1,9 +1,9 @@
 package org.amupoti.sm.main.config;
 
-import org.amupoti.supermanager.parser.acb.SMUserTeamService;
-import org.amupoti.supermanager.parser.acb.SMUserTeamServiceImpl;
 import org.amupoti.supermanager.parser.acb.SmContentParser;
 import org.amupoti.supermanager.parser.acb.SmContentProvider;
+import org.amupoti.supermanager.parser.acb.teams.SMUserTeamService;
+import org.amupoti.supermanager.parser.acb.teams.SMUserTeamServiceImpl;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.context.annotation.Bean;
@@ -23,12 +23,12 @@ import static org.amupoti.supermanager.parser.acb.SmContentProvider.SUPERMANAGER
 public class ApplicationConfig {
 
     @Bean
-    public PropertySourcesPlaceholderConfigurer getPropertySourcesPlaceholderConfigurer(){
+    public PropertySourcesPlaceholderConfigurer getPropertySourcesPlaceholderConfigurer() {
         return new PropertySourcesPlaceholderConfigurer();
     }
 
     @Bean
-    public RestTemplate getRestTemplate(){
+    public RestTemplate getRestTemplate() {
         CloseableHttpClient httpClient = HttpClientBuilder
                 .create()
                 .disableRedirectHandling()
