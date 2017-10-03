@@ -39,7 +39,7 @@ public class SMUserTeamServiceImpl implements SMUserTeamService {
 
         for (SmTeam team : teams) {
             String teamPage = smContentProvider.getTeamPage(team);
-            smContentParser.populateTeam(teamPage, team);
+            smContentParser.populateTeam(teamPage, team, playerMarketData);
             computeTeamStats(team);
         }
 

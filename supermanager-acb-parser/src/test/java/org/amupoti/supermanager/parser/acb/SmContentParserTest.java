@@ -22,7 +22,6 @@ public class SmContentParserTest {
 
         ClassPathResource resource = new ClassPathResource("html/market.html");
         String marketHtml = FileUtils.readFileToString(resource.getFile());
-        log.info(marketHtml);
         PlayerMarketData playerMarketData = parser.providePlayerData(marketHtml);
         Assert.assertEquals(194, playerMarketData.size());
     }
