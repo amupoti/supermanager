@@ -5,6 +5,8 @@ import org.amupoti.supermanager.parser.acb.beans.PlayerPosition;
 import org.amupoti.supermanager.parser.acb.beans.SmPlayer;
 import org.amupoti.supermanager.parser.acb.beans.SmPlayerStatus;
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
+import org.amupoti.supermanager.parser.acb.beans.market.MarketCategory;
+import org.amupoti.supermanager.parser.acb.beans.market.PlayerMarketData;
 import org.amupoti.supermanager.parser.acb.exception.ErrorCode;
 import org.amupoti.supermanager.parser.acb.exception.SmException;
 import org.htmlcleaner.HtmlCleaner;
@@ -12,9 +14,12 @@ import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
 
 import javax.annotation.PostConstruct;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.amupoti.supermanager.parser.acb.beans.market.MarketCategory.*;
 
 /**
  * Created by amupoti on 28/08/2017.
@@ -23,6 +28,7 @@ import java.util.stream.Collectors;
 public class SmContentParser {
 
     private HtmlCleaner htmlCleaner;
+    public static final String MARKET_REGEX = "//*[@id=\"posicion%d\"]/tbody";
 
     @PostConstruct
     public void init() {
@@ -159,5 +165,40 @@ public class SmContentParser {
 
     private String extractErrorMessage(String html) {
         return html.split("mostrarMensajeModal\\('")[1].split("'")[0];
+    }
+
+    public PlayerMarketData providePlayerData(String html) {
+        PlayerMarketData playerMarketData = new PlayerMarketData();
+        try {
+
+            TagNode node = htmlCleaner.clean(html);
+
+            for (int pos = 1; pos <= 5; pos += 2) {
+                String xpath = String.format(MARKET_REGEX, pos);
+                Object[] objects = node.evaluateXPath(xpath);
+                int numPlayers = ((TagNode) objects[0]).getAllElements(false).length;
+                for (int player = 0; player < numPlayers; player++) {
+                    int finalPlayer = player;
+                    String name = getDataFromElementForCategory(objects, player, NAME);
+                    playerMarketData.addPlayer(name);
+                    List<MarketCategory> categoriesElem = Arrays.asList(PRICE, BUY_PCT, LAST_VAL);
+                    categoriesElem.stream().forEach(c -> playerMarketData.addPlayerData(name, c.name(), getDataFromElementForCategory(objects, finalPlayer, c)));
+                    List<MarketCategory> categoriesChildren = Arrays.asList(MEAN_VAL, LAST_THREE_VAL, KEEP_BROKER);
+                    categoriesChildren.stream().forEach(c -> playerMarketData.addPlayerData(name, c.name(), getDataFromChildrenForCategory(objects, finalPlayer, c)));
+                }
+            }
+        } catch (XPatherException e) {
+            throw new SmException(ErrorCode.ERROR_PARSING_MARKET, e);
+        }
+
+        return playerMarketData;
+    }
+
+    private String getDataFromElementForCategory(Object[] objects, int p, MarketCategory category) {
+        return ((TagNode) objects[0]).getAllElements(false)[p].getAllElements(false)[category.getColumn()].getAllElementsList(false).get(0).getAllChildren().get(0).toString();
+    }
+
+    private String getDataFromChildrenForCategory(Object[] objects, int p, MarketCategory category) {
+        return ((TagNode) objects[0]).getAllElements(false)[p].getAllElements(false)[category.getColumn()].getAllChildren().get(0).toString();
     }
 }

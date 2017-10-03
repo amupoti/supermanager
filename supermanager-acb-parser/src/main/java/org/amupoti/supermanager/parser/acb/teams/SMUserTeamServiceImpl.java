@@ -1,10 +1,12 @@
-package org.amupoti.supermanager.parser.acb;
+package org.amupoti.supermanager.parser.acb.teams;
 
 import lombok.extern.slf4j.Slf4j;
+import org.amupoti.supermanager.parser.acb.SmContentParser;
+import org.amupoti.supermanager.parser.acb.SmContentProvider;
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
+import org.amupoti.supermanager.parser.acb.beans.market.PlayerMarketData;
 import org.amupoti.supermanager.parser.acb.utils.DataUtils;
 import org.htmlcleaner.XPatherException;
-import org.springframework.http.HttpHeaders;
 
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
@@ -26,17 +28,17 @@ public class SMUserTeamServiceImpl implements SMUserTeamService {
     @Override
     public List<SmTeam> getTeamsByCredentials(String user, String password) throws XPatherException {
 
-        HttpHeaders httpHeaders = smContentProvider.prepareHeaders();
-
-        smContentProvider.addCookieFromEntryPageToHeaders(httpHeaders);
-        String loginPage = smContentProvider.authenticateUser(user, password, httpHeaders);
+        String loginPage = smContentProvider.authenticateUser(user, password);
         smContentParser.checkGameStatus(loginPage);
 
-        String pageBody = smContentProvider.getTeamsPage(httpHeaders);
+        String pageBody = smContentProvider.getTeamsPage();
         List<SmTeam> teams = smContentParser.getTeams(pageBody);
-        //no teams returned if game is closed
+
+        String marketPage = smContentProvider.getMarketPage();
+        PlayerMarketData playerMarketData = smContentParser.providePlayerData(marketPage);
+
         for (SmTeam team : teams) {
-            String teamPage = smContentProvider.getTeamPage(httpHeaders, team);
+            String teamPage = smContentProvider.getTeamPage(team);
             smContentParser.populateTeam(teamPage, team);
             computeTeamStats(team);
         }

@@ -19,11 +19,15 @@ public class SmContentProvider {
     public static final String SUPERMANAGER_HOME_URL = "http://supermanager.acb.com/index/identificar";
     private static final String BASE_URL = "http://supermanager.acb.com";
     private static final String URL_TEAM_LIST = "http://supermanager.acb.com/equipos/listado";
+    private static final String MARKET_PAGE = "http://supermanager.acb.com/mercado";
     public static final String EUROPEO_HOME_URL = "http://supermanager.acb.com/europeo/";
     private String competition;
 
     @Autowired
     private RestTemplate restTemplate;
+    private String user;
+    private String password;
+    private HttpHeaders httpHeaders;
 
     public SmContentProvider(String competition) {
         this.competition = competition;
@@ -34,12 +38,25 @@ public class SmContentProvider {
         restTemplate.getMessageConverters().add(new FormHttpMessageConverter());
     }
 
-    public String getTeamsPage(HttpHeaders httpHeaders) {
+    public String getTeamsPage() {
         ResponseEntity<String> exchange = restTemplate.exchange(URL_TEAM_LIST, HttpMethod.GET, new HttpEntity<>(null, httpHeaders), String.class);
         return exchange.getBody();
     }
 
-    public String authenticateUser(String user, String password, HttpHeaders httpHeaders) {
+    public String getTeamPage(SmTeam team) {
+        return restTemplate.exchange(BASE_URL + team.getUrl(), HttpMethod.GET, new HttpEntity<>(null, httpHeaders), String.class).getBody();
+    }
+
+    public String authenticateUser(String user, String password) {
+
+        this.user = user;
+        this.password = password;
+        httpHeaders = prepareHeaders();
+        addCookieFromEntryPageToHeaders(httpHeaders);
+        return checkUserLogin(user, password, httpHeaders);
+    }
+
+    private String checkUserLogin(String user, String password, HttpHeaders httpHeaders) {
         HttpEntity<MultiValueMap<String, String>> httpEntity;
         MultiValueMap<String, String> params = addFormParams(user, password);
         httpEntity = new HttpEntity<>(params, httpHeaders);
@@ -47,7 +64,7 @@ public class SmContentProvider {
         return exchange.getBody();
     }
 
-    public void addCookieFromEntryPageToHeaders(HttpHeaders httpHeaders) {
+    private void addCookieFromEntryPageToHeaders(HttpHeaders httpHeaders) {
         HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(null, httpHeaders);
         ResponseEntity<String> exchange = restTemplate.exchange(competition, HttpMethod.GET, httpEntity, String.class);
         String cookie = exchange.getHeaders().get("Set-Cookie").toString().replace("[", "").split(";")[0];
@@ -62,7 +79,7 @@ public class SmContentProvider {
         return params;
     }
 
-    public HttpHeaders prepareHeaders() {
+    private HttpHeaders prepareHeaders() {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Host", "supermanager.acb.com");
         httpHeaders.add(HttpHeaders.ACCEPT, "*/*");
@@ -71,8 +88,8 @@ public class SmContentProvider {
         return httpHeaders;
     }
 
-    public String getTeamPage(HttpHeaders httpHeaders, SmTeam team) {
-        return restTemplate.exchange(BASE_URL + team.getUrl(), HttpMethod.GET, new HttpEntity<>(null, httpHeaders), String.class).getBody();
+    public String getMarketPage() {
+        ResponseEntity<String> exchange = restTemplate.exchange(MARKET_PAGE, HttpMethod.GET, new HttpEntity<>(null, httpHeaders), String.class);
+        return exchange.getBody();
     }
-
 }
