@@ -55,12 +55,16 @@ public class SMUserTeamServiceImpl implements SMUserTeamService {
         team.setMeanScorePerPlayer((float) stats.getAverage());
         team.setUsedPlayers((int) stats.getCount());
         team.setComputedScore((float) stats.getSum());
-        team.setScorePrediction(computeTeamScorePrediction(stats, team));
+        team.setScorePrediction(round(computeTeamScorePrediction(stats, team)));
     }
 
     private float computeTeamScorePrediction(DoubleSummaryStatistics stats, SmTeam team) {
         return (float) stats.getAverage() * (team.getPlayerList().size()
                 - team.getPlayerList().stream().filter(p -> !p.getStatus().isActive() || p.getStatus().isInjured()).count());
+    }
+
+    private static float round(Number number) {
+        return Math.round(number.floatValue() * 100.0) / 100.0f;
     }
 
 }
