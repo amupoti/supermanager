@@ -52,9 +52,9 @@ public class SMUserTeamServiceImpl implements SMUserTeamService {
                 .filter(p -> !p.getScore().equals("-"))
                 .mapToDouble(p -> DataUtils.getScoreFromStringValue(p.getScore()))
                 .summaryStatistics();
-        team.setMeanScorePerPlayer((float) stats.getAverage());
+        team.setMeanScorePerPlayer(round((float) stats.getAverage()));
         team.setUsedPlayers((int) stats.getCount());
-        team.setComputedScore((float) stats.getSum());
+        team.setComputedScore(round((float) stats.getSum()));
         team.setScorePrediction(round(computeTeamScorePrediction(stats, team)));
     }
 
