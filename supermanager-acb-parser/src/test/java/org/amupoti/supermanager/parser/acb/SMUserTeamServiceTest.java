@@ -2,6 +2,7 @@ package org.amupoti.supermanager.parser.acb;
 
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
 import org.amupoti.supermanager.parser.acb.config.TestConfig;
+import org.amupoti.supermanager.parser.acb.teams.SMUserTeamService;
 import org.hamcrest.core.StringContains;
 import org.htmlcleaner.XPatherException;
 import org.junit.Assert;

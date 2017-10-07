@@ -1,8 +1,10 @@
 package org.amupoti.supermanager.parser.acb.beans;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
-import lombok.experimental.Builder;
+
+import java.util.Map;
 
 /**
  * Created by Marcel on 02/01/2016.
@@ -15,4 +17,5 @@ public class SmPlayer {
     String position;
     String score;
     SmPlayerStatus status;
+    Map<String, String> marketData;
 }

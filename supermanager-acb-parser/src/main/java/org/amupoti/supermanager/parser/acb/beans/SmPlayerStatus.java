@@ -27,10 +27,10 @@ public class SmPlayerStatus {
     @Override
     public String toString() {
         List<String> sb = new ArrayList<>();
-        if (!active) sb.add("Inactivo");
-        if (injured) sb.add("Lesionado");
-        if (spanish) sb.add("Español");
-        if (foreign) sb.add("Extracom");
+        if (!active) sb.add("INA");
+        if (injured) sb.add("LES");
+        if (spanish) sb.add("ESP");
+        if (foreign) sb.add("EXT");
         if (info) sb.add("Info");
         return String.join(", ", sb);
 

@@ -1,10 +1,12 @@
-package org.amupoti.supermanager.parser.acb;
+package org.amupoti.supermanager.parser.acb.teams;
 
 import lombok.extern.slf4j.Slf4j;
+import org.amupoti.supermanager.parser.acb.SmContentParser;
+import org.amupoti.supermanager.parser.acb.SmContentProvider;
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
+import org.amupoti.supermanager.parser.acb.beans.market.PlayerMarketData;
 import org.amupoti.supermanager.parser.acb.utils.DataUtils;
 import org.htmlcleaner.XPatherException;
-import org.springframework.http.HttpHeaders;
 
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
@@ -26,18 +28,18 @@ public class SMUserTeamServiceImpl implements SMUserTeamService {
     @Override
     public List<SmTeam> getTeamsByCredentials(String user, String password) throws XPatherException {
 
-        HttpHeaders httpHeaders = smContentProvider.prepareHeaders();
-
-        smContentProvider.addCookieFromEntryPageToHeaders(httpHeaders);
-        String loginPage = smContentProvider.authenticateUser(user, password, httpHeaders);
+        String loginPage = smContentProvider.authenticateUser(user, password);
         smContentParser.checkGameStatus(loginPage);
 
-        String pageBody = smContentProvider.getTeamsPage(httpHeaders);
+        String pageBody = smContentProvider.getTeamsPage();
         List<SmTeam> teams = smContentParser.getTeams(pageBody);
-        //no teams returned if game is closed
+
+        String marketPage = smContentProvider.getMarketPage();
+        PlayerMarketData playerMarketData = smContentParser.providePlayerData(marketPage);
+
         for (SmTeam team : teams) {
-            String teamPage = smContentProvider.getTeamPage(httpHeaders, team);
-            smContentParser.populateTeam(teamPage, team);
+            String teamPage = smContentProvider.getTeamPage(team);
+            smContentParser.populateTeam(teamPage, team, playerMarketData);
             computeTeamStats(team);
         }
 
@@ -50,15 +52,19 @@ public class SMUserTeamServiceImpl implements SMUserTeamService {
                 .filter(p -> !p.getScore().equals("-"))
                 .mapToDouble(p -> DataUtils.getScoreFromStringValue(p.getScore()))
                 .summaryStatistics();
-        team.setMeanScorePerPlayer((float) stats.getAverage());
+        team.setMeanScorePerPlayer(round((float) stats.getAverage()));
         team.setUsedPlayers((int) stats.getCount());
-        team.setComputedScore((float) stats.getSum());
-        team.setScorePrediction(computeTeamScorePrediction(stats, team));
+        team.setComputedScore(round((float) stats.getSum()));
+        team.setScorePrediction(round(computeTeamScorePrediction(stats, team)));
     }
 
     private float computeTeamScorePrediction(DoubleSummaryStatistics stats, SmTeam team) {
         return (float) stats.getAverage() * (team.getPlayerList().size()
                 - team.getPlayerList().stream().filter(p -> !p.getStatus().isActive() || p.getStatus().isInjured()).count());
+    }
+
+    private static float round(Number number) {
+        return Math.round(number.floatValue() * 100.0) / 100.0f;
     }
 
 }

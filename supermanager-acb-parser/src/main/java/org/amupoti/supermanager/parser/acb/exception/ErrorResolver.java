@@ -17,6 +17,7 @@ public class ErrorResolver {
                 "no funcione correctamente");
         errors.put(DEFAULT_ERROR, "Se ha producido un error, pruébalo de nuevo más tarde.");
         errors.put(INCORRECT_SESSION_ID, "Tu sesión ha caducado, prueba a hacer login de nuevo.");
+        errors.put(ERROR_PARSING_MARKET, "No se ha podido recuperar la información del mercado");
     }
 
     public static String getMessageFromCode(ErrorCode code) {
