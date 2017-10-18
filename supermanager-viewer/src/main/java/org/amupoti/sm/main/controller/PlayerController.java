@@ -26,7 +26,7 @@ public class PlayerController {
     }
 
     @RequestMapping(value = "/players/news.html")
-    public String getPLayerNews(Model model) throws URISyntaxException, ExecutionException, XPatherException, InterruptedException, IOException {
+    public String getPlayerNews(Model model) throws URISyntaxException, ExecutionException, XPatherException, InterruptedException, IOException {
 
         return "news";
     }

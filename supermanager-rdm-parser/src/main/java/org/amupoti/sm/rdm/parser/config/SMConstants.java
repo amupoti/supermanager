@@ -9,7 +9,8 @@ public interface SMConstants {
     //TODO: create enums
     String VISITOR = "Visitante";
     String LOCAL = "Local";
-    String[] teamIds = {"AND", "BLB", "CAI", "CAN", "EST", "FCB", "FUE", "GCA", "JOV", "LAB", "MAN", "MUR", "OBR", "RMA", "SEV", "UNI", "VBC"};
+    //TODO: UPDATE
+    String[] teamIds = {"AND", "BLB", "BUR", "CAI", "CAN", "EST", "FCB", "FUE", "GBC", "GCA", "JOV", "LAB", "MUR", "OBR", "RMA", "SEV", "UNI", "VBC"};
 
     String NOT_PLAYING_MATCH = "DES";
     String NOT_PLAYING_MATCH_TEXT = "Descansa";

@@ -13,9 +13,7 @@ public enum PlayerPositionRdm {
     private int number;
 
 
-    PlayerPositionRdm(String id,
-                      int number)
-
+    PlayerPositionRdm(String id, int number)
     {
         this.id = id;
         this.number = number;
