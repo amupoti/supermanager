@@ -3,6 +3,8 @@ package org.amupoti.sm.main.controller;
 import org.amupoti.sm.main.bean.SMUser;
 import org.amupoti.sm.main.model.UserTeamViewData;
 import org.amupoti.sm.main.users.UserCredentialsHolder;
+import org.amupoti.sm.rdm.parser.bean.SMPlayerDataBean;
+import org.amupoti.sm.rdm.parser.services.PlayerCompleteDataService;
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
 import org.amupoti.supermanager.parser.acb.exception.ErrorCode;
 import org.amupoti.supermanager.parser.acb.exception.SmException;
@@ -34,6 +36,9 @@ public class UserController {
 
     @Autowired
     private SMUserTeamService SMUserTeamService;
+
+    @Autowired
+    private PlayerCompleteDataService playerCompleteDataService;
 
     private UserCredentialsHolder userCredentialsHolder = new UserCredentialsHolder();
 
@@ -76,9 +81,25 @@ public class UserController {
         for (SmTeam team : userTeams) {
             teamMap.put(team.getName(), new UserTeamViewData(team.getPlayerList(), team.getScore(), team.getComputedScore(),
                     team.getUsedPlayers(), team.getMeanScorePerPlayer(), team.getScorePrediction()));
+            addPlayerStatsToTeam(team);
         }
 
         model.addAttribute("teamMap", teamMap);
         return "userTeams";
+    }
+
+    private void addPlayerStatsToTeam(SmTeam team) {
+        team.getPlayerList().stream().forEach(p -> {
+                    Optional<SMPlayerDataBean> playerCompleteData = playerCompleteDataService.getPlayerCompleteData(p.getName());
+                    if (playerCompleteData.isPresent()) {
+                        SMPlayerDataBean playerDataBean = playerCompleteData.get();
+                        if (p.getMarketData() == null) {
+                            log.error("a");
+                        }
+                        p.getMarketData().putIfAbsent("MVP", String.valueOf(playerDataBean.getMvp()));
+                        p.getMarketData().putIfAbsent("RANKING", String.valueOf(playerDataBean.getRanking()));
+                    }
+                }
+        );
     }
 }

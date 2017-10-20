@@ -13,9 +13,9 @@ import java.util.Map;
 @Builder
 @ToString
 public class SmPlayer {
-    String name;
-    String position;
-    String score;
-    SmPlayerStatus status;
-    Map<String, String> marketData;
+    private String name;
+    private String position;
+    private String score;
+    private SmPlayerStatus status;
+    private Map<String, String> marketData;
 }

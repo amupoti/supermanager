@@ -19,7 +19,7 @@ public class PlayerMarketData {
     }
 
     public Map<String, String> getPlayerMap(String playerName) {
-        return playerData.get(playerName);
+        return playerData.get(playerName) == null ? new HashMap<>() : playerData.get(playerName);
     }
 
     public int size() {

@@ -45,7 +45,7 @@ public class ComputePlayerValuesService {
      * @param playerEntity
      * @param smPlayerDataBean
      */
-    public void addTeamData(PlayerEntity playerEntity, SMPlayerDataBean smPlayerDataBean) {
+    private void addTeamData(PlayerEntity playerEntity, SMPlayerDataBean smPlayerDataBean) {
 
         int matchNumber = matchControlService.getMatchNumber();
         LOG.debug("Showing data for match number " + matchNumber);
@@ -120,7 +120,7 @@ public class ComputePlayerValuesService {
      * @param playerEntity
      * @param smPlayerDataBean
      */
-    public void addRawPlayerData(PlayerEntity playerEntity, SMPlayerDataBean smPlayerDataBean) {
+    private void addRawPlayerData(PlayerEntity playerEntity, SMPlayerDataBean smPlayerDataBean) {
         smPlayerDataBean.setPlayerId(playerEntity.getPlayerId().toString());
         smPlayerDataBean.setPlayerPosition(playerEntity.getPlayerPosition().name());
         smPlayerDataBean.setPlayerLocalVal(playerEntity.getLocalMean());
@@ -137,7 +137,7 @@ public class ComputePlayerValuesService {
      *
      * @param smPlayerDataBean
      */
-    public void addPlayerComputedData(SMPlayerDataBean smPlayerDataBean) {
+    private void addPlayerComputedData(SMPlayerDataBean smPlayerDataBean) {
 
         float meanNoNegative = (smPlayerDataBean.getMeanLastMatches() + 20) * 5;
         float mvpVal = meanNoNegative + (smPlayerDataBean.getPlayerOtherTeamReceivedValShort()) +

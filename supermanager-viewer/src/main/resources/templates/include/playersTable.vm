@@ -6,6 +6,8 @@
         <th>Precio</th>
         <th>= broker</th>
         <th>Últ 3</th>
+        <th>MVP</th>
+        <th>Ranking</th>
         <th>Pos.</th>
         <th>Val.</th>
 
@@ -19,6 +21,8 @@
             <td>$smData.marketData.get("PRICE")</td>
             <td>$smData.marketData.get("KEEP_BROKER")</td>
             <td>$smData.marketData.get("LAST_THREE_VAL")</td>
+            <td>$smData.marketData.get("MVP")</td>
+            <td>$smData.marketData.get("RANKING")</td>
             <td>$smData.position</td>
             <td>$smData.score</td>
 
