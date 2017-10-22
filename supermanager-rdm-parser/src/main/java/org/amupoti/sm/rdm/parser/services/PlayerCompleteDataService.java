@@ -30,8 +30,8 @@ public class PlayerCompleteDataService {
 
     private String adaptPlayerName(String playerName) {
         switch (playerName) {
-            case "O'Leary":
-                return "OLeary";
+            case "O'Leary, Ian":
+                return "OLeary, Ian";
             default:
                 return playerName;
         }
