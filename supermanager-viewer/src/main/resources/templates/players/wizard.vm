@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    #parse( "./include/header.vm" )
+    #parse( "../include/header.vm" )
 
 <script>
 $(document).ready(function()
@@ -17,7 +17,7 @@ $(document).ready(function()
 <body>
     <h1>Supermanager - Previsión para la jornada $matchNumber</h1>
         <table id="myTable" class="tablesorter">
-            #parse("./include/playersWizard.vm")
+            #parse("../include/playersWizard.vm")
         </table>
 </body>
 </html>

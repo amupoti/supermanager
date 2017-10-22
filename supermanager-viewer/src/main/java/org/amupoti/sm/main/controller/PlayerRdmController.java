@@ -50,12 +50,12 @@ public class PlayerRdmController {
     @Autowired
     private TeamService acbTeamService;
 
-    @RequestMapping(value = "/teams/")
+    @RequestMapping(value = "/teams/teams.html")
     public String getTeams(Model model) throws IOException, XPatherException, URISyntaxException, InterruptedException, ExecutionException {
 
         Iterable<TeamEntity> teamList = teamService.getTeams();
         model.addAttribute("teams", teamList);
-        return "teams";
+        return "teams/teams";
     }
 
     @RequestMapping(value = "/teams/scores.html")
@@ -63,7 +63,7 @@ public class PlayerRdmController {
 
         List<SMTeamDataBean> teamPoints = computeTeamValuesService.getTeamPoints();
         model.addAttribute("teams", teamPoints);
-        return "teamScores";
+        return "teams/teamScores";
     }
 
     @RequestMapping(value = "/populate/{match}")
@@ -79,14 +79,14 @@ public class PlayerRdmController {
     public String getSupermagerInfo(Model model) throws URISyntaxException, ExecutionException, XPatherException, InterruptedException, IOException {
 
         populatePlayerData(model);
-        return "wizard";
+        return "players/wizard";
     }
 
     @RequestMapping(value = "/players/simple.html")
     public String getSimpleSupermagerInfo(Model model) throws URISyntaxException, ExecutionException, XPatherException, InterruptedException, IOException {
 
         populatePlayerData(model);
-        return "simple";
+        return "players/simple";
     }
 
     private void populatePlayerData(Model model) {

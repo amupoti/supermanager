@@ -2,7 +2,7 @@
 <html>
 <head>
 
-    #parse( "./include/header.vm" )
+    #parse( "../include/header.vm" )
 <script>
 $(document).ready(function()
     {

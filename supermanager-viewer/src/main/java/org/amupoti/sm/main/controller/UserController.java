@@ -85,7 +85,7 @@ public class UserController {
         }
 
         model.addAttribute("teamMap", teamMap);
-        return "userTeams";
+        return "users/userTeams";
     }
 
     private void addPlayerStatsToTeam(SmTeam team) {
@@ -93,9 +93,6 @@ public class UserController {
                     Optional<SMPlayerDataBean> playerCompleteData = playerCompleteDataService.getPlayerCompleteData(p.getName());
                     if (playerCompleteData.isPresent()) {
                         SMPlayerDataBean playerDataBean = playerCompleteData.get();
-                        if (p.getMarketData() == null) {
-                            log.error("a");
-                        }
                         p.getMarketData().putIfAbsent("MVP", String.valueOf(playerDataBean.getMvp()));
                         p.getMarketData().putIfAbsent("RANKING", String.valueOf(playerDataBean.getRanking()));
                     }

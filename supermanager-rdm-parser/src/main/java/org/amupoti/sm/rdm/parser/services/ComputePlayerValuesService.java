@@ -11,6 +11,7 @@ import org.amupoti.sm.rdm.parser.repository.entity.ValueEntity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import static org.amupoti.sm.rdm.parser.bean.DataUtils.toFloat;
@@ -143,22 +144,27 @@ public class ComputePlayerValuesService {
         float mvpVal = meanNoNegative + (smPlayerDataBean.getPlayerOtherTeamReceivedValShort()) +
                 (smPlayerDataBean.getOtherTeamReceivedVal()) / 2 + (smPlayerDataBean.getTeamValAsLV()) / 3;
 
-        smPlayerDataBean.setMvp(toFloat(mvpVal));
+        mvpVal = (mvpVal - 130) * 100 / 260;
+        smPlayerDataBean.setMvp(toFloat(bounded(mvpVal)));
 
         float playerValue =
-                meanNoNegative * 5 +
+                meanNoNegative * 2 +
                         (smPlayerDataBean.getPlayerOtherTeamReceivedValShort()) * 4 +
                         (smPlayerDataBean.getPlayerOtherTeamReceivedValMedium()) * 3 +
                         (smPlayerDataBean.getPlayerOtherTeamReceivedValLong()) * 2 +
                         (smPlayerDataBean.getOtherTeamReceivedVal()) / 2 +
                         (smPlayerDataBean.getTeamValAsLV()) / 3;
-
-        smPlayerDataBean.setRanking(toFloat(playerValue));
+        playerValue = (playerValue - 180) * 100 / 900;
+        smPlayerDataBean.setRanking(toFloat(bounded(playerValue)));
 
     }
 
+    private float bounded(float playerValue) {
+        return Math.min(100, Math.max(playerValue, 0));
+    }
+
+    @Cacheable("playerData")
     public SMPlayerDataBean addPlayerData(PlayerEntity playerEntity) {
-        //TODO: add cache for this method
         SMPlayerDataBean smPlayerDataBean = new SMPlayerDataBean();
         addRawPlayerData(playerEntity, smPlayerDataBean);
         addTeamData(playerEntity, smPlayerDataBean);

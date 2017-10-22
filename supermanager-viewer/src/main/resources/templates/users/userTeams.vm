@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-#parse( "./include/header.vm" )
+#parse( "../include/header.vm" )
 <script>
 
  $(document).ready(function() {
@@ -69,11 +69,11 @@ background-color: #f7f7f7
 
         <h3>$key - $teamData.score ($teamData.computedScore) </h3>
         <table style="width: 80%" id="myTeamTable-$key" class="tablesorter">
-            #parse("./include/teamTable.vm")
+            #parse("../include/teamTable.vm")
         </table>
 
         <table style="width: 90%" id="myTable-$key" class="tablesorter">
-            #parse("./include/playersTable.vm")
+            #parse("../include/playersTable.vm")
         </table>
     #end
 </div>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    #parse( "../include/header.vm" )
+
+<script>
+$(document).ready(function()
+    {
+        $("#myTable").tablesorter({
+            widgets: ['zebra']
+            });
+    }
+);
+
+</script>
+</head>
+<body>
+    <h1>Supermanager - Previsión para la jornada $matchNumber. Vista simplificada</h1>
+        <table id="myTable" class="tablesorter">
+
+    <thead>
+    <tr>
+        <th>Jugador</th>
+        <th>Posición</th>
+        <th>Equipo</th>
+        <th>Local?</th>
+        <th>Contra?</th>
+
+        <th>Broker</th>
+        <th>Broker =</th>
+        <th>Media últ. 5</th>
+        <th>MVP</th>
+        <th>Ranking</th>
+
+    </tr>
+    </thead>
+    <tbody>
+         #foreach( $smData in $smDataList )
+        <tr>
+            <td>$smData.playerId</td>
+            <td>$smData.playerPosition</td>
+            <td>$smData.teamName</td>
+            <td>$smData.localOrVisitor</td>
+            <td>$smData.otherTeamName</td>
+            <td>$smData.broker</td>
+            <td>$smData.keepBroker</td>
+            <td>$smData.meanLastMatches</td>
+            <td>$smData.mvp</td>
+            <td>$smData.ranking</td>
+
+
+        </tr>
+      #end
+    </tbody>
+        </table>
+</body>
+</html>
+
+
+
