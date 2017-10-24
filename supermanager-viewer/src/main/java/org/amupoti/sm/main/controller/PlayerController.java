@@ -25,8 +25,14 @@ public class PlayerController {
         return "index";
     }
 
+    @RequestMapping(value = "/indice.html")
+    public String indexPro(Model model) {
+
+        return "indexPro";
+    }
+
     @RequestMapping(value = "/players/news.html")
-    public String getPLayerNews(Model model) throws URISyntaxException, ExecutionException, XPatherException, InterruptedException, IOException {
+    public String getPlayerNews(Model model) throws URISyntaxException, ExecutionException, XPatherException, InterruptedException, IOException {
 
         return "news";
     }

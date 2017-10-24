@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>SuperManager</title>
+    #parse( "./include/header.vm" )
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="twelve columns">
+                <h1>Índice</h1>
+                <ul>
+                    <li> <a href="/users/login.html"  class="btn btn-info" role="button">Listado de tus equipos</a></li>
+                    <li> <a href="/players/news.html"  class="btn btn-info" role="button">Dudas/Bajas de última hora</a></li>
+                    <li> <a href="/players/table.html"  class="btn btn-info" role="button">Tabla de jugadores</a></li>
+                    <li> <a href="/players/simple.html"  class="btn btn-info" role="button">Tabla de jugadores (Simple)</a></li>
+                    <li> <a href="/teams/scores.html"  class="btn btn-info" role="button">Predicción de anotación de los equipos</a></li>
+                    <li> <a href="/teams/teams.html"  class="btn btn-info" role="button">Tabla de equipos ACB</a></li>
+
+                </ul>
+            </div>
+         </div>
+    </div>
+</body>
+</html>

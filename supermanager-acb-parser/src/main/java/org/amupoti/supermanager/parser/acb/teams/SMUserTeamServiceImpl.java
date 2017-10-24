@@ -56,6 +56,7 @@ public class SMUserTeamServiceImpl implements SMUserTeamService {
         team.setUsedPlayers((int) stats.getCount());
         team.setComputedScore(round((float) stats.getSum()));
         team.setScorePrediction(round(computeTeamScorePrediction(stats, team)));
+
     }
 
     private float computeTeamScorePrediction(DoubleSummaryStatistics stats, SmTeam team) {
