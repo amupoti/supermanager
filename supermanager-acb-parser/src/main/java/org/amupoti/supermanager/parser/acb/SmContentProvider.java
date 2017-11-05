@@ -1,6 +1,8 @@
 package org.amupoti.supermanager.parser.acb;
 
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
+import org.amupoti.supermanager.parser.acb.exception.ErrorCode;
+import org.amupoti.supermanager.parser.acb.exception.SmException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.http.converter.FormHttpMessageConverter;
@@ -44,7 +46,9 @@ public class SmContentProvider {
     }
 
     public String getTeamPage(SmTeam team) {
-        return restTemplate.exchange(BASE_URL + team.getUrl(), HttpMethod.GET, new HttpEntity<>(null, httpHeaders), String.class).getBody();
+        String body = restTemplate.exchange(BASE_URL + team.getUrl(), HttpMethod.GET, new HttpEntity<>(null, httpHeaders), String.class).getBody();
+        if (body == null) throw new SmException(ErrorCode.ERROR_PARSING_TEAMS);
+        return body;
     }
 
     public String authenticateUser(String user, String password) {
