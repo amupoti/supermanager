@@ -26,7 +26,7 @@ public class SMUserTeamServiceImpl implements SMUserTeamService {
     }
 
     @Override
-    public List<SmTeam> getTeamsByCredentials(String user, String password) throws XPatherException {
+    synchronized public List<SmTeam> getTeamsByCredentials(String user, String password) throws XPatherException {
 
         String loginPage = smContentProvider.authenticateUser(user, password);
         smContentParser.checkGameStatus(loginPage);
