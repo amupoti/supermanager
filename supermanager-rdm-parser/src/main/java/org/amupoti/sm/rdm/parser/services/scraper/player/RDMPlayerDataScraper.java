@@ -18,14 +18,10 @@ import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 /**
  * Loads data from www.elrincondelmanager.es so it can be loaded in the local database
@@ -108,7 +104,6 @@ public class RDMPlayerDataScraper implements PlayerDataService {
     }
 
     public List<PlayerEntity> getPlayersData(Set<PlayerId> playerIds) {
-        List<Future<PlayerEntity>> futurePlayerDataList = new LinkedList<>();
         List<PlayerEntity> playerDataList = new LinkedList<>();
 
 
@@ -118,31 +113,15 @@ public class RDMPlayerDataScraper implements PlayerDataService {
             num++;
             log.info("Getting data for player " + playerId + ". " + num + " out of " + playerIds.size() + " processed.");
 
-            Future<PlayerEntity> playerData = null;
             try {
-                playerData = populatePlayerData(playerId);
-                futurePlayerDataList.add(playerData);
-                sleep(50);
+                PlayerEntity playerData = populatePlayerData(playerId);
+                playerDataList.add(playerData);
             } catch (PlayerException e) {
                 log.error("Could not get data for player " + playerId);
+                log.info("Processed " + num + " players out of " + playerIds.size());
             }
         }
 
-        for (int i = 0; i < futurePlayerDataList.size(); i++) {
-            if (!futurePlayerDataList.get(i).isDone()) {
-                log.info("Player " + i + " not ready, waiting...");
-                sleep(50);
-                i--;
-            } else {
-                try {
-                    playerDataList.add(futurePlayerDataList.get(i).get());
-                    log.info("Processed " + (i + 1) + " players out of " + futurePlayerDataList.size());
-                } catch (ExecutionException | InterruptedException e) {
-                    log.error("Could not process player number " + (i + 1));
-                    e.printStackTrace();
-                }
-            }
-        }
         return playerDataList;
     }
 
@@ -162,8 +141,7 @@ public class RDMPlayerDataScraper implements PlayerDataService {
      * @throws IOException
      * @throws XPatherException
      */
-    @Async
-    private Future<PlayerEntity> populatePlayerData(PlayerId playerId) throws PlayerException {
+    private PlayerEntity populatePlayerData(PlayerId playerId) throws PlayerException {
 
         PlayerEntity playerEntity = playerRepository.findByPlayerId(playerId);
         if (playerEntity == null) {
@@ -196,7 +174,7 @@ public class RDMPlayerDataScraper implements PlayerDataService {
         } catch (DataParsingException | URISyntaxException | IOException e) {
             throw new PlayerException("A problem ocurred while populating player " + playerId, e);
         }
-        return new AsyncResult<>(playerEntity);
+        return playerEntity;
     }
 
 
