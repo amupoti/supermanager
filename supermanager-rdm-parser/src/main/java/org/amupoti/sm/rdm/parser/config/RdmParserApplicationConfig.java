@@ -1,9 +1,9 @@
 package org.amupoti.sm.rdm.parser.config;
 
 
-import org.amupoti.sm.rdm.parser.provider.HTMLProviderService;
+import org.amupoti.sm.rdm.parser.provider.HTMLProviderServiceV2;
 import org.amupoti.sm.rdm.parser.services.scraper.player.PlayerDataService;
-import org.amupoti.sm.rdm.parser.services.scraper.player.RDMPlayerDataScraper;
+import org.amupoti.sm.rdm.parser.services.scraper.player.RDMPlayerDataScraperV2;
 import org.amupoti.sm.rdm.parser.services.scraper.team.RDMTeamDataService;
 import org.amupoti.sm.rdm.parser.services.scraper.team.TeamDataService;
 import org.springframework.context.annotation.Bean;
@@ -19,14 +19,13 @@ import org.springframework.web.client.RestTemplate;
 public class RdmParserApplicationConfig {
 
     @Bean
-    public HTMLProviderService getHtmlProviderService() {
-        return new HTMLProviderService();
+    public HTMLProviderServiceV2 getHtmlProviderService() {
+        return new HTMLProviderServiceV2();
     }
 
     @Bean
     public PlayerDataService getPlayerDataService() {
-        return new RDMPlayerDataScraper();
-        //return new MockPlayerDataService();
+        return new RDMPlayerDataScraperV2();
     }
 
     @Bean

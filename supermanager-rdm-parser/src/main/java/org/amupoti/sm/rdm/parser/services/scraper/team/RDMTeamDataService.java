@@ -29,8 +29,8 @@ public class RDMTeamDataService implements TeamDataService {
     /**
      * XPath expressions for team page
      */
-    private static final String VAL_LOCAL = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[8]/td[2]";
-    private static final String VAL_LOCAL_RECEIVED = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[8]/td[3]";
+    private static final String VAL_LOCAL = "/body/div[5]/div/div[1]/div[2]/div/table/tbody/tr[1]/td[2]/text()[1]";
+    private static final String VAL_LOCAL_RECEIVED = "/body/div[5]/div/div[1]/div[2]/div/table/tbody/tr[1]/td[3]/text()[1]";
     private static final String VAL_VISITOR = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[8]/td[4]";
     private static final String VAL_VISITOR_RECEIVED = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[8]/td[5]";
     private static final String VAL = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[8]/td[6]";
