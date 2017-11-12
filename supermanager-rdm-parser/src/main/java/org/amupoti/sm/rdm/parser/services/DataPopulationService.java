@@ -78,7 +78,6 @@ public class DataPopulationService {
         for (TeamEntity teamEntity : teams) {
             populateMatchesByTeam(teamEntity.getName());
         }
-
     }
 
     /**
@@ -260,7 +259,5 @@ public class DataPopulationService {
 
         teamRepository.save(teamEntity);
     }
-
-
 }
 
