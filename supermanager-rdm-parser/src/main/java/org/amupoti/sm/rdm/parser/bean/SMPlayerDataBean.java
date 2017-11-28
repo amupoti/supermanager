@@ -42,5 +42,6 @@ public class SMPlayerDataBean {
 
     Float mvp;
     Float ranking;
+    String color;
 }
 

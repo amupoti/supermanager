@@ -13,6 +13,12 @@ $(document).ready(function()
 );
 
 </script>
+
+<style>
+    .tablesorter tr[style] td {background: transparent}
+    .tablesorter tr {    border-bottom:1pt solid white }
+</style>
+
 </head>
 <body>
     <h1>Supermanager - Previsión para la jornada $matchNumber</h1>
