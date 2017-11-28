@@ -96,6 +96,7 @@ public class UserController {
                         p.getMarketData().putIfAbsent("MVP", String.valueOf(playerDataBean.getMvp()));
                         p.getMarketData().putIfAbsent("RANKING", String.valueOf(playerDataBean.getRanking()));
                         p.getMarketData().putIfAbsent("TEAM", playerCompleteData.get().getTeamName());
+                        p.getMarketData().putIfAbsent("COLOR", playerCompleteData.get().getColor());
                     }
                 }
         );

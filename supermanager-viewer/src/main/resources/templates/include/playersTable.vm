@@ -24,7 +24,7 @@
             <td>$smData.marketData.get("KEEP_BROKER")</td>
             <td>$smData.marketData.get("LAST_THREE_VAL")</td>
             <td>$smData.marketData.get("MVP")</td>
-            <td>$smData.marketData.get("RANKING")</td>
+            <td style="background-color:#$smData.marketData.get("COLOR")">$smData.marketData.get("RANKING")</td>
             <td>$smData.position</td>
             <td>$smData.score</td>
 
