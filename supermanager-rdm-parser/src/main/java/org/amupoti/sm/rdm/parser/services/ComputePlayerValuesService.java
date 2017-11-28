@@ -156,11 +156,33 @@ public class ComputePlayerValuesService {
                         (smPlayerDataBean.getTeamValAsLV()) / 3;
         playerValue = (playerValue - 180) * 100 / 900;
         smPlayerDataBean.setRanking(toFloat(bounded(playerValue)));
+        smPlayerDataBean.setColor(computeColor(bounded(playerValue)));
+    }
+
+
+    private String computeColor(Float mvp) {
+        float red = 255 * (100 - mvp) / 100;
+        float blue = 110;
+        float green = (255 * mvp) / 100;
+        float offset = 80;
+        red = boundedColor(red + offset);
+        green = boundedColor(green + offset);
+        return Integer.toHexString((int) red)
+                + Integer.toHexString((int) green)
+                + Integer.toHexString((int) blue);
+
 
     }
 
+    private float bounded(float value, float max) {
+        return Math.min(max, Math.max(value, 0));
+    }
     private float bounded(float playerValue) {
-        return Math.min(100, Math.max(playerValue, 0));
+        return bounded(playerValue, 100);
+    }
+
+    private float boundedColor(float playerValue) {
+        return bounded(playerValue, 255);
     }
 
     @Cacheable("playerData")
@@ -170,6 +192,5 @@ public class ComputePlayerValuesService {
         addTeamData(playerEntity, smPlayerDataBean);
         addPlayerComputedData(smPlayerDataBean);
         return smPlayerDataBean;
-
     }
 }
