@@ -95,6 +95,7 @@ public class UserController {
                         SMPlayerDataBean playerDataBean = playerCompleteData.get();
                         p.getMarketData().putIfAbsent("MVP", String.valueOf(playerDataBean.getMvp()));
                         p.getMarketData().putIfAbsent("RANKING", String.valueOf(playerDataBean.getRanking()));
+                        p.getMarketData().putIfAbsent("TEAM", playerCompleteData.get().getTeamName());
                     }
                 }
         );

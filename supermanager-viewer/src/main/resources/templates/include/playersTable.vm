@@ -3,11 +3,12 @@
     <tr>
         <th>Status</th>
         <th>Jugador</th>
+        <th>Equipo</th>
         <th>Precio</th>
         <th>= broker</th>
         <th>Últ 3</th>
-        <th>MVP</th>
-        <th>Ranking</th>
+        <th>MVP?</th>
+        <th>Próximos 5</th>
         <th>Pos.</th>
         <th>Val.</th>
 
@@ -18,6 +19,7 @@
         <tr>
             <td>$smData.status</td>
             <td>$smData.name</td>
+            <td>$smData.marketData.get("TEAM")</td>
             <td>$smData.marketData.get("PRICE")</td>
             <td>$smData.marketData.get("KEEP_BROKER")</td>
             <td>$smData.marketData.get("LAST_THREE_VAL")</td>
