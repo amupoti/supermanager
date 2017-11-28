@@ -13,7 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class})
-public class RDMPlayerDataScraperV2Test {
+public class RdmPlayerDataScraperV2Test {
 
 
     @Test
