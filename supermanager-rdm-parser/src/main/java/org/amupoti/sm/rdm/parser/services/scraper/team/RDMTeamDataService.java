@@ -3,8 +3,11 @@ package org.amupoti.sm.rdm.parser.services.scraper.team;
 import org.amupoti.sm.rdm.parser.bean.PlayerPositionRdm;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
@@ -12,7 +15,9 @@ import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by Marcel on 17/08/2015.
@@ -168,8 +173,10 @@ public class RDMTeamDataService implements TeamDataService {
      */
     private String getTeamPage(String teamId, PlayerPositionRdm position) throws IOException {
         org.apache.http.client.HttpClient client = HttpClients.createDefault();
-        HttpGet httpPost = new HttpGet((TEAM_PAGE + teamId));
-        //TODO: wait until page allows results per position
+        HttpPost httpPost = new HttpPost((TEAM_PAGE + teamId));
+        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
+        nvps.add(new BasicNameValuePair("pos", position.getId()));
+        httpPost.setEntity(new UrlEncodedFormEntity(nvps));
         HttpResponse response = client.execute(httpPost);
         return IOUtils.toString(response.getEntity().getContent());
 

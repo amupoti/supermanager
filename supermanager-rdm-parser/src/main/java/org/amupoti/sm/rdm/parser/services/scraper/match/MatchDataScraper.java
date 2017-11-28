@@ -1,7 +1,7 @@
 package org.amupoti.sm.rdm.parser.services.scraper.match;
 
 import lombok.Setter;
-import org.amupoti.sm.rdm.parser.provider.HTMLProviderService;
+import org.amupoti.sm.rdm.parser.provider.HTMLProviderServiceV2;
 import org.amupoti.sm.rdm.parser.repository.entity.MatchEntity;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
@@ -23,7 +23,7 @@ public class MatchDataScraper {
 
     @Autowired
     @Setter
-    private HTMLProviderService htmlProviderService;
+    private HTMLProviderServiceV2 htmlProviderService;
     private HtmlCleaner cleaner;
 
 
