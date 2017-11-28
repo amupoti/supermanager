@@ -40,7 +40,7 @@
             <td>$smData.keepBroker</td>
             <td>$smData.meanLastMatches</td>
             <td>$smData.mvp</td>
-            <td>$smData.ranking</td>
+            <td style="background-color:#$smData.color">$smData.ranking</td>
             <td>$smData.teamValAsLV</td>
             <td>$smData.otherTeamReceivedValAsLV</td>
 
