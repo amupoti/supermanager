@@ -11,6 +11,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
@@ -29,23 +30,22 @@ public class RDMTeamDataService implements TeamDataService {
     /**
      * XPath expressions for team page
      */
-    private static final String VAL_LOCAL = "/body/div[5]/div/div[1]/div[2]/div/table/tbody/tr[1]/td[2]/text()[1]";
-    private static final String VAL_LOCAL_RECEIVED = "/body/div[5]/div/div[1]/div[2]/div/table/tbody/tr[1]/td[3]/text()[1]";
-    private static final String VAL_VISITOR = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[8]/td[4]";
-    private static final String VAL_VISITOR_RECEIVED = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[8]/td[5]";
-    private static final String VAL = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[8]/td[6]";
-    private static final String VAL_RECEIVED = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[8]/td[7]";
+    private static final String VAL_LOCAL = "/body/div[5]/div/div[1]/div[2]/div/table/tbody/tr[1]/td[2]";
+    private static final String VAL_LOCAL_RECEIVED = "/body/div[5]/div/div[1]/div[2]/div/table/tbody/tr[1]/td[3]";
+    private static final String VAL_VISITOR = "/body/div[5]/div/div[1]/div[2]/div/table/tbody/tr[1]/td[4]";
+    private static final String VAL_VISITOR_RECEIVED = "/body/div[5]/div/div[1]/div[2]/div/table/tbody/tr[1]/td[5]";
+    private static final String VAL = "/body/div[5]/div/div[1]/div[2]/div/table/tbody/tr[1]/td[6]";
+    private static final String VAL_RECEIVED = "/body/div[5]/div/div[1]/div[2]/div/table/tbody/tr[1]/td[7]";
 
-    private static final String POINTS_LOCAL = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[9]/td[2]";
-    private static final String POINTS_LOCAL_RECEIVED = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[9]/td[3]";
-    private static final String POINTS_VISITOR = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[9]/td[4]";
-    private static final String POINTS_VISITOR_RECEIVED = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[9]/td[5]";
-    private static final String POINTS = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[9]/td[6]";
-    private static final String POINTS_RECEIVED = "//*[@id=\"sm_central\"]/div[1]/table/tbody/tr[9]/td[7]";
+    private static final String POINTS_LOCAL = "/body/div[5]/div/div[1]/div[2]/div/table/tbody/tr[2]/td[2]";
+    private static final String POINTS_LOCAL_RECEIVED = "/body/div[5]/div/div[1]/div[2]/div/table/tbody/tr[2]/td[3]";
+    private static final String POINTS_VISITOR = "/body/div[5]/div/div[1]/div[2]/div/table/tbody/tr[2]/td[4]";
+    private static final String POINTS_VISITOR_RECEIVED = "/body/div[5]/div/div[1]/div[2]/div/table/tbody/tr[2]/td[5]";
+    private static final String POINTS = "/body/div[5]/div/div[1]/div[2]/div/table/tbody/tr[2]/td[6]";
+    private static final String POINTS_RECEIVED = "/body/div[5]/div/div[1]/div[2]/div/table/tbody/tr[2]/td[7]";
 
-
-    public static final String TEAM_PAGE = "http://www.rincondelmanager.com/smgr/team.php?equipo=";
-
+    @Value("${url.team}")
+    public String TEAM_PAGE;
 
     /**
      * String containing the HTML code of the page
@@ -133,6 +133,9 @@ public class RDMTeamDataService implements TeamDataService {
             if (value.contains("(")) {
                 value = parseVal(value);
             }
+            if (value.contains(",")) {
+                value = value.replace(",", ".");
+            }
             return value;
         } catch (Exception e) {
             //TODO: this is a poor way to handle any problem we may have during parsing, but won't break data
@@ -172,7 +175,7 @@ public class RDMTeamDataService implements TeamDataService {
         org.apache.http.client.HttpClient client = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost((TEAM_PAGE + teamId));
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-        nvps.add(new BasicNameValuePair("posi", position.getId()));
+        nvps.add(new BasicNameValuePair("pos", position.getId()));
         httpPost.setEntity(new UrlEncodedFormEntity(nvps));
         HttpResponse response = client.execute(httpPost);
         return IOUtils.toString(response.getEntity().getContent());

@@ -29,7 +29,7 @@ import java.util.*;
  * Created by Marcel on 17/08/2015.
  */
 @Slf4j
-public class RDMPlayerDataScraperV2 implements PlayerDataService {
+public class RdmPlayerDataScraperV2 implements PlayerDataService {
 
     public static final int ROW_VAL_MEDIA_LOCAL = 1;
     public static final int ROW_VAL_MEDIA_VISITANTE = 2;
@@ -62,7 +62,7 @@ public class RDMPlayerDataScraperV2 implements PlayerDataService {
     @Autowired
     private MatchControlService matchControlService;
 
-    public RDMPlayerDataScraperV2() {
+    public RdmPlayerDataScraperV2() {
         cleaner = new HtmlCleaner();
     }
 
@@ -169,15 +169,15 @@ public class RDMPlayerDataScraperV2 implements PlayerDataService {
         try {
             html = htmlProviderService.getPlayerURL(playerId);
 
-            String localMean = getValueViaLabelForPlayerMeans(html, RDMPlayerDataScraperV2.ROW_VAL_MEDIA_LOCAL).replace(",", ".");
-            String visitorMean = getValueViaLabelForPlayerMeans(html, RDMPlayerDataScraperV2.ROW_VAL_MEDIA_VISITANTE).replace(",", ".");
-            String keepBroker = getValueViaXPath(html, RDMPlayerDataScraperV2.VAL_MANTENER_BROKER).replace(",", ".");
-            String broker = getValueViaXPath(html, RDMPlayerDataScraperV2.BROKER).replace(".", "");
+            String localMean = getValueViaLabelForPlayerMeans(html, RdmPlayerDataScraperV2.ROW_VAL_MEDIA_LOCAL).replace(",", ".");
+            String visitorMean = getValueViaLabelForPlayerMeans(html, RdmPlayerDataScraperV2.ROW_VAL_MEDIA_VISITANTE).replace(",", ".");
+            String keepBroker = getValueViaXPath(html, RdmPlayerDataScraperV2.VAL_MANTENER_BROKER).replace(",", ".");
+            String broker = getValueViaXPath(html, RdmPlayerDataScraperV2.BROKER).replace(".", "");
             String meanLastMatches = getValueViaLabelForLastResults(html);
             log.debug("Mean of lastMatches for player " + playerId + " is " + meanLastMatches);
 
             //Parse team and store in player data
-            String team = getValueViaXPath(html, RDMPlayerDataScraperV2.PLAYER_TEAM);
+            String team = getValueViaXPath(html, RdmPlayerDataScraperV2.PLAYER_TEAM);
             team = parseTeam(team);
             TeamEntity teamEntity = teamService.getTeam(team);
 
