@@ -149,14 +149,22 @@ public class ComputePlayerValuesService {
 
         float playerValue =
                 meanNoNegative * 2 +
-                        (smPlayerDataBean.getPlayerOtherTeamReceivedValShort()) * 4 +
-                        (smPlayerDataBean.getPlayerOtherTeamReceivedValMedium()) * 3 +
-                        (smPlayerDataBean.getPlayerOtherTeamReceivedValLong()) * 2 +
+                        getPlayerExpectedMatchesValue(smPlayerDataBean) +
                         (smPlayerDataBean.getOtherTeamReceivedVal()) / 2 +
                         (smPlayerDataBean.getTeamValAsLV()) / 3;
         playerValue = (playerValue - 180) * 100 / 900;
         smPlayerDataBean.setRanking(toFloat(bounded(playerValue)));
         smPlayerDataBean.setColor(computeColor(bounded(playerValue)));
+    }
+
+    private float getPlayerExpectedMatchesValue(SMPlayerDataBean smPlayerDataBean) {
+        float nextValue = (smPlayerDataBean.getPlayerOtherTeamReceivedValShort()) * 4 +
+                (smPlayerDataBean.getPlayerOtherTeamReceivedValMedium()) * 3 +
+                (smPlayerDataBean.getPlayerOtherTeamReceivedValLong()) * 2;
+        if (smPlayerDataBean.getPlayerPosition().equals(PlayerPositionRdm.BASE.name())) {
+            nextValue *= 2;
+        }
+        return nextValue;
     }
 
 
