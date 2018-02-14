@@ -4,7 +4,6 @@
         <th>Status</th>
         <th>Jugador</th>
         <th>Precio</th>
-        <th>= broker</th>
         <th>Últ 3</th>
         <th>Pos.</th>
         <th>Val.</th>
@@ -17,7 +16,6 @@
             <td>$smData.status</td>
             <td>$smData.name</td>
             <td>$smData.marketData.get("PRICE")</td>
-            <td>$smData.marketData.get("KEEP_BROKER")</td>
             <td>$smData.marketData.get("LAST_THREE_VAL")</td>
             <td>$smData.position</td>
             <td>$smData.score</td>

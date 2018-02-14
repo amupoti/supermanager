@@ -21,6 +21,7 @@ public class SmContentProvider {
     private static final String URL_TEAM_LIST = "http://supermanager.acb.com/equipos/listado";
     private static final String MARKET_PAGE = "http://supermanager.acb.com/mercado";
     public static final String EUROPEO_HOME_URL = "http://supermanager.acb.com/europeo/";
+    public static final String COPA_HOME_URL = "http://supermanager.acb.com/copadelrey";
     private String competition;
 
     @Autowired
