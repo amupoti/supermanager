@@ -201,9 +201,9 @@ public class SmContentParser {
     }
 
     private String getDataFromChildrenForCategory(Object[] objects, int p, MarketCategory category) {
-        log.info("Getting data from children for category {}  and player {}", category, p);
+        log.debug("Getting data from children for category {}  and player {}", category, p);
         String value = ((TagNode) objects[0]).getAllElements(false)[p].getAllElements(false)[category.getColumn()].getAllChildren().get(0).toString();
-        log.info("Value is {}", value);
+        log.debug("Value is {}", value);
         return value;
     }
 
