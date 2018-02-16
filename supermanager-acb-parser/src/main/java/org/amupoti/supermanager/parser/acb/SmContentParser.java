@@ -169,19 +169,21 @@ public class SmContentParser {
                 int numPlayers = ((TagNode) objects[0]).getAllElements(false).length;
                 log.debug("There are {} players for position {}", numPlayers, pos);
                 for (int player = 0; player < numPlayers; player++) {
-                    int finalPlayer = player;
-                    if ((player == 46 && pos == 3) || (player == 39 && pos == 5)) {
-                        log.info("Skipping player {}-{}", pos, player);
-                        continue;
+                    try {
+                        int finalPlayer = player;
+                        String name = getDataFromElementForCategory(objects, player, NAME);
+                        playerMarketData.addPlayer(name);
+
+                        List<MarketCategory> categoriesElem = Arrays.asList(PRICE, BUY_PCT, LAST_VAL);
+                        categoriesElem.stream().forEach(c -> playerMarketData.addPlayerData(name, c.name(), getDataFromElementForCategory(objects, finalPlayer, c)));
+
+                        List<MarketCategory> categoriesChildren = Arrays.asList(MEAN_VAL, LAST_THREE_VAL);
+                        categoriesChildren.stream().forEach(c -> playerMarketData.addPlayerData(name, c.name(), getDataFromChildrenForCategory(objects, finalPlayer, c)));
+                    } catch (Exception e) {
+                        log.info("Could not process player with pos {} in row {}", pos, player);
+
+
                     }
-                    String name = getDataFromElementForCategory(objects, player, NAME);
-                    playerMarketData.addPlayer(name);
-
-                    List<MarketCategory> categoriesElem = Arrays.asList(PRICE, BUY_PCT, LAST_VAL);
-                    categoriesElem.stream().forEach(c -> playerMarketData.addPlayerData(name, c.name(), getDataFromElementForCategory(objects, finalPlayer, c)));
-
-                    List<MarketCategory> categoriesChildren = Arrays.asList(MEAN_VAL, LAST_THREE_VAL);
-                    categoriesChildren.stream().forEach(c -> playerMarketData.addPlayerData(name, c.name(), getDataFromChildrenForCategory(objects, finalPlayer, c)));
                 }
             }
         } catch (XPatherException e) {
