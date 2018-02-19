@@ -42,7 +42,7 @@ public class TestConfig {
 
     @Bean
     public SmContentProvider getSmContentProvider() {
-        return new SmContentProvider(SmContentProvider.COPA_HOME_URL);
+        return new SmContentProvider(SmContentProvider.ACTIVE_COMPETITION);
     }
 
     @Bean
