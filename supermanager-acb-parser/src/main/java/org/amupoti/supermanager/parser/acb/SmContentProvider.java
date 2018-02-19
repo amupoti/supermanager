@@ -22,6 +22,7 @@ public class SmContentProvider {
     private static final String MARKET_PAGE = "http://supermanager.acb.com/mercado";
     public static final String EUROPEO_HOME_URL = "http://supermanager.acb.com/europeo/";
     public static final String COPA_HOME_URL = "http://supermanager.acb.com/copadelrey";
+    public static final String ACTIVE_COMPETITION = SUPERMANAGER_HOME_URL;
     private String competition;
 
     @Autowired
