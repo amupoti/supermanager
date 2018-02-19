@@ -13,7 +13,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
-import static org.amupoti.supermanager.parser.acb.SmContentProvider.COPA_HOME_URL;
+import static org.amupoti.supermanager.parser.acb.SmContentProvider.ACTIVE_COMPETITION;
 
 /**
  * Created by Marcel on 06/08/2015.
@@ -51,7 +51,7 @@ public class ApplicationConfig {
 
     @Bean
     public SmContentProvider getSmContentProvider() {
-        return new SmContentProvider(COPA_HOME_URL);
+        return new SmContentProvider(ACTIVE_COMPETITION);
     }
 }
 
