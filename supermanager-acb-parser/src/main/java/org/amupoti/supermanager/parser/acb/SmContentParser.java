@@ -177,7 +177,7 @@ public class SmContentParser {
                         List<MarketCategory> categoriesElem = Arrays.asList(PRICE, BUY_PCT, LAST_VAL);
                         categoriesElem.stream().forEach(c -> playerMarketData.addPlayerData(name, c.name(), getDataFromElementForCategory(objects, finalPlayer, c)));
 
-                        List<MarketCategory> categoriesChildren = Arrays.asList(MEAN_VAL, LAST_THREE_VAL);
+                        List<MarketCategory> categoriesChildren = Arrays.asList(MEAN_VAL, LAST_THREE_VAL, KEEP_BROKER);
                         categoriesChildren.stream().forEach(c -> playerMarketData.addPlayerData(name, c.name(), getDataFromChildrenForCategory(objects, finalPlayer, c)));
                     } catch (Exception e) {
                         log.info("Could not process player with pos {} in row {}", pos, player);

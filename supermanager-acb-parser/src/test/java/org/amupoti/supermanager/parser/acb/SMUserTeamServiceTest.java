@@ -6,7 +6,6 @@ import org.amupoti.supermanager.parser.acb.teams.SMUserTeamService;
 import org.hamcrest.core.StringContains;
 import org.htmlcleaner.XPatherException;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,6 @@ public class SMUserTeamServiceTest {
     private SMUserTeamService acbTeamsService;
 
     @Test
-    @Ignore("Ignore for Copa18")
     public void getTeams() throws XPatherException {
 
 
@@ -42,7 +40,6 @@ public class SMUserTeamServiceTest {
 
 
     @Test
-    @Ignore("Ignore for Copa18")
     public void getPlayers() throws XPatherException {
 
 

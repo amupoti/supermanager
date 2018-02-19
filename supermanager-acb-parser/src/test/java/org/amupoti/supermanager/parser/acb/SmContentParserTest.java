@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.amupoti.supermanager.parser.acb.beans.market.PlayerMarketData;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
@@ -16,7 +15,6 @@ public class SmContentParserTest {
 
 
     @Test
-    @Ignore("Ignore during copa18")
     public void providePlayerData() throws Exception {
 
         SmContentParser parser = new SmContentParser();
