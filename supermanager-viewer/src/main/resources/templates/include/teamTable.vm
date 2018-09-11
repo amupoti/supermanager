@@ -1,13 +1,13 @@
 
     <thead>
     <tr>
-        <th>Val equipo</th>
-        <th>Val sumada equipo</th>
-        <th>Han jugado</th>
-        <th>Media por jugador</th>
+        <th class="text-center">Val. equipo</th>
+        <th class="text-center">Val. sumada</th>
+        <th class="text-center">Han jugado</th>
+        <th class="text-center">Media</th>
     </tr>
     </thead>
-    <tbody>
+    <tbody align="center">
         <tr>
             <td>$teamData.score</td>
             <td>$teamData.computedScore</td>
