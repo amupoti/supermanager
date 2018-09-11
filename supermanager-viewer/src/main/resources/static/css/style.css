@@ -7,11 +7,11 @@ table.tablesorter {
 	text-align: left;
 }
 table.tablesorter thead tr th, table.tablesorter tfoot tr th {
-	background-color: #999;
+	background-color: #def2f9;
 	border: 1px solid #FFF;
 	font-size: 8pt;
 	padding: 4px;
-	color: #fff
+	color: #222
 }
 table.tablesorter thead tr .header {
 	background-image: url(bg.gif);
@@ -21,7 +21,7 @@ table.tablesorter thead tr .header {
 }
 table.tablesorter tbody td {
 	color: #3D3D3D;
-	padding: 4px;
+	padding: 7px;
 	background-color: #FFF;
 	vertical-align: top;
 }
@@ -49,3 +49,7 @@ h1, h2, h3{
 #countdown{
  color: #fff;
 }
+
+#biggerNum{
+ font-size: 110%
+ }
