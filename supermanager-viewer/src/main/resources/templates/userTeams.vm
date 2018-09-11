@@ -9,7 +9,7 @@
    $('.containerts').each(function(i) {
      $(this).children(".tablesorter")
        .tablesorter({
-         widthFixed: true,
+         widthFixed: false,
          widgets: ['zebra']
        });
    });
@@ -25,7 +25,7 @@
 </script>
     <style type="text/css">
 body{
-background-color: #f7f7f7
+background-color: #64b6ee
 }
     </style>
 </head>
@@ -33,10 +33,11 @@ background-color: #f7f7f7
 
 <div align="right" id="countdown"></div>
 
-<h1>Resumen de tus equipos</h1>
+
 <div align="center" class="containerts">
+    <h1>Resumen de tus equipos</h1>
     #set ($map = $teamMap)
-    <table style="width: 80%" id="myTable-overview" class="tablesorter">
+    <table style="width: 90%" id="myTable-overview" class="tablesorter">
         <thead>
         <tr>
             <th>Equipo</th>
@@ -60,7 +61,7 @@ background-color: #f7f7f7
         #end
     </table>
 </div>
-<h1>Detalle de tus equipos</h1>
+
 <div align="center" class="containerts">
     #set ($map = $teamMap)
     #foreach( $key in $map.keySet())
@@ -68,7 +69,7 @@ background-color: #f7f7f7
         #set ($teamData = $map.get($key))
 
         <h3>$key - $teamData.score ($teamData.computedScore) </h3>
-        <table style="width: 80%" id="myTeamTable-$key" class="tablesorter">
+        <table style="width: 90%" id="myTeamTable-$key" class="tablesorter">
             #parse("./include/teamTable.vm")
         </table>
 
