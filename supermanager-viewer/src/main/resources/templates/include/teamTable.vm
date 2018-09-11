@@ -1,10 +1,10 @@
 
     <thead>
     <tr>
-        <th>Val equipo</th>
-        <th>Val sumada equipo</th>
+        <th>Val. equipo</th>
+        <th>Val. sumada</th>
         <th>Han jugado</th>
-        <th>Media por jugador</th>
+        <th>Media</th>
     </tr>
     </thead>
     <tbody>
