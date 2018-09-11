@@ -40,10 +40,10 @@ background-color: #f7f7f7
         <thead>
         <tr>
             <th>Equipo</th>
-            <th>Valoración</th>
-            <th>Valoración sumada</th>
+            <th>Val.</th>
+<!--            <th>Val. sumada</th> -->
             <th>Han jugado</th>
-            <th>Media por jugador</th>
+            <th>Media</th>
             <th>Proyección</th>
         </tr>
         </thead>
@@ -51,7 +51,7 @@ background-color: #f7f7f7
         <tr>
             #set ($teamData = $map.get($key))
                 <td>$key</td>
-            <td>$teamData.score</td>
+<!--            <td>$teamData.score</td> -->
             <td>$teamData.computedScore</td>
             <td>$teamData.usedPlayers</td>
             <td>$teamData.meanScorePerPlayer</td>
