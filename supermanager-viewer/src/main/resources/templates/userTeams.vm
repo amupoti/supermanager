@@ -53,10 +53,10 @@ background-color: #64b6ee
             #set ($teamData = $map.get($key))
                 <td>$key</td>
 <!--            <td>$teamData.score</td> -->
-            <td>$teamData.computedScore</td>
+            <td id="biggerNum">$teamData.computedScore</td>
             <td>$teamData.usedPlayers</td>
             <td>$teamData.meanScorePerPlayer</td>
-            <td>$teamData.scorePrediction</td>
+            <td id="biggerNum">$teamData.scorePrediction</td>
         </tr>
         #end
     </table>
