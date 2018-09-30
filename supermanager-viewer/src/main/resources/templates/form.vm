@@ -1,12 +1,11 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>Listado de los jugadores de tus equipos del SuperManeger</title>
+    <title>Listado de los jugadores de tus equipos del SuperManager</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     #parse( "./include/header.vm" )
 </head>
 <style media="screen" type="text/css">
-@import "bourbon";
 
 body {
 	background: #eee !important;
@@ -17,6 +16,12 @@ body {
   margin-bottom: 80px;
 }
 
+
+.h2{
+
+  color: #000 ! important;
+
+}
 .form-signin {
   max-width: 380px;
   padding: 15px 35px 45px;
@@ -64,7 +69,7 @@ body {
 </form>
     <div class="wrapper">
       <form action="dologin.html" method="post" class="form-signin">
-        <h2 class="form-signin-heading">Acceso</h2>
+        <h2 class="form-signin-heading" style="color:#000" >Usuario y contraseña del supermanager</h2>
         <input type="text" class="form-control" name="login" placeholder="Usuario de supermanager" id="login" required="" autofocus="" />
         <input type="password" class="form-control" name="password" placeholder="Password" id="p" required=""/>
         <button class="btn btn-lg btn-primary btn-block" type="submit">Enviar</button>
