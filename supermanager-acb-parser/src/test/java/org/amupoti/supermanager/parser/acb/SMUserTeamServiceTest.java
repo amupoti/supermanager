@@ -33,8 +33,8 @@ public class SMUserTeamServiceTest {
 
         List<SmTeam> teams = acbTeamsService.getTeamsByCredentials(USER, PASSWORD);
         Assert.assertEquals(3, teams.size());
-        Assert.assertThat(teams.get(0).getName() + teams.get(1).getName(), StringContains.containsString("El equipo 1"));
-        Assert.assertThat(teams.get(0).getName() + teams.get(1).getName(), StringContains.containsString("El equipo 2"));
+        Assert.assertThat(teams.get(0).getName() + teams.get(1).getName() + teams.get(2).getName(), StringContains.containsString("El equipo 1"));
+        Assert.assertThat(teams.get(0).getName() + teams.get(1).getName() + teams.get(2).getName(), StringContains.containsString("El equipo 2"));
 
     }
 
