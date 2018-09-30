@@ -8,11 +8,8 @@
     <!-- Bootstrap core CSS -->
     <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <link href="/bootstrap/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
-
     <!-- Custom styles for this template -->
-    <link href="signin.css" rel="stylesheet">
+
     <link rel="stylesheet" href="/css/style.css" type="text/css" id="" media="print, projection, screen">
     <link rel="stylesheet" href="/css/normalize.css" type="text/css">
 
