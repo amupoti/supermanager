@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.amupoti.supermanager.parser.acb.SmContentParser;
 import org.amupoti.supermanager.parser.acb.SmContentProvider;
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
+import org.amupoti.supermanager.parser.acb.beans.market.MarketCategory;
 import org.amupoti.supermanager.parser.acb.beans.market.PlayerMarketData;
 import org.amupoti.supermanager.parser.acb.utils.DataUtils;
 import org.htmlcleaner.XPatherException;
@@ -56,6 +57,15 @@ public class SMUserTeamServiceImpl implements SMUserTeamService {
         team.setUsedPlayers((int) stats.getCount());
         team.setComputedScore(round((float) stats.getSum()));
         team.setScorePrediction(round(computeTeamScorePrediction(stats, team)));
+        int brokerSum = getBrokerSum(team);
+        team.setTeamBroker(brokerSum);
+        team.setTotalBroker(team.getCash() + brokerSum);
+    }
+
+    private int getBrokerSum(SmTeam team) {
+        return team.getPlayerList().stream()
+                .map(p -> p.getMarketData().get(MarketCategory.PRICE.name()))
+                .mapToInt(DataUtils::toPriceValue).sum();
     }
 
     private float computeTeamScorePrediction(DoubleSummaryStatistics stats, SmTeam team) {

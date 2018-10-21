@@ -7,6 +7,7 @@ import org.amupoti.supermanager.parser.acb.beans.SmTeam;
 import org.amupoti.supermanager.parser.acb.exception.ErrorCode;
 import org.amupoti.supermanager.parser.acb.exception.SmException;
 import org.amupoti.supermanager.parser.acb.teams.SMUserTeamService;
+import org.amupoti.supermanager.parser.acb.utils.DataUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.htmlcleaner.XPatherException;
@@ -74,8 +75,17 @@ public class UserController {
 
         List<SmTeam> userTeams = SMUserTeamService.getTeamsByCredentials(user.getLogin(), user.getPassword());
         for (SmTeam team : userTeams) {
-            teamMap.put(team.getName(), new UserTeamViewData(team.getPlayerList(), team.getScore(), team.getComputedScore(),
-                    team.getUsedPlayers(), team.getMeanScorePerPlayer(), team.getScorePrediction()));
+            teamMap.put(team.getName(), UserTeamViewData.builder()
+                    .playerList(team.getPlayerList())
+                    .score(team.getScore())
+                    .computedScore(team.getComputedScore())
+                    .usedPlayers(team.getUsedPlayers())
+                    .meanScorePerPlayer(team.getMeanScorePerPlayer())
+                    .scorePrediction(team.getScorePrediction())
+                    .cash(DataUtils.format(team.getCash()))
+                    .totalBroker(DataUtils.format(team.getTotalBroker()))
+                    .teamBroker(DataUtils.format(team.getTeamBroker()))
+                    .build());
         }
 
         model.addAttribute("teamMap", teamMap);
