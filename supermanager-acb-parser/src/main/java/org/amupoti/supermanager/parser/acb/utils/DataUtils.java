@@ -17,12 +17,16 @@ public class DataUtils {
         DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.getDefault());
         otherSymbols.setDecimalSeparator('.');
         otherSymbols.setGroupingSeparator(',');
-        df = new DecimalFormat("#0.00", otherSymbols);
+        df = new DecimalFormat("##,###,###.##", otherSymbols);
     }
 
     public static String format(Number number) {
 
         return df.format(round(number));
+    }
+
+    public static int toPriceValue(String price) {
+        return Integer.parseInt(price.replace(".", ""));
     }
 
     public static String format(String value) {

@@ -42,7 +42,6 @@ background-color: #64b6ee
         <tr>
             <th>Equipo</th>
             <th>Val.</th>
-<!--            <th>Val. sumada</th> -->
             <th>Han jugado</th>
             <th>Media</th>
             <th>Proyección</th>
@@ -52,7 +51,6 @@ background-color: #64b6ee
         <tr>
             #set ($teamData = $map.get($key))
                 <td>$key</td>
-<!--            <td>$teamData.score</td> -->
             <td id="biggerNum">$teamData.computedScore</td>
             <td>$teamData.usedPlayers</td>
             <td>$teamData.meanScorePerPlayer</td>
