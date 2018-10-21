@@ -22,5 +22,8 @@ public class SmTeam {
     private int usedPlayers;
     private Float meanScorePerPlayer;
     private Float scorePrediction;
+    private int cash;
+    private int teamBroker;
+    private int totalBroker;
 
 }

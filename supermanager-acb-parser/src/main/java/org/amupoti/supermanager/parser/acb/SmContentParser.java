@@ -9,6 +9,7 @@ import org.amupoti.supermanager.parser.acb.beans.market.MarketCategory;
 import org.amupoti.supermanager.parser.acb.beans.market.PlayerMarketData;
 import org.amupoti.supermanager.parser.acb.exception.ErrorCode;
 import org.amupoti.supermanager.parser.acb.exception.SmException;
+import org.amupoti.supermanager.parser.acb.utils.DataUtils;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
@@ -31,6 +32,7 @@ public class SmContentParser {
     private HtmlCleaner htmlCleaner;
     public static final String MARKET_REGEX = "//*[@id=\"posicion%d\"]/tbody";
 
+
     @PostConstruct
     public void init() {
         htmlCleaner = new HtmlCleaner();
@@ -40,7 +42,18 @@ public class SmContentParser {
         TagNode node = htmlCleaner.clean(html);
         addPlayers(team, node, playerMarketData);
         addTotalScore(team, node);
+        addTeamCash(team, node);
+    }
 
+    private void addTeamCash(SmTeam team, TagNode node) throws XPatherException {
+        String xpathScore = "//*[@id=\"presupuesto\"]";
+        Object[] objects = node.evaluateXPath(xpathScore);
+        String cash = ((TagNode) objects[0]).getAllChildren().get(0).toString();
+        try {
+            team.setCash(DataUtils.toPriceValue(cash));
+        } catch (NumberFormatException e) {
+            team.setCash(-1);
+        }
     }
 
     private void addPlayers(SmTeam team, TagNode node, PlayerMarketData playerMarketData) throws XPatherException {

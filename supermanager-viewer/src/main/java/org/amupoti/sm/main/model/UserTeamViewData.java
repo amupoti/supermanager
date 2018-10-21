@@ -1,6 +1,7 @@
 package org.amupoti.sm.main.model;
 
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 import org.amupoti.supermanager.parser.acb.beans.SmPlayer;
 
 import java.util.List;
@@ -8,7 +9,8 @@ import java.util.List;
 /**
  * Created by amupoti on 01/08/2017.
  */
-@Data
+@Getter
+@Builder
 public class UserTeamViewData {
     private final List<SmPlayer> playerList;
     private final Float score;
@@ -16,5 +18,8 @@ public class UserTeamViewData {
     private final int usedPlayers;
     private final Float meanScorePerPlayer;
     private final Float scorePrediction;
+    private String cash;
+    private String teamBroker;
+    private String totalBroker;
 
 }
