@@ -7,6 +7,7 @@ import org.amupoti.supermanager.parser.acb.teams.SMUserTeamServiceImpl;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -20,6 +21,7 @@ import static org.amupoti.supermanager.parser.acb.SmContentProvider.ACTIVE_COMPE
  */
 @Configuration
 @PropertySource("classpath:urls.properties")
+@ComponentScan("org.amupoti.supermanager.parser.rdm")
 public class ApplicationConfig {
 
     @Bean

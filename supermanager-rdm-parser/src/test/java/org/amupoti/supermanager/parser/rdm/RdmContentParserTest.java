@@ -33,8 +33,8 @@ public class RdmContentParserTest {
 
         Assertions.assertThat(teamMatches).hasSize(34);
 
-        Set<RdmTeam> teams = teamMatches.stream().map(Match::getHomeTeam).collect(Collectors.toSet());
-        Assertions.assertThat(teams).hasSize(18);
+        Set<RdmTeam> teams = teamMatches.stream().map(Match::getAgainstTeam).collect(Collectors.toSet());
+        Assertions.assertThat(teams).hasSize(17);
     }
 
 }
