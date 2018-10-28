@@ -53,3 +53,29 @@ h1, h2, h3{
 #biggerNum{
  font-size: 110%
 }
+
+.localClass{
+ font-size: 120%;
+ font-weight: bold;
+ text-decoration: underline;
+}
+
+.TOP{
+    background-color: #eebbbb  !important;
+}
+
+.GOOD{
+    background-color:  #ffe6cc  !important;
+}
+
+.AVERAGE{
+    background-color: #ffffcc  !important;
+}
+
+.POOR{
+    background-color: #b3ff78  !important;
+}
+
+.WORST{
+    background-color: #80ff80  !important;
+}
