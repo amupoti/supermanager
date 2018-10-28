@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Calendario</title>
+    #parse( "./include/header.vm" )
+    <script>
+
+
+    </script>
+</head>
+</script>
+<style type="text/css">
+    body{
+    background-color: #64b6ee
+    }
+</style>
+<body>
+
+    <div align="center" class="containerts">
+        <h1>Calendario</h1>
+
+        #set ($teams = $teamsData)
+        #foreach( $team in $teams)
+             <h1>$team.team.teamName</h1>
+
+            <table style="width: 90%" id="myTable-overview" class="tablesorter">
+            <thead>
+            <tr>
+                <th>Equipo</th>
+                #foreach($i in [$firstMatch..34])
+                    <th align="center">J $i</th>
+                #end
+            </tr>
+            </thead>
+            <tr>
+                <td><b>$team.team</b></td>
+                #foreach($i in [$firstMatch..34])
+                    #set ($index = $i - 1)
+                    #set ($match = $team.matches[$index])
+                    <td class="$match.againstTeam.quality" align="center">
+                        <div class="#if($match.local)localClass#{else}awayClass#end">
+                            $match.againstTeam</td>
+                        </div>
+                    </td>
+                #end
+            </tr>
+
+        </table>
+        #end
+    </div>
+
+</body>
+</html>

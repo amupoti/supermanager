@@ -11,6 +11,7 @@
     <modules>
         <module>supermanager-acb-parser</module>
         <module>supermanager-viewer</module>
+        <module>supermanager-rdm-parser</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>

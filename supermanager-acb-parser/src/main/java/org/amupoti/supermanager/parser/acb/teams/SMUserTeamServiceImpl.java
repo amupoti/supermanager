@@ -64,6 +64,7 @@ public class SMUserTeamServiceImpl implements SMUserTeamService {
 
     private int getBrokerSum(SmTeam team) {
         return team.getPlayerList().stream()
+                .filter(p -> p.getMarketData() != null)
                 .map(p -> p.getMarketData().get(MarketCategory.PRICE.name()))
                 .mapToInt(DataUtils::toPriceValue).sum();
     }
