@@ -12,10 +12,6 @@ import lombok.ToString;
 @ToString
 public class Match {
 
-    private RdmTeam homeTeam;
-    private RdmTeam awayTeam;
-    private String homeScore;
-    private String awayScore;
-
-
+    private RdmTeam againstTeam;
+    private boolean local;
 }

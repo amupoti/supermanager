@@ -18,10 +18,6 @@ public class RdmContentParser {
 
     private HtmlCleaner htmlCleaner;
     private static String xpathMatches = "body/div[5]/div/div[2]/div/div[1]/div/table/tbody/tr[%s]/td[%s]/a";
-    //private static String xpathMatches = "/html/body/div[5]/div/div[2]/div/div[1]/div/table/tbody/tr[1]/td[2]/a";
-//    "/html/body/div[5]/div/div[2]/div/div[1]/div/table/tbody/tr[1]/td[4]/a"
-
-    //          "/html/body/div[5]/div/div[2]/div/div[1]/div/table/tbody/tr[2]/td[2]/a"
 
     @PostConstruct
     public void init() {
@@ -42,9 +38,10 @@ public class RdmContentParser {
         try {
             String homeTeam = getTeamFromXpath(node, String.format(xpathMatches, row, 2));
             String awayTeam = getTeamFromXpath(node, String.format(xpathMatches, row, 4));
+            String againstTeam = homeTeam.equals(rdmTeam.name()) ? awayTeam : homeTeam;
             return Match.builder()
-                    .homeTeam(RdmTeam.valueOf(homeTeam))
-                    .awayTeam(RdmTeam.valueOf(awayTeam))
+                    .againstTeam(RdmTeam.valueOf(againstTeam))
+                    .local(homeTeam.equals(rdmTeam.name()))
                     .build();
         } catch (XPatherException e) {
             throw new RuntimeException("Could not read matches for team " + rdmTeam.name());
