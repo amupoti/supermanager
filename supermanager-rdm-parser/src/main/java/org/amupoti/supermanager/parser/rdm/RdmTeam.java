@@ -5,5 +5,5 @@ package org.amupoti.supermanager.parser.rdm;
  */
 public enum RdmTeam {
 
-    AND, BAS, BRE, BUR, CAN, EST, FCB, FUE, GBC, GCA, JOV, MAN, MUR, OBR, RMA, UNI, VAL, ZAR
+    AND, BAS, BRE, BUR, CAN, EST, FCB, FUE, GBC, GCA, JOV, MAN, MUR, OBR, RMA, UNI, VBC, ZAR
 }
