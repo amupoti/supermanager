@@ -10,9 +10,24 @@ import static org.amupoti.supermanager.parser.rdm.RdmTeam.Quality.*;
 @Getter
 public enum RdmTeam {
 
-    AND("Andorra", AVERAGE), BAS("Baskonia", TOP), BRE("Breogan", POOR), BUR("Burgos", POOR), CAN("Iberostar Tenerife", AVERAGE), EST("Estudiantes", AVERAGE), FCB("Barça", TOP),
-    FUE("Fuenlabrada", POOR), GBC("Delteco", WORST), GCA("Grancanaria", GOOD), JOV("Joventut", AVERAGE), MAN("Manresa", POOR),
-    MUR("UCAM Murcia", POOR), OBR("Obradorio", POOR), RMA("Real Madrid", TOP), UNI("Unicaja", TOP), VBC("Valencia", GOOD), ZAR("Tecnyconta Zaragoza", POOR);
+    AND("Andorra", AVERAGE),
+    BAS("Baskonia", TOP),
+    BRE("Breogan", POOR),
+    BUR("Burgos", POOR),
+    CAN("Iberostar Tenerife", AVERAGE),
+    EST("Estudiantes", AVERAGE),
+    FCB("Barça", TOP),
+    FUE("Fuenlabrada", POOR),
+    GBC("Delteco", WORST),
+    GCA("Grancanaria", GOOD),
+    JOV("Joventut", AVERAGE),
+    MAN("Manresa", AVERAGE),
+    MUR("UCAM Murcia", POOR),
+    OBR("Obradorio", POOR),
+    RMA("Real Madrid", TOP),
+    UNI("Unicaja", TOP),
+    VBC("Valencia", GOOD),
+    ZAR("Tecnyconta Zaragoza", POOR);
 
     private String teamName;
     private Quality quality;
