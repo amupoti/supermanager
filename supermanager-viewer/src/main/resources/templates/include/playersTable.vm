@@ -4,6 +4,7 @@
         <th>Jugador</th>
         <th class="text-center">Precio</th>
         <th class="text-center">= broker</th>
+        <th class="text-center">+15% broker</th>
         <th class="text-center">Últ 3</th>
         <th class="text-center">Pos.</th>
         <th class="text-center">Val.</th>
@@ -17,6 +18,7 @@
             <td align="left">$!smData.name</td>
             <td>$!smData.marketData.get("PRICE")</td>
             <td>$!smData.marketData.get("KEEP_BROKER")</td>
+            <td>$!smData.marketData.get("PLUS_15_BROKER")</td>
             <td>$!smData.marketData.get("LAST_THREE_VAL")</td>
             <td>$!smData.position</td>
             <td>$!smData.score</td>
