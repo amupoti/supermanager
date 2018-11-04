@@ -15,6 +15,7 @@ import javax.annotation.PostConstruct;
 public class RdmContentProvider {
 
     private final static String TEAM_URL = "http://www.rincondelmanager.com/smgr/equipo.php?eq=%s";
+    public static final String RDM_MAIN_PAGE = "http://www.rincondelmanager.com/smgr/";
     @Autowired
     private RestTemplate restTemplate;
 
@@ -26,6 +27,12 @@ public class RdmContentProvider {
 
     protected String getTeamPage(RdmTeam rdmTeam) {
         String url = String.format(TEAM_URL, rdmTeam.name());
+        ResponseEntity<String> exchange = restTemplate.getForEntity(url, String.class);
+        return exchange.toString();
+    }
+
+    protected String getMainPage() {
+        String url = RDM_MAIN_PAGE;
         ResponseEntity<String> exchange = restTemplate.getForEntity(url, String.class);
         return exchange.toString();
     }

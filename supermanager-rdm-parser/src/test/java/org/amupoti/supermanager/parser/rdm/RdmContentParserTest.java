@@ -37,4 +37,11 @@ public class RdmContentParserTest {
         Assertions.assertThat(teams).hasSize(17);
     }
 
+    @Test
+    public void whenGetMatchNumber_thenItIsANumber() {
+        String page = provider.getMainPage();
+        String matchNumber = parser.getMatchNumber(page);
+        Assertions.assertThat(Integer.parseInt(matchNumber)).isBetween(1, 35);
+    }
+
 }
