@@ -32,7 +32,6 @@ public class SmContentParser {
     private HtmlCleaner htmlCleaner;
     public static final String MARKET_REGEX = "//*[@id=\"posicion%d\"]/tbody";
 
-
     @PostConstruct
     public void init() {
         htmlCleaner = new HtmlCleaner();
@@ -189,9 +188,11 @@ public class SmContentParser {
 
                         List<MarketCategory> categoriesElem = Arrays.asList(PRICE, BUY_PCT, LAST_VAL);
                         categoriesElem.forEach(c -> playerMarketData.addPlayerData(name, c.name(), getDataFromElementForCategory(objects, finalPlayer, c)));
-
                         List<MarketCategory> categoriesChildren = Arrays.asList(MEAN_VAL, LAST_THREE_VAL, PLUS_15_BROKER, KEEP_BROKER);
                         categoriesChildren.forEach(c -> playerMarketData.addPlayerData(name, c.name(), getDataFromChildrenForCategory(objects, finalPlayer, c)));
+
+                        String teamName = extractTeam(objects, finalPlayer);
+                        playerMarketData.addPlayerData(name, TEAM.name(), teamName);
                     } catch (Exception e) {
                         log.info("Could not process player with pos {} in row {}", pos, player);
 
@@ -204,6 +205,10 @@ public class SmContentParser {
         }
 
         return playerMarketData;
+    }
+
+    private String extractTeam(Object[] objects, int finalPlayer) {
+        return ((TagNode) objects[0]).getAllElements(false)[finalPlayer].getAllElements(false)[4].getAllChildren().get(0).toString();
     }
 
     private String getDataFromElementForCategory(Object[] objects, int p, MarketCategory category) {
