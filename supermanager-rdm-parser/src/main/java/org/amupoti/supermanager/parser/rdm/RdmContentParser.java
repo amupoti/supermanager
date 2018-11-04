@@ -19,6 +19,8 @@ public class RdmContentParser {
     private HtmlCleaner htmlCleaner;
     private static String xpathMatches = "body/div[5]/div/div[2]/div/div[1]/div/table/tbody/tr[%s]/td[%s]/a";
 
+    private static String xPathCurrentGame = "//*[@id=\"accordion\"]/div[1]/div[1]/h4/a";
+
     @PostConstruct
     public void init() {
         htmlCleaner = new HtmlCleaner();
@@ -51,5 +53,17 @@ public class RdmContentParser {
     private String getTeamFromXpath(TagNode node, String homeTeamXpath) throws XPatherException {
         Object[] objects = node.evaluateXPath(homeTeamXpath);
         return ((TagNode) objects[0]).getAllChildren().get(0).toString();
+    }
+
+    public String getMatchNumber(String page) {
+
+        try {
+            TagNode node = htmlCleaner.clean(page);
+            Object[] objects = node.evaluateXPath(xPathCurrentGame);
+            return ((TagNode) objects[0]).getAllChildren().get(0).toString().split("J")[1];
+        } catch (XPatherException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

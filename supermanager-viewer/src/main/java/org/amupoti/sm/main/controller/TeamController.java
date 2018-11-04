@@ -25,7 +25,7 @@ public class TeamController {
     @RequestMapping(value = "/teams/calendar.html")
     public String getCalendar(@RequestParam(required = false, name = "jornada") Optional<String> matchNumber, Model model) {
 
-        Integer firstMatch = 1;
+        Integer firstMatch = matchService.getNextMatch();
         if (matchNumber.isPresent()) {
             firstMatch = Integer.parseInt(matchNumber.get());
         }
