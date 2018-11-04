@@ -25,6 +25,17 @@ public class RdmMatchService {
         return Arrays.stream(RdmTeam.values()).map(this::getTeamData).collect(Collectors.toList());
     }
 
+    @Cacheable("NextMatch")
+    public int getNextMatch() {
+        return getCurrentMatchFromIdealTeamWidget() + 1;
+    }
+
+    private int getCurrentMatchFromIdealTeamWidget() {
+        String page = provider.getMainPage();
+        String matchNumber = parser.getMatchNumber(page);
+        return Integer.parseInt(matchNumber);
+    }
+
     private RdmTeamData getTeamData(RdmTeam team) {
         String teamPage = provider.getTeamPage(team);
         List<Match> teamMatches = parser.getTeamMatches(teamPage, team);
