@@ -20,7 +20,7 @@ public class RdmMatchService {
     @Autowired
     private RdmContentProvider provider;
 
-    @Cacheable("teamData")
+    @Cacheable("TeamData")
     public List<RdmTeamData> getTeamsData() {
         return Arrays.stream(RdmTeam.values()).map(this::getTeamData).collect(Collectors.toList());
     }
