@@ -1,6 +1,5 @@
     <thead >
     <tr>
-        <th class="text-center">Status</th>
         <th>Jugador</th>
         <th class="text-center">Precio</th>
         <th class="text-center">= broker</th>
@@ -14,7 +13,6 @@
     <tbody align="center">
         #foreach( $smData in $smDataList )
         <tr>
-            <td>$!smData.status</td>
             <td align="left">$!smData.name</td>
             <td>$!smData.marketData.get("PRICE")</td>
             <td>$!smData.marketData.get("KEEP_BROKER")</td>
