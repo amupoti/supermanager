@@ -1,7 +1,7 @@
 package org.amupoti.supermanager.parser.acb.utils;
 
 
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
