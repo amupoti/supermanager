@@ -208,7 +208,7 @@ public class SmContentParser {
     }
 
     private String extractTeam(Object[] objects, int finalPlayer) {
-        return ((TagNode) objects[0]).getAllElements(false)[finalPlayer].getAllElements(false)[4].getAllChildren().get(0).toString();
+        return ((TagNode) ((TagNode) objects[0]).getAllElements(false)[finalPlayer].getAllElements(false)[3].getAllChildren().get(0)).getAttributes().get("title");
     }
 
     private String getDataFromElementForCategory(Object[] objects, int p, MarketCategory category) {

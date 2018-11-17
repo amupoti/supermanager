@@ -30,6 +30,19 @@ public class RdmMatchService {
         return getCurrentMatchFromIdealTeamWidget() + 1;
     }
 
+    @Cacheable("RdmTeamData")
+    public RdmTeamData getTeamDataFromMatchNumber(RdmTeam team, int matchNumber, int nextMatches) {
+
+        int lastMatch = Math.min(matchNumber + nextMatches - 1, 34);
+
+        String teamPage = provider.getTeamPage(team);
+        List<Match> teamMatches = parser.getTeamMatches(teamPage, team);
+        return RdmTeamData.builder()
+                .matches(teamMatches.subList(matchNumber - 1, lastMatch))
+                .team(team)
+                .build();
+    }
+
     private int getCurrentMatchFromIdealTeamWidget() {
         String page = provider.getMainPage();
         String matchNumber = parser.getMatchNumber(page);
