@@ -1,6 +1,5 @@
 package org.amupoti.sm.main.service;
 
-import javafx.util.Pair;
 import org.amupoti.sm.main.model.ViewerMatch;
 import org.amupoti.sm.main.model.ViewerPlayer;
 import org.amupoti.supermanager.parser.acb.beans.SmPlayer;
@@ -9,6 +8,7 @@ import org.amupoti.supermanager.parser.rdm.Match;
 import org.amupoti.supermanager.parser.rdm.RdmMatchService;
 import org.amupoti.supermanager.parser.rdm.RdmTeam;
 import org.amupoti.supermanager.parser.rdm.RdmTeamData;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -57,7 +57,7 @@ public class RdmSmTeamService {
 
     private Pair<SmPlayer, RdmTeamData> toRdmTeamData(Pair<SmPlayer, RdmTeam> pair, int nextMatch) {
         RdmTeamData teamDataFromMatchNumber = matchService.getTeamDataFromMatchNumber(pair.getValue(), nextMatch, NEXT_MATCHES);
-        Pair<SmPlayer, RdmTeamData> pairData = new Pair(pair.getKey(), teamDataFromMatchNumber);
+        Pair<SmPlayer, RdmTeamData> pairData = Pair.of(pair.getKey(), teamDataFromMatchNumber);
         return pairData;
     }
 
@@ -65,6 +65,7 @@ public class RdmSmTeamService {
         String smTeamName = p.getMarketData().get(MarketCategory.TEAM.name());
         RdmTeam rdmTeam = RdmTeam.fromTeamName(smTeamName);
         p.getMarketData().put(TEAM_RDM, rdmTeam.name());
-        return new Pair(p, rdmTeam);
+        return Pair.of(p, rdmTeam);
+
     }
 }
