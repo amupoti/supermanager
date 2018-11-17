@@ -2,12 +2,14 @@ package org.amupoti.sm.main.controller;
 
 import org.amupoti.sm.main.bean.SMUser;
 import org.amupoti.sm.main.model.UserTeamViewData;
+import org.amupoti.sm.main.service.RdmSmTeamService;
 import org.amupoti.sm.main.users.UserCredentialsHolder;
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
 import org.amupoti.supermanager.parser.acb.exception.ErrorCode;
 import org.amupoti.supermanager.parser.acb.exception.SmException;
 import org.amupoti.supermanager.parser.acb.teams.SMUserTeamService;
 import org.amupoti.supermanager.parser.acb.utils.DataUtils;
+import org.amupoti.supermanager.parser.rdm.RdmMatchService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.htmlcleaner.XPatherException;
@@ -24,6 +26,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.amupoti.sm.main.service.RdmSmTeamService.NEXT_MATCHES;
+
 /**
  * Created by Marcel on 13/01/2016.
  */
@@ -37,6 +41,12 @@ public class UserController {
     private SMUserTeamService SMUserTeamService;
 
     private UserCredentialsHolder userCredentialsHolder = new UserCredentialsHolder();
+
+    @Autowired
+    private RdmSmTeamService rdmSmTeamService;
+
+    @Autowired
+    private RdmMatchService matchService;
 
     @RequestMapping(value = "/login.html", method = RequestMethod.GET)
     public String getUserTeamsForm(Model model) {
@@ -76,7 +86,7 @@ public class UserController {
         List<SmTeam> userTeams = SMUserTeamService.getTeamsByCredentials(user.getLogin(), user.getPassword());
         for (SmTeam team : userTeams) {
             teamMap.put(team.getName(), UserTeamViewData.builder()
-                    .playerList(team.getPlayerList())
+                    .playerList(rdmSmTeamService.buildPlayerList(team.getPlayerList()))
                     .score(team.getScore())
                     .computedScore(team.getComputedScore())
                     .usedPlayers(team.getUsedPlayers())
@@ -88,6 +98,10 @@ public class UserController {
                     .build());
         }
 
+        Integer firstMatch = matchService.getNextMatch();
+        int lastMatch = Math.min(34, firstMatch + NEXT_MATCHES - 1);
+        model.addAttribute("firstMatch", firstMatch.intValue());
+        model.addAttribute("lastMatch", lastMatch);
         model.addAttribute("teamMap", teamMap);
         return "userTeams";
     }

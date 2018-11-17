@@ -1,5 +1,6 @@
 package org.amupoti.supermanager.parser.rdm;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.FormHttpMessageConverter;
@@ -12,6 +13,7 @@ import javax.annotation.PostConstruct;
  * Created by amupoti on 28/08/2017.
  */
 @Service
+@Slf4j
 public class RdmContentProvider {
 
     private final static String TEAM_URL = "http://www.rincondelmanager.com/smgr/equipo.php?eq=%s";
@@ -26,6 +28,7 @@ public class RdmContentProvider {
 
 
     protected String getTeamPage(RdmTeam rdmTeam) {
+        log.debug("Getting page for team {}", rdmTeam);
         String url = String.format(TEAM_URL, rdmTeam.name());
         ResponseEntity<String> exchange = restTemplate.getForEntity(url, String.class);
         return exchange.toString();
