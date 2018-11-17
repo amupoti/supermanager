@@ -32,6 +32,7 @@ public class RdmSmTeamService {
         //TODO: return data
         final int nextMatch = matchService.getNextMatch();
         List<ViewerPlayer> collect = playerList.stream()
+                .filter(p -> p.getMarketData() != null)
                 .map(this::toRdmTeam)
                 .map(playerAndTeam -> toRdmTeamData(playerAndTeam, nextMatch))
                 .map(this::toViewerPlayer)
