@@ -17,7 +17,7 @@ public enum RdmTeam {
     RMA("Real Madrid", TOP),
     UNI("Unicaja", GOOD),
     VBC("Valencia Basket Club", GOOD),
-    JOV("Divina Seguros Joventut", GOOD),
+    JOV("Club Joventut Badalona", GOOD),
     AND("MoraBanc Andorra", AVERAGE),
     OBR("Monbus Obradoiro", AVERAGE),
     CAN("Iberostar Tenerife", AVERAGE),
@@ -27,9 +27,9 @@ public enum RdmTeam {
     BUR("San Pablo Burgos", POOR),
     MAN("BAXI Manresa", POOR),
     MUR("UCAM Murcia CB", POOR),
-    ZAR("Tecnyconta Zaragoza", POOR),
-    BET("Coosur Real Betis Breogán", WORST),
-    BLB("Retabet Bilbao Basket", WORST);
+    ZAR("Casademont Zaragoza", POOR),
+    BET("Coosur Real Betis", WORST),
+    BLB("RETAbet Bilbao Basket", WORST);
 
     private String teamName;
     private Quality quality;
