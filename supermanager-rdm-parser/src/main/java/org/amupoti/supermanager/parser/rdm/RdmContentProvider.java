@@ -16,8 +16,8 @@ import javax.annotation.PostConstruct;
 @Slf4j
 public class RdmContentProvider {
 
-    private final static String TEAM_URL = "http://www.rincondelmanager.com/smgr/equipo.php?eq=%s";
-    public static final String RDM_MAIN_PAGE = "http://www.rincondelmanager.com/smgr/";
+    private final static String TEAM_URL = "https://www.rincondelmanager.com/smgr/equipo.php?eq=%s";
+    public static final String RDM_MAIN_PAGE = "https://www.rincondelmanager.com/smgr/";
     @Autowired
     private RestTemplate restTemplate;
 
