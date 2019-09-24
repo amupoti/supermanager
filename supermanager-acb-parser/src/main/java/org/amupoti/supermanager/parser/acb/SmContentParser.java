@@ -19,6 +19,7 @@ import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.amupoti.supermanager.parser.acb.beans.market.MarketCategory.*;
@@ -55,30 +56,38 @@ public class SmContentParser {
         }
     }
 
-    private void addPlayers(SmTeam team, TagNode node, PlayerMarketData playerMarketData) throws XPatherException {
+    private void addPlayers(SmTeam team, TagNode node, PlayerMarketData playerMarketData) {
         String xPathExpression = "//*[@id=\"puesto$row\"]/td[3]/span/a";
         String xPathExpressionScore = "//*[@id=\"puesto$row\"]/td[9]";
         String xPathExpressionIcons = "//*[@id=\"puesto$row\"]/td[1]";
 
         List<SmPlayer> players = new LinkedList<>();
         for (int i = 1; i <= 11; i++) {
-            Object[] objects = getObjectsFromExpression(node, xPathExpression.replace("$row", "" + i));
-            if (objects == null || objects.length == 0 || ((TagNode) objects[0]).getAllChildren().size() == 0) continue;
+            Optional<SmPlayer> player = Optional.empty();
+            try {
 
-            ParsePlayerDataFromSmTeam playerParsedData = new ParsePlayerDataFromSmTeam(node, xPathExpressionScore, xPathExpressionIcons, i, objects).invoke();
-            SmPlayerStatus statuses = playerParsedData.getStatus();
-            String name = playerParsedData.getName();
-            String score = playerParsedData.getScore();
+                Object[] objects = getObjectsFromExpression(node, xPathExpression.replace("$row", "" + i));
+                if (objects == null || objects.length == 0 || ((TagNode) objects[0]).getAllChildren().size() == 0)
+                    continue;
 
-            SmPlayer player = SmPlayer.builder()
-                    .name(name)
-                    .position(PlayerPosition.getFromRowId(i).name())
-                    .score(score)
-                    .status(statuses)
-                    .marketData(playerMarketData.getPlayerMap(name))
-                    .build();
+                ParsePlayerDataFromSmTeam playerParsedData = new ParsePlayerDataFromSmTeam(node, xPathExpressionScore, xPathExpressionIcons, i, objects).invoke();
+                SmPlayerStatus statuses = playerParsedData.getStatus();
+                String name = playerParsedData.getName();
+                String score = playerParsedData.getScore();
 
-            players.add(player);
+                player = Optional.of(SmPlayer.builder()
+                        .name(name)
+                        .position(PlayerPosition.getFromRowId(i).name())
+                        .score(score)
+                        .status(statuses)
+                        .marketData(playerMarketData.getPlayerMap(name))
+                        .build());
+
+            } catch (Exception e) {
+                log.error("Could not add player!", e);
+            }
+            player.ifPresent(p -> players.add(p));
+
         }
         team.setPlayerList(players);
     }
@@ -111,13 +120,14 @@ public class SmContentParser {
 
     private void addTotalScore(SmTeam team, TagNode node) throws XPatherException {
         String xpathScore = "//*[@id=\"valoracion_total\"]";
-        Object[] objects = node.evaluateXPath(xpathScore);
-        String score = ((TagNode) objects[0]).getAllChildren().get(0).toString();
         try {
+            Object[] objects = node.evaluateXPath(xpathScore);
+            String score = ((TagNode) objects[0]).getAllChildren().get(0).toString();
             //TODO: use DataUtils, which needs to be moved into a util package
             team.setScore(Float.parseFloat(score.replace(",", ".")));
 
-        } catch (NumberFormatException e) {
+        } catch (Exception e) {
+            log.error("Could not add the score for the team {}", team);
             team.setScore(-1.0f);
         }
     }
