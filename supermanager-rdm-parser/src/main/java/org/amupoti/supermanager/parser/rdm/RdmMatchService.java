@@ -45,7 +45,7 @@ public class RdmMatchService {
 
     private int getCurrentMatchFromIdealTeamWidget() {
         String page = provider.getMainPage();
-        String matchNumber = "0"; //parser.getMatchNumber(page);
+        String matchNumber = parser.getMatchNumber(page);
         return Integer.parseInt(matchNumber);
     }
 
