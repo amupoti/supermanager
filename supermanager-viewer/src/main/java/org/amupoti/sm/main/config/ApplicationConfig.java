@@ -3,7 +3,6 @@ package org.amupoti.sm.main.config;
 import org.amupoti.supermanager.parser.acb.SmContentParser;
 import org.amupoti.supermanager.parser.acb.SmContentProvider;
 import org.amupoti.supermanager.parser.acb.teams.SMUserTeamService;
-import org.amupoti.supermanager.parser.acb.teams.SMUserTeamServiceImpl;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.springframework.context.annotation.Bean;
@@ -43,7 +42,7 @@ public class ApplicationConfig {
 
     @Bean
     public SMUserTeamService getAcbTeamService() {
-        return new SMUserTeamServiceImpl(getSmContentProvider(), getSmContentParser());
+        return new SMUserTeamService(getSmContentProvider(), getSmContentParser());
     }
 
     @Bean

@@ -7,7 +7,6 @@ import org.amupoti.sm.main.users.UserCredentialsHolder;
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
 import org.amupoti.supermanager.parser.acb.exception.ErrorCode;
 import org.amupoti.supermanager.parser.acb.exception.SmException;
-import org.amupoti.supermanager.parser.acb.teams.SMUserTeamService;
 import org.amupoti.supermanager.parser.acb.utils.DataUtils;
 import org.amupoti.supermanager.parser.rdm.RdmMatchService;
 import org.apache.commons.logging.Log;
@@ -38,7 +37,7 @@ public class UserController {
     private final static Log log = LogFactory.getLog(UserController.class);
 
     @Autowired
-    private SMUserTeamService SMUserTeamService;
+    private org.amupoti.supermanager.parser.acb.teams.SMUserTeamService SMUserTeamService;
 
     private UserCredentialsHolder userCredentialsHolder = new UserCredentialsHolder();
 
