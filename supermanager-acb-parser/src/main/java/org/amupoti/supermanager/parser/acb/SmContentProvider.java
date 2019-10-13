@@ -1,8 +1,14 @@
 package org.amupoti.supermanager.parser.acb;
 
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
+import org.amupoti.supermanager.parser.acb.privateleague.PrivateLeagueCategory;
+import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -27,9 +33,11 @@ public class SmContentProvider {
 
     @Autowired
     private RestTemplate restTemplate;
-    private String user;
-    private String password;
-    private HttpHeaders httpHeaders;
+
+    @Value("${privateLeague.id}")
+    private String urlPrivateLeague;
+
+    private MultiValueMap<String, String> httpHeaders;
 
     public SmContentProvider(String competition) {
         this.competition = competition;
@@ -41,7 +49,7 @@ public class SmContentProvider {
     }
 
     public String getTeamsPage() {
-        ResponseEntity<String> exchange = restTemplate.exchange(URL_TEAM_LIST, HttpMethod.GET, new HttpEntity<>(null, httpHeaders), String.class);
+        ResponseEntity<String> exchange = restTemplate.exchange(URL_TEAM_LIST, HttpMethod.GET, new HttpEntity<String>(null, httpHeaders), String.class);
         return exchange.getBody();
     }
 
@@ -51,14 +59,16 @@ public class SmContentProvider {
 
     public String authenticateUser(String user, String password) {
 
-        this.user = user;
-        this.password = password;
         httpHeaders = prepareHeaders();
         addCookieFromEntryPageToHeaders(httpHeaders);
         return checkUserLogin(user, password, httpHeaders);
     }
 
-    private String checkUserLogin(String user, String password, HttpHeaders httpHeaders) {
+    public String getPrivateLeaguePage(PrivateLeagueCategory category) {
+        return restTemplate.exchange(urlPrivateLeague + category.getPagePath(), HttpMethod.GET, new HttpEntity<>(null, httpHeaders), String.class).getBody();
+    }
+
+    private String checkUserLogin(String user, String password, MultiValueMap<String, String> httpHeaders) {
         HttpEntity<MultiValueMap<String, String>> httpEntity;
         MultiValueMap<String, String> params = addFormParams(user, password);
         httpEntity = new HttpEntity<>(params, httpHeaders);
@@ -66,7 +76,7 @@ public class SmContentProvider {
         return exchange.getBody();
     }
 
-    private void addCookieFromEntryPageToHeaders(HttpHeaders httpHeaders) {
+    private void addCookieFromEntryPageToHeaders(MultiValueMap<String, String> httpHeaders) {
         HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(null, httpHeaders);
         ResponseEntity<String> exchange = restTemplate.exchange(competition, HttpMethod.GET, httpEntity, String.class);
         String cookie = exchange.getHeaders().get("Set-Cookie").toString().replace("[", "").split(";")[0];
@@ -81,11 +91,11 @@ public class SmContentProvider {
         return params;
     }
 
-    private HttpHeaders prepareHeaders() {
-        HttpHeaders httpHeaders = new HttpHeaders();
+    private MultiValueMap<String, String> prepareHeaders() {
+        MultiValueMap<String, String> httpHeaders = new LinkedMultiValueMap<>();
         httpHeaders.add("Host", "supermanager.acb.com");
         httpHeaders.add(HttpHeaders.ACCEPT, "*/*");
-        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        httpHeaders.add("Content-type", MediaType.APPLICATION_FORM_URLENCODED.toString());
         httpHeaders.add(HttpHeaders.REFERER, "http://supermanager.acb.com/index/identificar");
         return httpHeaders;
     }
