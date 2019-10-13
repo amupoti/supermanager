@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Estadísticas de la liga privada</title>
+    #parse( "./include/header.vm" )
+    <script>
+
+
+    </script>
+</head>
+</script>
+<style type="text/css">
+    body{
+    background-color: #64b6ee
+    }
+</style>
+<body>
+
+    <div align="center" class="containerts">
+        <h1>Estadísticas de la liga privada: Jornada $match, Estadística: $stat</h1>
+
+            <table style="width: 90%" id="myTable-overview" class="tablesorter">
+                    <thead>
+                    <tr>
+                        <th>Equipo</th>
+                        <th>Puntos</th>
+                    </tr>
+                    </thead>
+                    #foreach($leagueStat in $leagueStats)
+
+                        <tr>
+                            <td><b>$leagueStat.team</b></td>
+                            <td><b>$leagueStat.points</b></td>
+                        </tr>
+                    #end
+            </table>
+
+    </div>
+
+</body>
+</html>
