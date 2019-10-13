@@ -45,7 +45,8 @@ public class PrivateLeagueStatsService {
 
     public List<PlayerLeagueStateEntity> getLeagueStats(String stat, int matchNumber) {
         List<PlayerLeagueStateEntity> currentMatchStats = privateLeagueRepository.findByMatchNumberAndStat(matchNumber, stat);
-        if (matchNumber == 1) {
+        boolean dataForPreviousMatch = privateLeagueRepository.findByMatchNumber(matchNumber - 1).size() != 0;
+        if (!dataForPreviousMatch) {
             return currentMatchStats;
         } else {
             return computeDeltaWithPreviousMatch(stat, matchNumber, currentMatchStats);

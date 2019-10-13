@@ -6,6 +6,7 @@ import org.amupoti.sm.main.service.privateleague.PrivateLeagueStatsService;
 import org.amupoti.sm.main.users.UserCredentialsHolder;
 import org.amupoti.supermanager.parser.acb.exception.ErrorCode;
 import org.amupoti.supermanager.parser.acb.exception.SmException;
+import org.amupoti.supermanager.parser.acb.privateleague.PrivateLeagueCategory;
 import org.amupoti.supermanager.parser.rdm.RdmMatchService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -61,9 +62,20 @@ public class PrivateLeagueController {
     }
 
     @RequestMapping(value = "/stats.html", method = RequestMethod.GET)
-    public String getPrivateLeagueStats(@RequestParam String stat, @RequestParam String match, Model model) throws XPatherException {
+    public String getPrivateLeagueStats(@RequestParam(required = false) String stat, @RequestParam(required = false) String match, Model model) throws XPatherException {
 
-        int matchNumber = Integer.parseInt(match);
+        int matchNumber;
+
+        if (stat == null) {
+            stat = PrivateLeagueCategory.REBOUNDS.toString();
+        }
+        if (match == null) {
+            matchNumber = matchService.getNextMatch() - 1;
+        } else {
+
+            matchNumber = Integer.parseInt(match);
+        }
+
         List<PlayerLeagueStateEntity> leagueStats = privateLeagueStatsService.getLeagueStats(stat, matchNumber);
 
 
@@ -71,8 +83,8 @@ public class PrivateLeagueController {
 
         model.addAttribute("leagueStats", leagueStats);
         model.addAttribute("stat", stat);
-        model.addAttribute("match", match);
-        return "showLeagueStats";
+        model.addAttribute("match", matchNumber);
+        return "leagueStats";
 
     }
 }
