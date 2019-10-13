@@ -61,6 +61,7 @@ public class SMUserTeamService {
         addLeagueDataForCategory(leagueData, PrivateLeagueCategory.REBOUNDS);
         addLeagueDataForCategory(leagueData, PrivateLeagueCategory.THREE_POINTERS);
         addLeagueDataForCategory(leagueData, PrivateLeagueCategory.ASSISTS);
+        addLeagueDataForCategory(leagueData, PrivateLeagueCategory.POINTS);
 
         return leagueData;
     }

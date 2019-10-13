@@ -28,8 +28,8 @@ public class SMUserTeamServiceTest {
 
     private static final String PASSWORD = "testsm_testsm";
     private static final String USER = "testsm_testsm";
-    public static final String EL_EQUIPO_2 = "El equipo 2";
-    public static final String EL_EQUIPO_1 = "El equipo 1";
+    private static final String EL_EQUIPO_2 = "El equipo 2";
+    private static final String EL_EQUIPO_1 = "El equipo 1";
 
     @Autowired
     private SMUserTeamService acbTeamsService;
@@ -59,13 +59,14 @@ public class SMUserTeamServiceTest {
     public void givenPrivateLeagueWhenGetDetailsThenGetAllStats() throws XPatherException {
         Map<PrivateLeagueCategory, Map<String, Integer>> stats = acbTeamsService.getPrivateLeagueData(USER, PASSWORD);
 
-        //Then there are 3 categories
-        assertThat(stats).hasSize(3);
+        //Then there are 4 categories
+        assertThat(stats).hasSize(4);
 
         //Then there are 2 teams in private league
         assertThat(stats.get(ASSISTS).size()).isEqualTo(2);
         assertThat(stats.get(REBOUNDS).size()).isEqualTo(2);
         assertThat(stats.get(THREE_POINTERS).size()).isEqualTo(2);
+        assertThat(stats.get(POINTS).size()).isEqualTo(2);
 
         //Then names are correct
         assertThat(stats.get(THREE_POINTERS).keySet()).containsExactlyInAnyOrder(EL_EQUIPO_1, EL_EQUIPO_2);

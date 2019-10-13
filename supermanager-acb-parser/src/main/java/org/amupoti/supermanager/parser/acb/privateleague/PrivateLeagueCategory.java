@@ -5,7 +5,7 @@ package org.amupoti.supermanager.parser.acb.privateleague;
  */
 
 public enum PrivateLeagueCategory {
-    ASSISTS("asistencias"), REBOUNDS("rebotes"), THREE_POINTERS("triples");
+    ASSISTS("asistencias"), REBOUNDS("rebotes"), THREE_POINTERS("triples"), POINTS("puntos");
 
     private String pagePath;
 
