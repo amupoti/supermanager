@@ -39,7 +39,8 @@ public class UserController {
     @Autowired
     private org.amupoti.supermanager.parser.acb.teams.SMUserTeamService SMUserTeamService;
 
-    private UserCredentialsHolder userCredentialsHolder = new UserCredentialsHolder();
+    @Autowired
+    private UserCredentialsHolder userCredentialsHolder;
 
     @Autowired
     private RdmSmTeamService rdmSmTeamService;
@@ -104,4 +105,6 @@ public class UserController {
         model.addAttribute("teamMap", teamMap);
         return "userTeams";
     }
+
+
 }
