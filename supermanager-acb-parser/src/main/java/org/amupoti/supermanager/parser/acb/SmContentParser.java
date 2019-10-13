@@ -16,10 +16,7 @@ import org.htmlcleaner.XPatherException;
 import org.springframework.cache.annotation.Cacheable;
 
 import javax.annotation.PostConstruct;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.amupoti.supermanager.parser.acb.beans.market.MarketCategory.*;
@@ -233,6 +230,27 @@ public class SmContentParser {
         String value = ((TagNode) objects[0]).getAllElements(false)[p].getAllElements(false)[category.getColumn()].getAllChildren().get(0).toString();
         log.debug("Value is {}", value);
         return value;
+    }
+
+    public Map<String, Integer> providePrivateLeagueData(String pageBody) throws XPatherException {
+        TagNode node = htmlCleaner.clean(pageBody);
+        Integer teamsInLeague = (Integer) (node.evaluateXPath("count(//*[@id=\"caja-ampliarliga\"]/table[2]/tbody/tr)")[0]);
+
+        String xpathTeamName = "//*[@id=\"caja-ampliarliga\"]/table[2]/tbody/tr[%s]/td[%s]";
+        int teamRow = 1;
+        final int name = 2;
+        final int points = 4;
+        Map<String, Integer> teamMap = new HashMap<>();
+
+        for (int i = 0; i < teamsInLeague; i++) {
+            String finalXpath = String.format(xpathTeamName, teamRow, name);
+            String teamName = ((TagNode) node.evaluateXPath(finalXpath)[0]).getAllChildren().get(0).toString();
+            finalXpath = String.format(xpathTeamName, teamRow, points);
+            String teamValue = ((TagNode) node.evaluateXPath(finalXpath)[0]).getAllChildren().get(0).toString();
+            teamRow++;
+            teamMap.put(teamName, Integer.valueOf(teamValue));
+        }
+        return teamMap;
     }
 
     private class ParsePlayerDataFromSmTeam {

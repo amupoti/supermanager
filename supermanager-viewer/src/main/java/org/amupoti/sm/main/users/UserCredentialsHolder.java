@@ -1,6 +1,7 @@
 package org.amupoti.sm.main.users;
 
 import org.amupoti.sm.main.bean.SMUser;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.Optional;
 /**
  * Created by amupoti on 22/08/2017.
  */
+@Service
 public class UserCredentialsHolder {
 
     private Map<String, SMUser> credentialsMap = new HashMap<>();
