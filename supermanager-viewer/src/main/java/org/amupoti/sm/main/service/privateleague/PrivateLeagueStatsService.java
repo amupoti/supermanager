@@ -43,8 +43,14 @@ public class PrivateLeagueStatsService {
         privateLeagueRepository.save(collect);
     }
 
-    public List<PlayerLeagueStateEntity> getLeagueStats(String stat, int matchNumber) {
+    public List<PlayerLeagueStateEntity> getLeagueDataByStat(String stat, int matchNumber) {
         List<PlayerLeagueStateEntity> currentMatchStats = privateLeagueRepository.findByMatchNumberAndStat(matchNumber, stat);
+        List<PlayerLeagueStateEntity> playerLeagueStateEntities = getPlayerLeagueStateEntities(stat, matchNumber, currentMatchStats);
+        playerLeagueStateEntities.sort(Comparator.comparing(PlayerLeagueStateEntity::getTeam));
+        return playerLeagueStateEntities;
+    }
+
+    private List<PlayerLeagueStateEntity> getPlayerLeagueStateEntities(String stat, int matchNumber, List<PlayerLeagueStateEntity> currentMatchStats) {
         boolean dataForPreviousMatch = privateLeagueRepository.findByMatchNumber(matchNumber - 1).size() != 0;
         if (!dataForPreviousMatch) {
             return currentMatchStats;
@@ -52,7 +58,6 @@ public class PrivateLeagueStatsService {
             return computeDeltaWithPreviousMatch(stat, matchNumber, currentMatchStats);
         }
     }
-
     private List<PlayerLeagueStateEntity> computeDeltaWithPreviousMatch(String stat, int matchNumber, List<PlayerLeagueStateEntity> currentMatchStats) {
         List<PlayerLeagueStateEntity> previousMatchStats = privateLeagueRepository.findByMatchNumberAndStat(matchNumber - 1, stat);
         currentMatchStats.sort(Comparator.comparing(PlayerLeagueStateEntity::getTeam));
