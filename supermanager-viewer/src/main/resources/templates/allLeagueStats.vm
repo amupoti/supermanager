@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Estadísticas de la liga privada</title>
+    #parse( "./include/header.vm" )
+<script>
+
+ $(document).ready(function() {
+
+   $('.containerts').each(function(i) {
+     $(this).children(".tablesorter")
+       .tablesorter({
+         widthFixed: false,
+         widgets: ['zebra']
+       });
+   });
+
+ });
+
+</script>
+</head>
+</script>
+<style type="text/css">
+    body{
+    background-color: #64b6ee
+    }
+</style>
+<body>
+
+    <div align="center" class="containerts">
+        <h1>Estadísticas de la liga privada: Jornada $match</h1>
+
+            <table style="width: 70%" id="myTable-overview" class="tablesorter">
+                    <thead>
+                    <tr>
+                        <th>Equipo</th>
+                        <th>Puntos</th>
+                        <th>Rebotes</th>
+                        <th>Triples</th>
+                        <th>Asistencias</th>
+                    </tr>
+                    </thead>
+                     #foreach($index in [1.. $assists.size()])
+                            #set ($i = $index - 1)
+                        <tr>
+                            <td><b>$points[$i].team</b></td>
+                            <td><b>$points[$i].points</b></td>
+                            <td><b>$rebounds[$i].points</b></td>
+                            <td><b>$threePointers[$i].points</b></td>
+                            <td><b>$assists[$i].points</b></td>
+                        </tr>
+                    #end
+            </table>
+
+    </div>
+
+</body>
+</html>
