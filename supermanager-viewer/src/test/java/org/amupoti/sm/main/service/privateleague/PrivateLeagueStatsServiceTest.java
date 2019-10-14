@@ -32,7 +32,7 @@ public class PrivateLeagueStatsServiceTest {
         String stat = PrivateLeagueCategory.ASSISTS.toString();
         privateLeagueStatsService.storeLeagueStatsForMatch(USER, PASSWORD, matchNumber);
         privateLeagueStatsService.storeLeagueStatsForMatch(USER, PASSWORD, matchNumber + 1);
-        List<PlayerLeagueStateEntity> playerLeagueStats = privateLeagueStatsService.getLeagueStats(stat, matchNumber + 1);
+        List<PlayerLeagueStateEntity> playerLeagueStats = privateLeagueStatsService.getLeagueDataByStat(stat, matchNumber + 1);
         Assertions.assertThat(playerLeagueStats.stream().allMatch(e -> e.getPoints() == 0)).isTrue();
 
     }
@@ -42,7 +42,7 @@ public class PrivateLeagueStatsServiceTest {
         String stat = PrivateLeagueCategory.ASSISTS.toString();
         privateLeagueStatsService.storeLeagueStatsForMatch(USER, PASSWORD, 1);
 
-        List<PlayerLeagueStateEntity> playerLeagueStats = privateLeagueStatsService.getLeagueStats(stat, 1);
+        List<PlayerLeagueStateEntity> playerLeagueStats = privateLeagueStatsService.getLeagueDataByStat(stat, 1);
         Assertions.assertThat(playerLeagueStats.stream().allMatch(e -> e.getPoints() != 0)).isTrue();
 
     }
