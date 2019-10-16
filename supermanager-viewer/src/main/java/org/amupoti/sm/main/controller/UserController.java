@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.amupoti.sm.main.service.RdmSmTeamService.NEXT_MATCHES;
+import static org.amupoti.supermanager.parser.acb.SmContentProvider.BASE_URL;
 
 /**
  * Created by Marcel on 13/01/2016.
@@ -95,6 +96,7 @@ public class UserController {
                     .cash(DataUtils.format(team.getCash()))
                     .totalBroker(DataUtils.format(team.getTotalBroker()))
                     .teamBroker(DataUtils.format(team.getTeamBroker()))
+                    .teamUrl(BASE_URL + team.getUrl())
                     .build());
         }
 

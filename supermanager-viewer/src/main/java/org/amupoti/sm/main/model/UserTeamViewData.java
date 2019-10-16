@@ -20,4 +20,5 @@ public class UserTeamViewData {
     private String cash;
     private String teamBroker;
     private String totalBroker;
+    private String teamUrl;
 }
