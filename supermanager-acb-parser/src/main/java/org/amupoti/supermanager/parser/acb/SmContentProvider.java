@@ -22,8 +22,8 @@ import javax.annotation.PostConstruct;
 
 public class SmContentProvider {
 
-    public static final String SUPERMANAGER_HOME_URL = "http://supermanager.acb.com/index/identificar";
-    private static final String BASE_URL = "http://supermanager.acb.com";
+    private static final String SUPERMANAGER_HOME_URL = "http://supermanager.acb.com/index/identificar";
+    public static final String BASE_URL = "http://supermanager.acb.com";
     private static final String URL_TEAM_LIST = "http://supermanager.acb.com/equipos/listado";
     private static final String MARKET_PAGE = "http://supermanager.acb.com/mercado";
     public static final String EUROPEO_HOME_URL = "http://supermanager.acb.com/europeo/";
