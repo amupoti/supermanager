@@ -50,7 +50,7 @@ background-color: #64b6ee
         #foreach( $key in $map.keySet())
         <tr>
             #set ($teamData = $map.get($key))
-                <td>$key</td>
+                <td><a href="$teamData.teamUrl">$key</a></td>
             <td id="biggerNum">$teamData.computedScore</td>
             <td>$teamData.usedPlayers</td>
             <td>$teamData.meanScorePerPlayer</td>
