@@ -13,7 +13,6 @@ import org.amupoti.supermanager.parser.acb.utils.DataUtils;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
-import org.springframework.cache.annotation.Cacheable;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -175,9 +174,8 @@ public class SmContentParser {
         return html.split("mostrarMensajeModal\\('")[1].split("'")[0];
     }
 
-    @Cacheable("market")
     public PlayerMarketData providePlayerData(String html) {
-        log.info("Requesting market data");
+
         PlayerMarketData playerMarketData = new PlayerMarketData();
 
         try {
@@ -248,7 +246,7 @@ public class SmContentParser {
             finalXpath = String.format(xpathTeamName, teamRow, points);
             String teamValue = ((TagNode) node.evaluateXPath(finalXpath)[0]).getAllChildren().get(0).toString();
             teamRow++;
-            teamMap.put(teamName, Integer.valueOf(teamValue));
+            teamMap.put(teamName, Integer.valueOf(teamValue.replace(".", "")));
         }
         return teamMap;
     }
