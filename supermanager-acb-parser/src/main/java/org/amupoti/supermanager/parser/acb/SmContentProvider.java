@@ -1,10 +1,12 @@
 package org.amupoti.supermanager.parser.acb;
 
+import lombok.extern.slf4j.Slf4j;
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
 import org.amupoti.supermanager.parser.acb.privateleague.PrivateLeagueCategory;
 import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -20,6 +22,7 @@ import javax.annotation.PostConstruct;
  * Created by amupoti on 28/08/2017.
  */
 
+@Slf4j
 public class SmContentProvider {
 
     private static final String SUPERMANAGER_HOME_URL = "http://supermanager.acb.com/index/identificar";
@@ -48,7 +51,9 @@ public class SmContentProvider {
         restTemplate.getMessageConverters().add(new FormHttpMessageConverter());
     }
 
+    @Cacheable("teamsPage")
     public String getTeamsPage() {
+        log.info("Requesting all teams page");
         ResponseEntity<String> exchange = restTemplate.exchange(URL_TEAM_LIST, HttpMethod.GET, new HttpEntity<String>(null, httpHeaders), String.class);
         return exchange.getBody();
     }
@@ -100,7 +105,9 @@ public class SmContentProvider {
         return httpHeaders;
     }
 
+    @Cacheable("marketPage")
     public String getMarketPage() {
+        log.info("Requesting market page");
         ResponseEntity<String> exchange = restTemplate.exchange(MARKET_PAGE, HttpMethod.GET, new HttpEntity<>(null, httpHeaders), String.class);
         return exchange.getBody();
     }
