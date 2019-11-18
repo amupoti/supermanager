@@ -1,0 +1,17 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>SuperManager</title>
+    #parse( "./include/header.vm" )
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="twelve columns">
+                <h1>Gestión de caches</h1>
+                $message
+            </div>
+         </div>
+    </div>
+</body>
+</html>Requesting market data

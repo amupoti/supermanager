@@ -29,7 +29,7 @@ public class RdmSmTeamService {
     private RdmMatchService matchService;
 
     public List<ViewerPlayer> buildPlayerList(List<SmPlayer> playerList) {
-        //TODO: return data
+
         final int nextMatch = matchService.getNextMatch();
         List<ViewerPlayer> collect = playerList.stream()
                 .filter(p -> p.getMarketData() != null)
