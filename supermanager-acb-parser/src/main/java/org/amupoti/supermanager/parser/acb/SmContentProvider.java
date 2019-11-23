@@ -52,8 +52,8 @@ public class SmContentProvider {
     }
 
     @Cacheable("teamsPage")
-    public String getTeamsPage() {
-        log.info("Requesting all teams page");
+    public String getTeamsPage(String user) {
+        log.info("Requesting all teams page for user {}", user);
         ResponseEntity<String> exchange = restTemplate.exchange(URL_TEAM_LIST, HttpMethod.GET, new HttpEntity<String>(null, httpHeaders), String.class);
         return exchange.getBody();
     }

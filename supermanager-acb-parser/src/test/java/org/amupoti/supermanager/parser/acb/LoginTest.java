@@ -30,7 +30,7 @@ public class LoginTest {
 
 
         smContentProvider.authenticateUser("testsm_testsm", "testsm_testsm");
-        String teamsPage = smContentProvider.getTeamsPage();
+        String teamsPage = smContentProvider.getTeamsPage("testsm_testsm");
         Assert.assertTrue(teamsPage.contains("crear equipo"));
     }
 

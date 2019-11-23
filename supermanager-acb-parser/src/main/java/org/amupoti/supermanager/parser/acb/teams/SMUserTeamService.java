@@ -36,7 +36,7 @@ public class SMUserTeamService {
         String loginPage = smContentProvider.authenticateUser(user, password);
         smContentParser.checkGameStatus(loginPage);
 
-        String pageBody = smContentProvider.getTeamsPage();
+        String pageBody = smContentProvider.getTeamsPage(user);
         List<SmTeam> teams = smContentParser.getTeams(pageBody);
 
         String marketPage = smContentProvider.getMarketPage();
