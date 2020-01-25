@@ -105,6 +105,8 @@ public class UserController {
         model.addAttribute("firstMatch", firstMatch.intValue());
         model.addAttribute("lastMatch", lastMatch);
         model.addAttribute("teamMap", teamMap);
+        model.addAttribute("username", user.getLogin());
+        model.addAttribute("id", id);
         return "userTeams";
     }
 
