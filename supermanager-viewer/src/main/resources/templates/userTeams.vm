@@ -77,5 +77,12 @@ background-color: #64b6ee
     #end
 </div>
 
+
+#if( $username == "amupoti" )
+  <li> <b><a href="/cache/clear.html" class="btn btn-info" role="button">Clear cache</a></b>
+  <li> <a href="/league/allstats.html" class="btn btn-info" role="button">Private league stats</a>
+  <li> <a href="/league/store.html?id=$id" class="btn btn-info" role="button">Update private league stats</a>
+#end
+
 </body>
 </html>
