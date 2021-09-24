@@ -5,6 +5,7 @@ import org.amupoti.supermanager.parser.acb.SmContentProvider;
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
 import org.amupoti.supermanager.parser.acb.beans.market.MarketCategory;
 import org.amupoti.supermanager.parser.acb.beans.market.PlayerMarketData;
+import org.amupoti.supermanager.parser.acb.dto.LoginResponse;
 import org.amupoti.supermanager.parser.acb.privateleague.PrivateLeagueCategory;
 import org.amupoti.supermanager.parser.acb.utils.DataUtils;
 import org.apache.commons.logging.Log;
@@ -33,11 +34,10 @@ public class SMUserTeamService {
 
     synchronized public List<SmTeam> getTeamsByCredentials(String user, String password) throws XPatherException {
 
-        String loginPage = smContentProvider.authenticateUser(user, password);
-        smContentParser.checkGameStatus(loginPage);
+        LoginResponse loginResponse = smContentProvider.authenticateUser(user, password);
 
-        String pageBody = smContentProvider.getTeamsPage(user);
-        List<SmTeam> teams = smContentParser.getTeams(pageBody);
+        String response = smContentProvider.getTeamsPage(user,loginResponse.getJwt());
+        List<SmTeam> teams = smContentParser.getTeams(response);
 
         String marketPage = smContentProvider.getMarketPage();
         PlayerMarketData playerMarketData = smContentParser.providePlayerData(marketPage);
@@ -53,8 +53,7 @@ public class SMUserTeamService {
     }
 
     public Map<PrivateLeagueCategory, Map<String, Integer>> getPrivateLeagueData(String user, String password) throws XPatherException {
-        String loginPage = smContentProvider.authenticateUser(user, password);
-        smContentParser.checkGameStatus(loginPage);
+        LoginResponse loginResponse = smContentProvider.authenticateUser(user, password);
 
         Map<PrivateLeagueCategory, Map<String, Integer>> leagueData = new HashMap<>();
 

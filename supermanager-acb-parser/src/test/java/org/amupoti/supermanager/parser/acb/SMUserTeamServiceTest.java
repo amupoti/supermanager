@@ -26,8 +26,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes = TestConfig.class)
 public class SMUserTeamServiceTest {
 
-    private static final String PASSWORD = "testsm_testsm";
-    private static final String USER = "testsm_testsm";
+    private static final String PASSWORD = "testsm_testsm@mailinator.com";
+    private static final String USER = "testsm_testsm@mailinator.com";
     private static final String EL_EQUIPO_2 = "El equipo 2";
     private static final String EL_EQUIPO_1 = "El equipo 1";
 
