@@ -11,11 +11,11 @@
     </thead>
     <tbody align="center">
         <tr>
-            <td>$teamData.score</td>
-            <td>$teamData.usedPlayers</td>
-            <td>$teamData.meanScorePerPlayer</td>
-            <td>$teamData.totalBroker</td>
-            <td>$teamData.teamBroker</td>
-            <td>$teamData.cash</td>
+            <td>${teamData.score}</td>
+            <td>${teamData.usedPlayers}</td>
+            <td>${teamData.meanScorePerPlayer}</td>
+            <td>${teamData.totalBroker}</td>
+            <td>${teamData.teamBroker}</td>
+            <td>${teamData.cash}</td>
         </tr>
     </tbody>
