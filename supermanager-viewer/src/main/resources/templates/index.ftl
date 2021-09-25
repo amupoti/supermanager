@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>SuperManager</title>
-    #parse( "./include/header.vm" )
+    <#include "./include/header.vm">
 </head>
 <body>
     <div class="container">

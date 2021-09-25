@@ -1,5 +1,7 @@
 package org.amupoti.supermanager.parser.acb;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.amupoti.supermanager.parser.acb.beans.PlayerPosition;
 import org.amupoti.supermanager.parser.acb.beans.SmPlayer;
@@ -7,18 +9,24 @@ import org.amupoti.supermanager.parser.acb.beans.SmPlayerStatus;
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
 import org.amupoti.supermanager.parser.acb.beans.market.MarketCategory;
 import org.amupoti.supermanager.parser.acb.beans.market.PlayerMarketData;
+import org.amupoti.supermanager.parser.acb.dto.TeamsDescriptionResponse;
+import org.amupoti.supermanager.parser.acb.dto.TeamsDetailsResponse;
 import org.amupoti.supermanager.parser.acb.exception.ErrorCode;
 import org.amupoti.supermanager.parser.acb.exception.SmException;
-import org.amupoti.supermanager.parser.acb.utils.DataUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
 
-import javax.annotation.PostConstruct;
-import java.util.*;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.amupoti.supermanager.parser.acb.beans.market.MarketCategory.*;
+import static org.amupoti.supermanager.parser.acb.utils.DataUtils.toFloat;
 
 /**
  * Created by amupoti on 28/08/2017.
@@ -28,64 +36,33 @@ public class SmContentParser {
 
     private HtmlCleaner htmlCleaner;
     public static final String MARKET_REGEX = "//*[@id=\"posicion%d\"]/tbody";
+    private ObjectMapper objectMapper = new ObjectMapper();
 
-    @PostConstruct
-    public void init() {
-        htmlCleaner = new HtmlCleaner();
+    public void populateTeam(String response, SmTeam team, PlayerMarketData playerMarketData) throws IOException {
+        List<TeamsDetailsResponse> teamsDetailsPerCompetition = objectMapper.readValue(response, new TypeReference<List<TeamsDetailsResponse>>() {
+        });
+        TeamsDetailsResponse teamsDetailsResponse = teamsDetailsPerCompetition.get(teamsDetailsPerCompetition.size() - 1);
+        addPlayers(team, teamsDetailsResponse, playerMarketData);
+        addTotalScore(team, teamsDetailsResponse);
+        //    addTeamCash(team, teamsDetailsResponse);
     }
 
-    public void populateTeam(String html, SmTeam team, PlayerMarketData playerMarketData) throws XPatherException {
-        TagNode node = htmlCleaner.clean(html);
-        addPlayers(team, node, playerMarketData);
-        addTotalScore(team, node);
-        addTeamCash(team, node);
-    }
+    private void addPlayers(SmTeam team, TeamsDetailsResponse teamsDescriptionResponse, PlayerMarketData playerMarketData) {
 
-    private void addTeamCash(SmTeam team, TagNode node) throws XPatherException {
-        String xpathScore = "//*[@id=\"presupuesto\"]";
-        Object[] objects = node.evaluateXPath(xpathScore);
-        String cash = ((TagNode) objects[0]).getAllChildren().get(0).toString();
-        try {
-            team.setCash(DataUtils.toPriceValue(cash));
-        } catch (NumberFormatException e) {
-            team.setCash(-1);
-        }
-    }
+        List<SmPlayer> players = teamsDescriptionResponse.getPlayerList().stream()
+                .map(this::buildPlayer).collect(Collectors.toList());
 
-    private void addPlayers(SmTeam team, TagNode node, PlayerMarketData playerMarketData) {
-        String xPathExpression = "//*[@id=\"puesto$row\"]/td[3]/span/a";
-        String xPathExpressionScore = "//*[@id=\"puesto$row\"]/td[9]";
-        String xPathExpressionIcons = "//*[@id=\"puesto$row\"]/td[1]";
-
-        List<SmPlayer> players = new LinkedList<>();
-        for (int i = 1; i <= 11; i++) {
-            Optional<SmPlayer> player = Optional.empty();
-            try {
-
-                Object[] objects = getObjectsFromExpression(node, xPathExpression.replace("$row", "" + i));
-                if (objects == null || objects.length == 0 || ((TagNode) objects[0]).getAllChildren().size() == 0)
-                    continue;
-
-                ParsePlayerDataFromSmTeam playerParsedData = new ParsePlayerDataFromSmTeam(node, xPathExpressionScore, xPathExpressionIcons, i, objects).invoke();
-                SmPlayerStatus statuses = playerParsedData.getStatus();
-                String name = playerParsedData.getName();
-                String score = playerParsedData.getScore();
-
-                player = Optional.of(SmPlayer.builder()
-                        .name(name)
-                        .position(PlayerPosition.getFromRowId(i).name())
-                        .score(score)
-                        .status(statuses)
-                        .marketData(playerMarketData.getPlayerMap(name))
-                        .build());
-
-            } catch (Exception e) {
-                log.error("Could not add player!", e);
-            }
-            player.ifPresent(p -> players.add(p));
-
-        }
         team.setPlayerList(players);
+    }
+
+    private SmPlayer buildPlayer(TeamsDetailsResponse.Player player) {
+        return SmPlayer.builder()
+                .name(player.getShortName())
+                .position(PlayerPosition.getFromNum(player.getPosition()).name())
+                .score(player.getJourneyPoints())
+                .status(SmPlayerStatus.builder().build())
+                //.marketData(playerMarketData.getPlayerMap(name))
+                .build();
     }
 
     private SmPlayerStatus parseStatuses(List<String> statuses) {
@@ -114,46 +91,25 @@ public class SmContentParser {
         return node.evaluateXPath($row);
     }
 
-    private void addTotalScore(SmTeam team, TagNode node) throws XPatherException {
-        String xpathScore = "//*[@id=\"valoracion_total\"]";
-        try {
-            Object[] objects = node.evaluateXPath(xpathScore);
-            String score = ((TagNode) objects[0]).getAllChildren().get(0).toString();
-            //TODO: use DataUtils, which needs to be moved into a util package
-            team.setScore(Float.parseFloat(score.replace(",", ".")));
+    private void addTotalScore(SmTeam team, TeamsDetailsResponse teamDetails) {
 
-        } catch (Exception e) {
-            log.error("Could not add the score for the team {}", team);
-            team.setScore(-1.0f);
-        }
+        team.setScore(toFloat(teamDetails.getTotalStats().getTotalPoints()));
     }
 
-    public List<SmTeam> getTeams(String html) {
+    public List<SmTeam> getTeams(String response) throws IOException {
 
-        if (html == null) throw new SmException(ErrorCode.ERROR_PARSING_TEAMS);
-
-        List<SmTeam> teamList = new LinkedList<>();
-
-        String xPathExpression = "//*[@id=\"contentmercado\"]/section/table[2]/tbody/tr";
-        try {
-            TagNode node = htmlCleaner.clean(html);
-            Object[] objects = node.evaluateXPath(xPathExpression);
-            int rows = objects.length;
-            for (int i = 1; i <= rows; i++) {
-                Object[] names = node.evaluateXPath(xPathExpression + "[" + i + "]/td[2]");
-                String name = ((TagNode) names[0]).getChildTagList().get(0).getAllChildren().get(0).toString();
-                String url = ((TagNode) names[0]).getChildTagList().get(0).getAttributeByName("href");
-                SmTeam team = new SmTeam();
-                team.setName(name);
-                team.setUrl(url);
-                log.info("Found team for user. Team: " + team);
-                teamList.add(team);
-            }
-        } catch (Exception e) {
-
-            throw new SmException(ErrorCode.ERROR_PARSING_TEAMS, e);
-        }
-        return teamList;
+        if (response == null) throw new SmException(ErrorCode.ERROR_PARSING_TEAMS);
+        List<TeamsDescriptionResponse> teamsDescriptionList = objectMapper.readValue(response, new TypeReference<List<TeamsDescriptionResponse>>() {
+        });
+        //Get teams from first competition
+        TeamsDescriptionResponse teamsDescriptionResponse = teamsDescriptionList.get(0);
+        return teamsDescriptionResponse.getUserTeamList().stream()
+                .map(team -> SmTeam.builder()
+                        .name(team.getNameTeam())
+                        .url(SmTeam.buildUrl(team.getIdUserTeam()))
+                        .teamBroker(NumberUtils.toInt(team.getBrokerValor()))
+                        .build())
+                .collect(Collectors.toList());
     }
 
 

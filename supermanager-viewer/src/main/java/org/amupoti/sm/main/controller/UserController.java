@@ -67,7 +67,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/teams.html", method = RequestMethod.GET)
-    public String getUserTeams(@RequestParam String id, Model model) throws XPatherException {
+    public String getUserTeams(@RequestParam String id, Model model) throws Exception {
 
         //TODO: validate if null
         Optional<SMUser> credentialsByKey = userCredentialsHolder.getCredentialsByKey(id);

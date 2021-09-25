@@ -1,5 +1,6 @@
 package org.amupoti.supermanager.parser.acb.beans;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -12,6 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
+@Builder
 public class SmTeam {
 
     private String name;
@@ -26,4 +28,7 @@ public class SmTeam {
     private int teamBroker;
     private int totalBroker;
 
+    public static String buildUrl(String teamId) {
+        return "https://supermanager.acb.com/api/basic/userteamplayer/journeys/" + teamId;
+    }
 }

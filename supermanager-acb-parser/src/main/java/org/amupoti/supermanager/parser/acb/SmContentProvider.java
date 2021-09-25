@@ -4,14 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
 import org.amupoti.supermanager.parser.acb.dto.LoginRequest;
 import org.amupoti.supermanager.parser.acb.dto.LoginResponse;
-import org.amupoti.supermanager.parser.acb.privateleague.PrivateLeagueCategory;
-import org.apache.http.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.util.LinkedMultiValueMap;
@@ -40,10 +36,6 @@ public class SmContentProvider {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Value("${privateLeague.id}")
-    private String urlPrivateLeague;
-
-
 
     public SmContentProvider(String competition) {
         this.competition = competition;
@@ -57,23 +49,24 @@ public class SmContentProvider {
     @Cacheable("teamsPage")
     public String getTeamsPage(String user, String token) {
         log.info("Requesting all teams page for user {}", user);
-        MultiValueMap<String, String> httpHeaders = new LinkedMultiValueMap<>();
-        httpHeaders.add("Authorization", "Bearer " + token);
+        MultiValueMap<String, String> httpHeaders = addToken(token);
         ResponseEntity<String> exchange = restTemplate.exchange(URL_TEAM_LIST, HttpMethod.GET, new HttpEntity<String>(null, httpHeaders), String.class);
         return exchange.getBody();
     }
 
-    public String getTeamPage(SmTeam team) {
-        return restTemplate.exchange(BASE_URL + team.getUrl(), HttpMethod.GET, new HttpEntity<>(null), String.class).getBody();
+    private MultiValueMap<String, String> addToken(String token) {
+        MultiValueMap<String, String> httpHeaders = new LinkedMultiValueMap<>();
+        httpHeaders.add("Authorization", "Bearer " + token);
+        return httpHeaders;
+    }
+
+    public String getTeamPage(SmTeam team, String token) {
+        return restTemplate.exchange(team.getUrl(), HttpMethod.GET, new HttpEntity<>(addToken(token)), String.class).getBody();
     }
 
     public LoginResponse authenticateUser(String user, String password) {
 
         return checkUserLogin(user, password);
-    }
-
-    public String getPrivateLeaguePage(PrivateLeagueCategory category) {
-        return restTemplate.exchange(urlPrivateLeague + category.getPagePath(), HttpMethod.GET, new HttpEntity<>(null), String.class).getBody();
     }
 
     private LoginResponse checkUserLogin(String user, String password) {
@@ -82,24 +75,8 @@ public class SmContentProvider {
         return responseEntity.getBody();
     }
 
-    private void addCookieFromEntryPageToHeaders(MultiValueMap<String, String> httpHeaders) {
-        HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(null, httpHeaders);
-        ResponseEntity<String> exchange = restTemplate.exchange(competition, HttpMethod.GET, httpEntity, String.class);
-        String cookie = exchange.getHeaders().get("Set-Cookie").toString().replace("[", "").split(";")[0];
-        httpHeaders.add("Cookie", cookie);
-    }
-
     private LoginRequest addAuthenticationDetails(String user, String password) {
         return new LoginRequest(user, password);
-    }
-
-    private MultiValueMap<String, String> prepareHeaders() {
-        MultiValueMap<String, String> httpHeaders = new LinkedMultiValueMap<>();
-        httpHeaders.add("Host", "supermanager.acb.com");
-        httpHeaders.add(HttpHeaders.ACCEPT, "*/*");
-        httpHeaders.add("Content-type", MediaType.APPLICATION_FORM_URLENCODED.toString());
-        httpHeaders.add(HttpHeaders.REFERER, "http://supermanager.acb.com/index/identificar");
-        return httpHeaders;
     }
 
     @Cacheable("marketPage")
