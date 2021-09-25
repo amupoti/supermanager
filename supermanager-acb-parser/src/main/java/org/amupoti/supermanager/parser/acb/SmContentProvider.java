@@ -26,7 +26,8 @@ public class SmContentProvider {
     private static final String SUPERMANAGER_HOME_URL = "http://supermanager.acb.com/index/identificar";
     public static final String BASE_URL = "http://supermanager.acb.com";
     private static final String URL_TEAM_LIST = "https://supermanager.acb.com/api/basic/userteam/all";
-    private static final String MARKET_PAGE = "http://supermanager.acb.com/mercado";
+    private static final String MARKET_PAGE = "https://supermanager.acb.com/api/basic/player?_filters={fields}&_page=1&_perPage=30";
+    private static final String MARKET_PAGE_FIELDS = "[{\"field\":\"competition.idCompetition\",\"value\":1,\"operator\":\"=\",\"condition\":\"AND\"},{\"field\":\"edition.isActive\",\"value\":true,\"operator\":\"=\",\"condition\":\"AND\"}]";
     public static final String EUROPEO_HOME_URL = "http://supermanager.acb.com/europeo/";
     public static final String COPA_HOME_URL = "http://supermanager.acb.com/copadelrey";
     public static final String ACTIVE_COMPETITION = SUPERMANAGER_HOME_URL;
@@ -80,9 +81,9 @@ public class SmContentProvider {
     }
 
     @Cacheable("marketPage")
-    public String getMarketPage() {
+    public String getMarketPage(String token) {
         log.info("Requesting market page");
-        ResponseEntity<String> exchange = restTemplate.exchange(MARKET_PAGE, HttpMethod.GET, new HttpEntity<>(null), String.class);
+        ResponseEntity<String> exchange = restTemplate.exchange(MARKET_PAGE, HttpMethod.GET, new HttpEntity<>(addToken(token)), String.class, MARKET_PAGE_FIELDS);
         return exchange.getBody();
     }
 }
