@@ -27,6 +27,6 @@ public class RdmContentProviderTest {
     public void whenRetrievingUrl_thenContainsTeamName() {
 
         String teamPage = rdmContentProvider.getTeamPage(RdmTeam.AND);
-        Assertions.assertThat(teamPage).contains("ANDORRA");
+        Assertions.assertThat(teamPage).containsIgnoringCase("ANDORRA");
     }
 }
