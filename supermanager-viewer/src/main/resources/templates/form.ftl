@@ -3,7 +3,7 @@
 <head>
     <title>Listado de los jugadores de tus equipos del SuperManager</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    #parse( "./include/header.vm" )
+    <#include "./include/header.vm">
 </head>
 <style media="screen" type="text/css">
 

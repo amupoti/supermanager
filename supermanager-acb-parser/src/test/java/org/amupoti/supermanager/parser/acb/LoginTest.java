@@ -10,9 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 /**
  * Created by Marcel on 25/09/2015.
  */
@@ -26,12 +23,11 @@ public class LoginTest {
     @Autowired
     private SmContentProvider smContentProvider;
     @Test
-    public void testLogin() throws IOException, URISyntaxException {
+    public void testLogin() {
 
-
-        smContentProvider.authenticateUser("testsm_testsm", "testsm_testsm");
-        String teamsPage = smContentProvider.getTeamsPage("testsm_testsm");
-        Assert.assertTrue(teamsPage.contains("crear equipo"));
+        String token = smContentProvider.authenticateUser("testsm_testsm@mailinator.com", "testsm_testsm@mailinator.com").getJwt();
+        String teamsPage = smContentProvider.getTeamsPage("testsm_testsm@mailinator.com", token);
+        Assert.assertTrue(teamsPage.contains("SuperManager Clásico"));
     }
 
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-#parse( "./include/header.vm" )
+<#include "./include/header.vm">
 <script>
 
  $(document).ready(function() {
@@ -36,7 +36,7 @@ background-color: #64b6ee
 
 <div align="center" class="containerts">
     <h1>Resumen de tus equipos</h1>
-    #set ($map = $teamMap)
+
     <table style="width: 90%" id="myTable-overview" class="tablesorter">
         <thead>
         <tr>
@@ -47,42 +47,38 @@ background-color: #64b6ee
             <th>Proyección</th>
         </tr>
         </thead>
-        #foreach( $key in $map.keySet())
+        <#list teamMap as key,teamData>
         <tr>
-            #set ($teamData = $map.get($key))
-                <td><a href="$teamData.teamUrl">$key</a></td>
-            <td id="biggerNum">$teamData.computedScore</td>
-            <td>$teamData.usedPlayers</td>
-            <td>$teamData.meanScorePerPlayer</td>
-            <td id="biggerNum">$teamData.scorePrediction</td>
+
+                <td><a href="${teamData.teamUrl}">${key}</a></td>
+            <td id="biggerNum">${teamData.computedScore}</td>
+            <td>${teamData.usedPlayers}</td>
+            <td>${teamData.meanScorePerPlayer}</td>
+            <td id="biggerNum">${teamData.scorePrediction}</td>
         </tr>
-        #end
+        </#list>
     </table>
 </div>
 
 <div align="center" class="containerts">
-    #set ($map = $teamMap)
-    #foreach( $key in $map.keySet())
-        #set ($smDataList = $map.get($key).playerList)
-        #set ($teamData = $map.get($key))
 
-        <h3>$key - $teamData.score ($teamData.computedScore) </h3>
+   <#list teamMap as key,teamData>
+
+        <h3>${key} - ${teamData.score} (${teamData.computedScore}) </h3>
         <table style="width: 90%" id="myTeamTable-$key" class="tablesorter">
-            #parse("./include/teamTable.vm")
+            <#include "./include/teamTable.ftl">
         </table>
 
         <table style="width: 90%" id="myTable-$key" class="tablesorter">
-            #parse("./include/playersTable.vm")
+            <#include "./include/playersTable.ftl">
         </table>
-    #end
+   </#list>
 </div>
 
 
-#if( $username == "amupoti" )
+<#if  username == "amupoti" >
   <li> <b><a href="/cache/clear.html" class="btn btn-info" role="button">Clear cache</a></b>
-  <li> <a href="/league/allstats.html" class="btn btn-info" role="button">Private league stats</a>
-  <li> <a href="/league/store.html?id=$id" class="btn btn-info" role="button">Update private league stats</a>
-#end
+ </#if>
 
 </body>
 </html>

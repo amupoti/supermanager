@@ -4,17 +4,15 @@ import org.amupoti.supermanager.parser.acb.SmContentParser;
 import org.amupoti.supermanager.parser.acb.SmContentProvider;
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
 import org.amupoti.supermanager.parser.acb.beans.market.MarketCategory;
-import org.amupoti.supermanager.parser.acb.beans.market.PlayerMarketData;
-import org.amupoti.supermanager.parser.acb.privateleague.PrivateLeagueCategory;
+import org.amupoti.supermanager.parser.acb.dto.LoginResponse;
 import org.amupoti.supermanager.parser.acb.utils.DataUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.htmlcleaner.XPatherException;
 
+import java.io.IOException;
 import java.util.DoubleSummaryStatistics;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Marcel on 02/01/2016.
@@ -31,20 +29,20 @@ public class SMUserTeamService {
         this.smContentParser = smContentParser;
     }
 
-    synchronized public List<SmTeam> getTeamsByCredentials(String user, String password) throws XPatherException {
+    synchronized public List<SmTeam> getTeamsByCredentials(String user, String password) throws XPatherException, IOException {
 
-        String loginPage = smContentProvider.authenticateUser(user, password);
-        smContentParser.checkGameStatus(loginPage);
+        LoginResponse loginResponse = smContentProvider.authenticateUser(user, password);
 
-        String pageBody = smContentProvider.getTeamsPage(user);
-        List<SmTeam> teams = smContentParser.getTeams(pageBody);
+        String token = loginResponse.getJwt();
+        String response = smContentProvider.getTeamsPage(user, token);
+        List<SmTeam> teams = smContentParser.getTeams(response);
 
-        String marketPage = smContentProvider.getMarketPage();
-        PlayerMarketData playerMarketData = smContentParser.providePlayerData(marketPage);
+        //   String marketPage = smContentProvider.getMarketPage();
+        //  PlayerMarketData playerMarketData = smContentParser.providePlayerData(marketPage);
 
         for (SmTeam team : teams) {
-            String teamPage = smContentProvider.getTeamPage(team);
-            smContentParser.populateTeam(teamPage, team, playerMarketData);
+            String teamPage = smContentProvider.getTeamPage(team, token);
+            smContentParser.populateTeam(teamPage, team, null);
             computeTeamStats(team);
         }
 
@@ -52,29 +50,9 @@ public class SMUserTeamService {
         return teams;
     }
 
-    public Map<PrivateLeagueCategory, Map<String, Integer>> getPrivateLeagueData(String user, String password) throws XPatherException {
-        String loginPage = smContentProvider.authenticateUser(user, password);
-        smContentParser.checkGameStatus(loginPage);
-
-        Map<PrivateLeagueCategory, Map<String, Integer>> leagueData = new HashMap<>();
-
-        addLeagueDataForCategory(leagueData, PrivateLeagueCategory.REBOUNDS);
-        addLeagueDataForCategory(leagueData, PrivateLeagueCategory.THREE_POINTERS);
-        addLeagueDataForCategory(leagueData, PrivateLeagueCategory.ASSISTS);
-        addLeagueDataForCategory(leagueData, PrivateLeagueCategory.POINTS);
-
-        return leagueData;
-    }
-
-    private void addLeagueDataForCategory(Map<PrivateLeagueCategory, Map<String, Integer>> leagueData, PrivateLeagueCategory category) throws XPatherException {
-        String pageBody = smContentProvider.getPrivateLeaguePage(category);
-        Map<String, Integer> data = smContentParser.providePrivateLeagueData(pageBody);
-        leagueData.put(category, data);
-    }
-
     private void computeTeamStats(SmTeam team) {
         DoubleSummaryStatistics stats = team.getPlayerList().stream()
-                .filter(p -> !p.getScore().equals("-"))
+                .filter(p -> p.getScore() != null && !p.getScore().equals("-"))
                 .mapToDouble(p -> DataUtils.getScoreFromStringValue(p.getScore()))
                 .summaryStatistics();
         team.setMeanScorePerPlayer(round((float) stats.getAverage()));

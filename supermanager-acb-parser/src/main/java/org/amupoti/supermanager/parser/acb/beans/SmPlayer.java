@@ -18,4 +18,6 @@ public class SmPlayer {
     String score;
     SmPlayerStatus status;
     Map<String, String> marketData;
+
+    
 }

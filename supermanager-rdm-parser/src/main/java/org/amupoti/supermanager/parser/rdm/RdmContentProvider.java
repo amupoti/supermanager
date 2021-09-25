@@ -9,6 +9,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 
+
 /**
  * Created by amupoti on 28/08/2017.
  */
