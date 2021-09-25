@@ -7,22 +7,17 @@ import org.amupoti.supermanager.parser.acb.beans.PlayerPosition;
 import org.amupoti.supermanager.parser.acb.beans.SmPlayer;
 import org.amupoti.supermanager.parser.acb.beans.SmPlayerStatus;
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
-import org.amupoti.supermanager.parser.acb.beans.market.MarketCategory;
 import org.amupoti.supermanager.parser.acb.beans.market.PlayerMarketData;
+import org.amupoti.supermanager.parser.acb.dto.MarketPlayerResponse;
 import org.amupoti.supermanager.parser.acb.dto.TeamsDescriptionResponse;
 import org.amupoti.supermanager.parser.acb.dto.TeamsDetailsResponse;
 import org.amupoti.supermanager.parser.acb.exception.ErrorCode;
 import org.amupoti.supermanager.parser.acb.exception.SmException;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.htmlcleaner.HtmlCleaner;
-import org.htmlcleaner.TagNode;
-import org.htmlcleaner.XPatherException;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.amupoti.supermanager.parser.acb.beans.market.MarketCategory.*;
@@ -50,18 +45,19 @@ public class SmContentParser {
     private void addPlayers(SmTeam team, TeamsDetailsResponse teamsDescriptionResponse, PlayerMarketData playerMarketData) {
 
         List<SmPlayer> players = teamsDescriptionResponse.getPlayerList().stream()
-                .map(this::buildPlayer).collect(Collectors.toList());
+                .map(player -> buildPlayer(player, playerMarketData))
+                .collect(Collectors.toList());
 
         team.setPlayerList(players);
     }
 
-    private SmPlayer buildPlayer(TeamsDetailsResponse.Player player) {
+    private SmPlayer buildPlayer(TeamsDetailsResponse.Player player, PlayerMarketData playerMarketData) {
         return SmPlayer.builder()
                 .name(player.getShortName())
                 .position(PlayerPosition.getFromNum(player.getPosition()).name())
                 .score(player.getJourneyPoints())
                 .status(SmPlayerStatus.builder().build())
-                //.marketData(playerMarketData.getPlayerMap(name))
+                .marketData(playerMarketData.getPlayerMap(player.getShortName()))
                 .build();
     }
 
@@ -85,10 +81,6 @@ public class SmContentParser {
                 .info(info)
                 .build();
 
-    }
-
-    private Object[] getObjectsFromExpression(TagNode node, String $row) throws XPatherException {
-        return node.evaluateXPath($row);
     }
 
     private void addTotalScore(SmTeam team, TeamsDetailsResponse teamDetails) {
@@ -130,133 +122,31 @@ public class SmContentParser {
         return html.split("mostrarMensajeModal\\('")[1].split("'")[0];
     }
 
-    public PlayerMarketData providePlayerData(String html) {
-
-        PlayerMarketData playerMarketData = new PlayerMarketData();
+    public PlayerMarketData providePlayerData(String response) {
 
         try {
-            TagNode node = htmlCleaner.clean(html);
-            for (int pos = 1; pos <= 5; pos += 2) {
-                String xpath = String.format(MARKET_REGEX, pos);
-                Object[] objects = node.evaluateXPath(xpath);
-                int numPlayers = ((TagNode) objects[0]).getAllElements(false).length;
-                log.debug("There are {} players for position {}", numPlayers, pos);
-                for (int player = 0; player < numPlayers; player++) {
-                    try {
-                        int finalPlayer = player;
-                        String name = getDataFromElementForCategory(objects, player, NAME);
-                        playerMarketData.addPlayer(name);
-
-                        List<MarketCategory> categoriesElem = Arrays.asList(PRICE, BUY_PCT, LAST_VAL);
-                        categoriesElem.forEach(c -> playerMarketData.addPlayerData(name, c.name(), getDataFromElementForCategory(objects, finalPlayer, c)));
-                        List<MarketCategory> categoriesChildren = Arrays.asList(MEAN_VAL, LAST_THREE_VAL, PLUS_15_BROKER, KEEP_BROKER);
-                        categoriesChildren.forEach(c -> playerMarketData.addPlayerData(name, c.name(), getDataFromChildrenForCategory(objects, finalPlayer, c)));
-
-                        String teamName = extractTeam(objects, finalPlayer);
-                        playerMarketData.addPlayerData(name, TEAM.name(), teamName);
-                    } catch (Exception e) {
-                        log.info("Could not process player with pos {} in row {}", pos, player);
-
-
-                    }
-                }
-            }
-        } catch (XPatherException e) {
+            PlayerMarketData playerMarketData = new PlayerMarketData();
+            List<MarketPlayerResponse> playerList = objectMapper.readValue(response, new TypeReference<List<MarketPlayerResponse>>() {
+            });
+            playerList.forEach(player -> fillMarketData(player, playerMarketData));
+            return playerMarketData;
+        } catch (
+                Exception e) {
             throw new SmException(ErrorCode.ERROR_PARSING_MARKET, e);
         }
 
-        return playerMarketData;
     }
 
-    private String extractTeam(Object[] objects, int finalPlayer) {
-        return ((TagNode) ((TagNode) objects[0]).getAllElements(false)[finalPlayer].getAllElements(false)[3].getAllChildren().get(0)).getAttributes().get("title");
+    private void fillMarketData(MarketPlayerResponse player, PlayerMarketData playerMarketData) {
+        String playerName = player.getShortName();
+        playerMarketData.addPlayer(playerName);
+        playerMarketData.addPlayerData(playerName, PRICE.name(), player.getPrice());
+        playerMarketData.addPlayerData(playerName, PLUS_15_BROKER.name(), player.getUp15());
+        playerMarketData.addPlayerData(playerName, KEEP_BROKER.name(), player.getKeep());
+        playerMarketData.addPlayerData(playerName, MEAN_VAL.name(), player.getCompetitionAverage());
+        playerMarketData.addPlayerData(playerName, TEAM.name(), player.getNameTeam());
+
     }
 
-    private String getDataFromElementForCategory(Object[] objects, int p, MarketCategory category) {
-        log.debug("Getting data from element for category {} and player {}", category, p);
-        String value = ((TagNode) objects[0]).getAllElements(false)[p].getAllElements(false)[category.getColumn()].getAllElementsList(false).get(0).getAllChildren().get(0).toString();
-        log.debug("Value is {}", value);
-        return value;
-    }
 
-    private String getDataFromChildrenForCategory(Object[] objects, int p, MarketCategory category) {
-        log.debug("Getting data from children for category {}  and player {}", category, p);
-        String value = ((TagNode) objects[0]).getAllElements(false)[p].getAllElements(false)[category.getColumn()].getAllChildren().get(0).toString();
-        log.debug("Value is {}", value);
-        return value;
-    }
-
-    public Map<String, Integer> providePrivateLeagueData(String pageBody) throws XPatherException {
-        TagNode node = htmlCleaner.clean(pageBody);
-        Integer teamsInLeague = (Integer) (node.evaluateXPath("count(//*[@id=\"caja-ampliarliga\"]/table[2]/tbody/tr)")[0]);
-
-        String xpathTeamName = "//*[@id=\"caja-ampliarliga\"]/table[2]/tbody/tr[%s]/td[%s]";
-        int teamRow = 1;
-        final int name = 2;
-        final int points = 4;
-        Map<String, Integer> teamMap = new HashMap<>();
-
-        for (int i = 0; i < teamsInLeague; i++) {
-            String finalXpath = String.format(xpathTeamName, teamRow, name);
-            String teamName = ((TagNode) node.evaluateXPath(finalXpath)[0]).getAllChildren().get(0).toString();
-            finalXpath = String.format(xpathTeamName, teamRow, points);
-            String teamValue = ((TagNode) node.evaluateXPath(finalXpath)[0]).getAllChildren().get(0).toString();
-            teamRow++;
-            teamMap.put(teamName, Integer.valueOf(teamValue.replace(".", "")));
-        }
-        return teamMap;
-    }
-
-    private class ParsePlayerDataFromSmTeam {
-        private TagNode node;
-        private String xPathExpressionScore;
-        private String xPathExpressionIcons;
-        private int i;
-        private Object[] objects;
-        private String name;
-        private String score;
-        private List<String> statuses;
-        private SmPlayerStatus sps;
-
-        public ParsePlayerDataFromSmTeam(TagNode node, String xPathExpressionScore, String xPathExpressionIcons, int i, Object... objects) {
-            this.node = node;
-            this.xPathExpressionScore = xPathExpressionScore;
-            this.xPathExpressionIcons = xPathExpressionIcons;
-            this.i = i;
-            this.objects = objects;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getScore() {
-            return score;
-        }
-
-        public SmPlayerStatus getStatus() {
-            return sps;
-        }
-
-        public ParsePlayerDataFromSmTeam invoke() throws XPatherException {
-            name = ((TagNode) objects[0]).getAllChildren().get(0).toString();
-
-            objects = node.evaluateXPath(xPathExpressionScore.replace("$row", "" + i));
-            score = ((TagNode) objects[0]).getAllChildren().get(0).toString();
-
-            objects = node.evaluateXPath(xPathExpressionIcons.replace("$row", "" + i));
-            statuses = getStatusesAsStrings(objects[0]);
-            sps = parseStatuses(statuses);
-            return this;
-        }
-
-        private List<String> getStatusesAsStrings(Object object) {
-            return ((TagNode) object).getAllChildren().stream()
-                    .filter(TagNode.class::isInstance)
-                    .map(s -> {
-                        TagNode t = (TagNode) s;
-                        return t.getAttributeByName("alt");
-                    }).collect(Collectors.toList());
-        }
-    }
 }

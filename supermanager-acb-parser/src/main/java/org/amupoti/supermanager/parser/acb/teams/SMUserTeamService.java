@@ -4,11 +4,11 @@ import org.amupoti.supermanager.parser.acb.SmContentParser;
 import org.amupoti.supermanager.parser.acb.SmContentProvider;
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
 import org.amupoti.supermanager.parser.acb.beans.market.MarketCategory;
+import org.amupoti.supermanager.parser.acb.beans.market.PlayerMarketData;
 import org.amupoti.supermanager.parser.acb.dto.LoginResponse;
 import org.amupoti.supermanager.parser.acb.utils.DataUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.htmlcleaner.XPatherException;
 
 import java.io.IOException;
 import java.util.DoubleSummaryStatistics;
@@ -29,7 +29,7 @@ public class SMUserTeamService {
         this.smContentParser = smContentParser;
     }
 
-    synchronized public List<SmTeam> getTeamsByCredentials(String user, String password) throws XPatherException, IOException {
+    synchronized public List<SmTeam> getTeamsByCredentials(String user, String password) throws IOException {
 
         LoginResponse loginResponse = smContentProvider.authenticateUser(user, password);
 
@@ -37,12 +37,12 @@ public class SMUserTeamService {
         String response = smContentProvider.getTeamsPage(user, token);
         List<SmTeam> teams = smContentParser.getTeams(response);
 
-        //   String marketPage = smContentProvider.getMarketPage();
-        //  PlayerMarketData playerMarketData = smContentParser.providePlayerData(marketPage);
+        String marketPage = smContentProvider.getMarketPage(token);
+        PlayerMarketData playerMarketData = smContentParser.providePlayerData(marketPage);
 
         for (SmTeam team : teams) {
             String teamPage = smContentProvider.getTeamPage(team, token);
-            smContentParser.populateTeam(teamPage, team, null);
+            smContentParser.populateTeam(teamPage, team, playerMarketData);
             computeTeamStats(team);
         }
 
