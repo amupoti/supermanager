@@ -68,7 +68,9 @@ public class SMUserTeamService {
         return team.getPlayerList().stream()
                 .filter(p -> p.getMarketData() != null)
                 .map(p -> p.getMarketData().get(MarketCategory.PRICE.name()))
-                .mapToInt(DataUtils::toPriceValue).sum();
+                .map(Float::parseFloat)
+                .mapToInt(Float::intValue)
+                .sum();
     }
 
     private float computeTeamScorePrediction(DoubleSummaryStatistics stats, SmTeam team) {

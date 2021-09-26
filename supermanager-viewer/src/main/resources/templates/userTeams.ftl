@@ -50,7 +50,7 @@ background-color: #64b6ee
         <#list teamMap as key,teamData>
         <tr>
 
-                <td><a href="${teamData.teamUrl}">${key}</a></td>
+            <td><a href="${teamData.teamUrl}">${key}</a></td>
             <td id="biggerNum">${teamData.computedScore}</td>
             <td>${teamData.usedPlayers}</td>
             <td>${teamData.meanScorePerPlayer}</td>
@@ -64,14 +64,16 @@ background-color: #64b6ee
 
    <#list teamMap as key,teamData>
 
-        <h3>${key} - ${teamData.score} (${teamData.computedScore}) </h3>
-        <table style="width: 90%" id="myTeamTable-$key" class="tablesorter">
-            <#include "./include/teamTable.ftl">
-        </table>
 
-        <table style="width: 90%" id="myTable-$key" class="tablesorter">
-            <#include "./include/playersTable.ftl">
-        </table>
+            <h3>${key} - ${teamData.score} (${teamData.computedScore}) </h3>
+            <table style="width: 90%" id="myTeamTable-$key" class="tablesorter">
+                <#include "./include/teamTable.ftl">
+            </table>
+
+            <table style="width: 90%" id="myTable-$key" class="tablesorter">
+                <#include "./include/playersTable.ftl">
+            </table>
+
    </#list>
 </div>
 

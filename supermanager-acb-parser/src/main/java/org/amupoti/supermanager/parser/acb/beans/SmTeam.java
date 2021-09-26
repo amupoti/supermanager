@@ -17,7 +17,8 @@ import java.util.List;
 public class SmTeam {
 
     private String name;
-    private String url;
+    private String apiUrl;
+    private String webUrl;
     private List<SmPlayer> playerList;
     private Float score;
     private Float computedScore;
@@ -30,5 +31,9 @@ public class SmTeam {
 
     public static String buildUrl(String teamId) {
         return "https://supermanager.acb.com/api/basic/userteamplayer/journeys/" + teamId;
+    }
+
+    public static String buildWebUrl(String teamId) {
+        return "https://supermanager.acb.com/#/teams/detail/" + teamId;
     }
 }
