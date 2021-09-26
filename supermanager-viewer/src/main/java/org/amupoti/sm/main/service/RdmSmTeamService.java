@@ -32,27 +32,28 @@ public class RdmSmTeamService {
 
         final int nextMatch = matchService.getNextMatch();
         List<ViewerPlayer> collect = playerList.stream()
-                .map(this::toSimpleViewerPlayer)
+
                 //TODO: get Market data
-//                .filter(p -> p.getMarketData() != null)
-//                .map(this::toRdmTeam)
-//                .map(playerAndTeam -> toRdmTeamData(playerAndTeam, nextMatch))
-//                .map(this::toViewerPlayer)
+                .filter(p -> p.getMarketData() != null)
+                .map(this::toRdmTeam)
+                .map(playerAndTeam -> toRdmTeamData(playerAndTeam, nextMatch))
+                .map(this::toViewerPlayer)
+//                .map((Pair<SmPlayer, RdmTeam> smPlayer) -> toSimpleViewerPlayer(smPlayer))
                 .collect(toList());
 
         return collect;
     }
 
-    private ViewerPlayer toSimpleViewerPlayer(SmPlayer smPlayer) {
+    private ViewerPlayer toSimpleViewerPlayer(Pair<SmPlayer, RdmTeam> smPlayer) {
         return ViewerPlayer.builder()
-                .player(smPlayer)
+                // .player(smPlayer)
                 .build();
     }
 
 
     private ViewerPlayer toViewerPlayer(Pair<SmPlayer, RdmTeamData> pair) {
         List<ViewerMatch> matches = pair.getValue().getMatches().stream()
-                .map(m -> buildViewerMatch(m))
+                .map(this::buildViewerMatch)
                 .collect(toList());
 
         return ViewerPlayer.builder()

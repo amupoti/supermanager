@@ -14,7 +14,6 @@ import org.amupoti.supermanager.parser.acb.dto.TeamsDetailsResponse;
 import org.amupoti.supermanager.parser.acb.exception.ErrorCode;
 import org.amupoti.supermanager.parser.acb.exception.SmException;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.htmlcleaner.HtmlCleaner;
 
 import java.io.IOException;
 import java.util.List;
@@ -29,8 +28,6 @@ import static org.amupoti.supermanager.parser.acb.utils.DataUtils.toFloat;
 @Slf4j
 public class SmContentParser {
 
-    private HtmlCleaner htmlCleaner;
-    public static final String MARKET_REGEX = "//*[@id=\"posicion%d\"]/tbody";
     private ObjectMapper objectMapper = new ObjectMapper();
 
     public void populateTeam(String response, SmTeam team, PlayerMarketData playerMarketData) throws IOException {
@@ -39,7 +36,6 @@ public class SmContentParser {
         TeamsDetailsResponse teamsDetailsResponse = teamsDetailsPerCompetition.get(teamsDetailsPerCompetition.size() - 1);
         addPlayers(team, teamsDetailsResponse, playerMarketData);
         addTotalScore(team, teamsDetailsResponse);
-        //    addTeamCash(team, teamsDetailsResponse);
     }
 
     private void addPlayers(SmTeam team, TeamsDetailsResponse teamsDescriptionResponse, PlayerMarketData playerMarketData) {
@@ -100,6 +96,7 @@ public class SmContentParser {
                         .name(team.getNameTeam())
                         .url(SmTeam.buildUrl(team.getIdUserTeam()))
                         .teamBroker(NumberUtils.toInt(team.getBrokerValor()))
+                        .cash(Float.valueOf(team.getAmount()).intValue())
                         .build())
                 .collect(Collectors.toList());
     }

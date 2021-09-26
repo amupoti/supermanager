@@ -14,11 +14,8 @@
             <td>${teamData.score}</td>
             <td>${teamData.usedPlayers}</td>
             <td>${teamData.meanScorePerPlayer}</td>
-            <td>-</td>
-            <td>-</td>
-<!--            <td>${teamData.totalBroker}</td>
+            <td>${teamData.totalBroker}</td>
             <td>${teamData.teamBroker}</td>
--->
             <td>${teamData.cash}</td>
         </tr>
     </tbody>
