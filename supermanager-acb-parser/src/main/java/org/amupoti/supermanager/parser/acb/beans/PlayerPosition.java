@@ -15,4 +15,17 @@ public enum PlayerPosition {
         }
         return null;
     }
+
+    public static int getFromName(String position) {
+        switch (PlayerPosition.valueOf(position)) {
+            case BASE:
+                return 1;
+            case ALERO:
+                return 3;
+            case PIVOT:
+                return 5;
+        }
+
+        return 0;
+    }
 }

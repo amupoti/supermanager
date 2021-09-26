@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.amupoti.supermanager.parser.acb.beans.PlayerPosition.getFromName;
 import static org.amupoti.supermanager.parser.acb.beans.market.MarketCategory.*;
 import static org.amupoti.supermanager.parser.acb.utils.DataUtils.toFloat;
 
@@ -42,9 +43,16 @@ public class SmContentParser {
 
         List<SmPlayer> players = teamsDescriptionResponse.getPlayerList().stream()
                 .map(player -> buildPlayer(player, playerMarketData))
+                .sorted(this::comparePosition)
                 .collect(Collectors.toList());
 
         team.setPlayerList(players);
+    }
+
+    private int comparePosition(SmPlayer p1, SmPlayer p2) {
+        int pos1 = getFromName(p1.getPosition());
+        int pos2 = getFromName(p2.getPosition());
+        return Integer.compare(pos1, pos2);
     }
 
     private SmPlayer buildPlayer(TeamsDetailsResponse.Player player, PlayerMarketData playerMarketData) {
@@ -94,7 +102,8 @@ public class SmContentParser {
         return teamsDescriptionResponse.getUserTeamList().stream()
                 .map(team -> SmTeam.builder()
                         .name(team.getNameTeam())
-                        .url(SmTeam.buildUrl(team.getIdUserTeam()))
+                        .apiUrl(SmTeam.buildUrl(team.getIdUserTeam()))
+                        .webUrl(SmTeam.buildWebUrl(team.getIdUserTeam()))
                         .teamBroker(NumberUtils.toInt(team.getBrokerValor()))
                         .cash(Float.valueOf(team.getAmount()).intValue())
                         .build())
