@@ -62,7 +62,7 @@ public class SmContentProvider {
     }
 
     public String getTeamPage(SmTeam team, String token) {
-        return restTemplate.exchange(team.getUrl(), HttpMethod.GET, new HttpEntity<>(addToken(token)), String.class).getBody();
+        return restTemplate.exchange(team.getApiUrl(), HttpMethod.GET, new HttpEntity<>(addToken(token)), String.class).getBody();
     }
 
     public LoginResponse authenticateUser(String user, String password) {

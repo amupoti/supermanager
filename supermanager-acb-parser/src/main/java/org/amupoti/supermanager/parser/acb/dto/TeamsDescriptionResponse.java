@@ -19,5 +19,6 @@ public class TeamsDescriptionResponse {
         String brokerValor;
         String totalPlayerPoints;
         String license;
+        String amount;
     }
 }
