@@ -29,7 +29,7 @@ public enum RdmTeam {
     MAN("BAXI Manresa", POOR),
     MUR("UCAM Murcia", POOR),
     BET("Coosur Real Betis", WORST),
-    BLB("Bilbao Basket", WORST);
+    BLB("Surne Bilbao Basket", WORST);
 
     private String teamName;
     private Quality quality;
