@@ -19,7 +19,7 @@
         <#list teamData.playerList as smData>
         <tr>
             <td align="left">${smData.player.name}</td>
-            <td>${(smData.player.marketData["TEAM"])!"-"}</td>
+            <td>${(smData.player.marketData["TEAM_RDM"])!"-"}</td>
             <td>${(smData.player.marketData["PRICE"])!"-"}</td>
             <td>${(smData.player.marketData["KEEP_BROKER"])!"-"}</td>
             <td>${(smData.player.marketData["PLUS_15_BROKER"])!"-"}</td>
