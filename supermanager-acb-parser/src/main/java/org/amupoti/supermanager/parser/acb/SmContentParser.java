@@ -111,23 +111,6 @@ public class SmContentParser {
     }
 
 
-    public void checkGameStatus(String html) {
-        String errorMessage = null;
-        try {
-            if (html != null && html.contains("mostrarMensajeModal")) {
-                errorMessage = extractErrorMessage(html);
-            }
-        } catch (Exception ex) {
-            throw new SmException(ErrorCode.ERROR_PARSING_TEAMS);
-        }
-
-        if (errorMessage != null) throw new SmException(errorMessage);
-    }
-
-    private String extractErrorMessage(String html) {
-        return html.split("mostrarMensajeModal\\('")[1].split("'")[0];
-    }
-
     public PlayerMarketData providePlayerData(String response) {
 
         try {

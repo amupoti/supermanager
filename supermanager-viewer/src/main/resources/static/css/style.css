@@ -60,7 +60,8 @@ h1, h2, h3{
 }
 
 #biggerNum{
- font-size: 110%
+ font-size: 110%;
+ font-weight: bold;
 }
 
 .localClass{

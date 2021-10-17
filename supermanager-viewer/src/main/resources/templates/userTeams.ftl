@@ -54,7 +54,7 @@ background-color: #64b6ee
             <td id="biggerNum">${teamData.computedScore}</td>
             <td>${teamData.usedPlayers}</td>
             <td>${teamData.meanScorePerPlayer}</td>
-            <td id="biggerNum">${teamData.scorePrediction}</td>
+            <td>${teamData.scorePrediction}</td>
         </tr>
         </#list>
     </table>
