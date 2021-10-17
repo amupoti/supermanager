@@ -58,7 +58,7 @@ public class SmContentParser {
     private SmPlayer buildPlayer(TeamsDetailsResponse.Player player, PlayerMarketData playerMarketData) {
         return SmPlayer.builder()
                 .name(player.getShortName())
-                .position(PlayerPosition.getFromNum(player.getPosition()).name())
+                .position(PlayerPosition.getFromNum(player.getPosition()).getName())
                 .score(player.getJourneyPoints())
                 .status(SmPlayerStatus.builder().build())
                 .marketData(playerMarketData.getPlayerMap(player.getShortName()))
@@ -147,11 +147,16 @@ public class SmContentParser {
         String playerName = player.getShortName();
         playerMarketData.addPlayer(playerName);
         playerMarketData.addPlayerData(playerName, PRICE.name(), player.getPrice());
+        playerMarketData.addPlayerData(playerName, PRICE_FORMATTED.name(), formatPrice(player.getPrice()));
         playerMarketData.addPlayerData(playerName, PLUS_15_BROKER.name(), player.getUp15());
         playerMarketData.addPlayerData(playerName, KEEP_BROKER.name(), player.getKeep());
         playerMarketData.addPlayerData(playerName, MEAN_VAL.name(), player.getCompetitionAverage());
         playerMarketData.addPlayerData(playerName, TEAM.name(), player.getNameTeam());
 
+    }
+
+    private String formatPrice(String price) {
+        return (Float.valueOf(price).intValue() / 1000) + "k";
     }
 
 

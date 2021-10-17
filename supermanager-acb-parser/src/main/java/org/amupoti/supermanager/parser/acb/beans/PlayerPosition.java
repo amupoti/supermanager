@@ -1,7 +1,14 @@
 package org.amupoti.supermanager.parser.acb.beans;
 
 public enum PlayerPosition {
-    BASE, ALERO, PIVOT;
+    BASE("B"), ALERO("A"), PIVOT("P");
+
+    private String name;
+
+    PlayerPosition(String name) {
+
+        this.name = name;
+    }
 
     public static PlayerPosition getFromNum(String position) {
         Integer num = Integer.valueOf(position);
@@ -16,16 +23,24 @@ public enum PlayerPosition {
         return null;
     }
 
-    public static int getFromName(String position) {
-        switch (PlayerPosition.valueOf(position)) {
-            case BASE:
-                return 1;
-            case ALERO:
-                return 3;
-            case PIVOT:
-                return 5;
+    public static int getFromName(String name) {
+        for (PlayerPosition position : values()) {
+            if (position.name.equals(name)) {
+                switch (position) {
+                    case BASE:
+                        return 1;
+                    case ALERO:
+                        return 3;
+                    case PIVOT:
+                        return 5;
+                }
+            }
         }
 
         return 0;
+    }
+
+    public String getName() {
+        return name;
     }
 }

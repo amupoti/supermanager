@@ -26,10 +26,6 @@ public class DataUtils {
         return df.format(round(number));
     }
 
-    public static int toPriceValue(String price) {
-        return Integer.parseInt(price.replace(".", ""));
-    }
-
     public static String format(String value) {
 
         if (NumberUtils.isNumber(value)) {

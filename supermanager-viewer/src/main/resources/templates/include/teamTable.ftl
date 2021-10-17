@@ -11,7 +11,7 @@
     </thead>
     <tbody align="center">
         <tr>
-            <td>${teamData.score}</td>
+            <td><b>${teamData.score}</b></td>
             <td>${teamData.usedPlayers}</td>
             <td>${teamData.meanScorePerPlayer}</td>
             <td>${teamData.totalBroker}</td>
