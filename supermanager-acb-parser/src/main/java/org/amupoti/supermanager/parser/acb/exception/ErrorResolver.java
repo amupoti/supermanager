@@ -18,6 +18,8 @@ public class ErrorResolver {
         errors.put(DEFAULT_ERROR, "Se ha producido un error, pruébalo de nuevo más tarde.");
         errors.put(INCORRECT_SESSION_ID, "Tu sesión ha caducado, prueba a hacer login de nuevo.");
         errors.put(ERROR_PARSING_MARKET, "No se ha podido recuperar la información del mercado");
+        errors.put(TEAM_PAGE_ERROR, "No se ha podido recuperar la información de los equipos");
+        errors.put(INVALID_CREDENTIALS, "Ha habido un error durante el login, comprueba tu usuario y contraseña");
     }
 
     public static String getMessageFromCode(ErrorCode code) {
