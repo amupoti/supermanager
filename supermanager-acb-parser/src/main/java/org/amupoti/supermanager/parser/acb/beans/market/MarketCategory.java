@@ -8,6 +8,6 @@ import lombok.Getter;
 @Getter
 public enum MarketCategory {
 
-    NAME(), TEAM(), PRICE(), BUY_PCT(), LAST_VAL(), MEAN_VAL(), LAST_THREE_VAL(), PLUS_15_BROKER(), KEEP_BROKER();
+    NAME, TEAM, PRICE, PRICE_FORMATTED, BUY_PCT, LAST_VAL, MEAN_VAL, LAST_THREE_VAL, PLUS_15_BROKER, KEEP_BROKER;
 
 }
