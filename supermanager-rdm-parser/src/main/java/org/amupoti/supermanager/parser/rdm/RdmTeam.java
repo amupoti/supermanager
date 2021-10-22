@@ -12,7 +12,7 @@ import static org.amupoti.supermanager.parser.rdm.RdmTeam.Quality.*;
 @Slf4j
 public enum RdmTeam {
 
-    BAS("Baskonia", TOP),
+    BAS("Bitci Baskonia", TOP),
     FCB("Barça", TOP),
     RMA("Real Madrid", TOP),
     UNI("Unicaja", GOOD),
