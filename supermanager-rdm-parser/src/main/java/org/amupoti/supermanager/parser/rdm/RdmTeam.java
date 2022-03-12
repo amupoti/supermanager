@@ -12,7 +12,7 @@ import static org.amupoti.supermanager.parser.rdm.RdmTeam.Quality.*;
 @Slf4j
 public enum RdmTeam {
 
-    BAS("Bitci Baskonia", TOP),
+    BAS("Bitci Baskonia", GOOD),
     FCB("Barça", TOP),
     RMA("Real Madrid", TOP),
     UNI("Unicaja", GOOD),
@@ -23,13 +23,13 @@ public enum RdmTeam {
     BRE("RÍO BREOGÁN", AVERAGE),
     GCA("Gran Canaria", AVERAGE),
     ZAR("Casademont Zaragoza", AVERAGE),
-    OBR("Monbus Obradoiro", POOR),
+    OBR("Monbus Obradoiro", WORST),
     AND("MoraBanc Andorra", POOR),
     BUR("Hereda San Pablo Burgos", POOR),
     MAN("BAXI Manresa", POOR),
     FUE("Urbas Fuenlabrada", WORST),
     BET("Coosur Real Betis", WORST),
-    BLB("Surne Bilbao Basket", WORST);
+    BLB("Surne Bilbao Basket", POOR);
 
     private String teamName;
     private Quality quality;
