@@ -19,21 +19,19 @@
     <div align="center" class="containerts">
         <h1>Calendario</h1>
 
-        <#list teamsData as team>
 
-             <h1>${team.team.teamName}</h1>
-
-            <table style="width: 90%" id="myTable-overview" class="tablesorter">
-            <thead>
+        <table style="width: 90%" id="myTable-overview" class="tablesorter">
+        <thead>
+        <tr>
+            <th>Equipo</th>
+            <#list firstMatch..34 as i>
+                <th align="center">J ${i}</th>
+            </#list>
+        </tr>
+        </thead>
+        <#list teamsData?sort_by("team") as team>
             <tr>
-                <th>Equipo</th>
-                <#list firstMatch..34 as i>
-                    <th align="center">J ${i}</th>
-                </#list>
-            </tr>
-            </thead>
-            <tr>
-                <td><b>${team.team}</b></td>
+                <td align="center"><b>${team.team}</b></td>
                 <#list firstMatch..34 as i>
 
                     <#assign match = team.matches[i-1] >
@@ -45,8 +43,8 @@
                  </#list>
             </tr>
 
-        </table>
         </#list>
+        </table>
     </div>
 
 </body>
