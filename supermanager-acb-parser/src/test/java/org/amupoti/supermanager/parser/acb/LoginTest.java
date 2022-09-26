@@ -24,7 +24,7 @@ public class LoginTest {
     @Test
     public void testLogin() {
 
-        String token = smContentProvider.authenticateUser("testsm_testsm@mailinator.com", "testsm_testsm@mailinator.com").getJwt();
+        String token = smContentProvider.authenticateUser("testsm_testsm@mailinator.com", "testsm_testsm@mailinator.comA1.").getJwt();
         String teamsPage = smContentProvider.getTeamsPage("testsm_testsm@mailinator.com", token);
         Assert.assertTrue(teamsPage.contains("SuperManager Clásico"));
     }

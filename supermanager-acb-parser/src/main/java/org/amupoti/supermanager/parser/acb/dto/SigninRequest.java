@@ -3,8 +3,8 @@ package org.amupoti.supermanager.parser.acb.dto;
 import lombok.Value;
 
 @Value
-public class LoginRequest {
+public class SigninRequest {
 
-    String uuid ;
-    String deviceId = "";
+    String username;
+    String password;
 }
