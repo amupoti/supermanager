@@ -20,13 +20,13 @@ public class RdmMatchServiceTest {
 
     @Test
     public void whenGettingMatchesForATeam_thenReturnMatches() {
-        RdmTeamData teamData = matchService.getTeamDataFromMatchNumber(RdmTeam.AND, 1, 3);
+        RdmTeamData teamData = matchService.getTeamDataFromMatchNumber(RdmTeam.FCB, 1, 3);
         Assertions.assertThat(teamData.getMatches()).hasSize(3);
     }
 
     @Test
     public void whenGettingMatchesForLastMatch_thenReturnOneMatch() {
-        RdmTeamData teamData = matchService.getTeamDataFromMatchNumber(RdmTeam.AND, 34, 3);
+        RdmTeamData teamData = matchService.getTeamDataFromMatchNumber(RdmTeam.FCB, 34, 3);
         Assertions.assertThat(teamData.getMatches()).hasSize(1);
     }
 }

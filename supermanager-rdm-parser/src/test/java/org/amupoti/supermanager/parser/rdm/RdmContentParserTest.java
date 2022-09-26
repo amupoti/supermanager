@@ -27,7 +27,7 @@ public class RdmContentParserTest {
 
     @Test
     public void whenRetrievingMatches_thenTeamPlays34Matches() {
-        RdmTeam team = RdmTeam.AND;
+        RdmTeam team = RdmTeam.FCB;
         String teamPage = provider.getTeamPage(team);
         List<Match> teamMatches = parser.getTeamMatches(teamPage, team);
 

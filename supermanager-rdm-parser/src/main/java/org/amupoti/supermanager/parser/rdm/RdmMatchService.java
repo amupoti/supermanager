@@ -32,7 +32,8 @@ public class RdmMatchService {
 
     @Cacheable("NextMatch")
     public int getNextMatch() {
-        return getCurrentMatchFromIdealTeamWidget() + 1;
+//        return getCurrentMatchFromIdealTeamWidget() + 1; TODO: change after 1st match
+        return getCurrentMatchFromIdealTeamWidget() ;
     }
 
     @Cacheable("RdmTeamData")

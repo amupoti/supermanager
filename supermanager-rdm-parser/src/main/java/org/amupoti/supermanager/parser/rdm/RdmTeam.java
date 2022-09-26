@@ -24,11 +24,11 @@ public enum RdmTeam {
     GCA("Gran Canaria", AVERAGE),
     ZAR("Casademont Zaragoza", AVERAGE),
     OBR("Monbus Obradoiro", WORST),
-    AND("MoraBanc Andorra", POOR),
-    BUR("Hereda San Pablo Burgos", POOR),
+    GIR("Bàsquet Girona", POOR),
     MAN("BAXI Manresa", GOOD),
     FUE("Urbas Fuenlabrada", WORST),
     BET("Coosur Real Betis", WORST),
+    CBG("Coviran Granada", POOR),
     BLB("Surne Bilbao Basket", POOR);
 
     private String teamName;
