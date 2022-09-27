@@ -12,24 +12,24 @@ import static org.amupoti.supermanager.parser.rdm.RdmTeam.Quality.*;
 @Slf4j
 public enum RdmTeam {
 
-    BAS("Bitci Baskonia", GOOD),
+    BAS("Cazoo Baskonia", GOOD),
     FCB("Barça", TOP),
     RMA("Real Madrid", TOP),
-    UNI("Unicaja", GOOD),
     VBC("Valencia Basket", GOOD),
-    MUR("UCAM Murcia", AVERAGE),
     CAN("Lenovo Tenerife", GOOD),
     JOV("Joventut Badalona", GOOD),
-    BRE("RÍO BREOGÁN", AVERAGE),
-    GCA("Gran Canaria", AVERAGE),
-    ZAR("Casademont Zaragoza", AVERAGE),
-    OBR("Monbus Obradoiro", WORST),
-    GIR("Bàsquet Girona", POOR),
     MAN("BAXI Manresa", GOOD),
-    FUE("Urbas Fuenlabrada", WORST),
-    BET("Coosur Real Betis", WORST),
-    CBG("Coviran Granada", POOR),
-    BLB("Surne Bilbao Basket", POOR);
+    UNI("Unicaja", AVERAGE),
+    GCA("Gran Canaria", AVERAGE),
+    MUR("UCAM Murcia", AVERAGE),
+    ZAR("Zaragoza", AVERAGE),
+    OBR("Obradoiro", POOR),
+    BRE("RÍO BREOGÁN", POOR),
+    BLB("Bilbao", POOR),
+    CBG("Granada", WORST),
+    GIR("Bàsquet Girona", WORST),
+    FUE("Fuenlabrada", WORST),
+    BET("Real Betis", WORST);
 
     private String teamName;
     private Quality quality;
@@ -47,11 +47,11 @@ public enum RdmTeam {
     public static RdmTeam fromTeamName(String teamName) {
 
         for (RdmTeam t : RdmTeam.values()) {
-            if (t.teamName.equalsIgnoreCase(teamName)) {
+            if (teamName.contains(t.teamName)) {
                 return t;
             }
         }
-        log.info("Could not convert team {}", teamName);
-        return null;
+        log.error("Could not convert team {}", teamName);
+        throw new RdmException("No se puede convertir el nombre de equipo "+teamName+" a un nombre del rincon del manager. Es posible que el equipo haya cambiado su nombre");
     }
 }
