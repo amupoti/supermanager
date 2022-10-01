@@ -24,7 +24,7 @@ public enum RdmTeam {
     MUR("UCAM Murcia", AVERAGE),
     ZAR("Zaragoza", AVERAGE),
     OBR("Obradoiro", POOR),
-    BRE("RÍO BREOGÁN", POOR),
+    BRE("Río Breogán", POOR),
     BLB("Bilbao", POOR),
     CBG("Granada", WORST),
     GIR("Bàsquet Girona", WORST),
