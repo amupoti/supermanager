@@ -2,8 +2,8 @@
 <html>
 <head>
     <title>Listado de los jugadores de tus equipos del SuperManager</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <#include "./include/header.vm">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <style media="screen" type="text/css">
 
