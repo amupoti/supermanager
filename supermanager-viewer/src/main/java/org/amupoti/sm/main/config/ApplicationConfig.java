@@ -36,8 +36,10 @@ public class ApplicationConfig {
                 .disableCookieManagement()
                 .build();
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
-        RestTemplate restTemplate = new RestTemplate(factory);
-        return restTemplate;
+        factory.setConnectionRequestTimeout(3000);
+        factory.setConnectTimeout(3000);
+        factory.setReadTimeout(3000);
+        return new RestTemplate(factory);
     }
 
     @Bean
