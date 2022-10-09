@@ -36,9 +36,9 @@ public class ApplicationConfig {
                 .disableCookieManagement()
                 .build();
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
-        factory.setConnectionRequestTimeout(3000);
-        factory.setConnectTimeout(3000);
-        factory.setReadTimeout(3000);
+        factory.setConnectionRequestTimeout(10000);
+        factory.setConnectTimeout(10000);
+        factory.setReadTimeout(10000);
         return new RestTemplate(factory);
     }
 
