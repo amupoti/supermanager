@@ -79,10 +79,10 @@ public class SmContentProvider {
         return checkUserLogin(user, password);
     }
 
-    @Retryable(maxAttempts = 3, value = InfrastructureException.class,
-            backoff = @Backoff(delay = 1000, multiplier = 2))
+    @Retryable(maxAttempts = 5, value = InfrastructureException.class,
+            backoff = @Backoff(delay = 2000, multiplier = 2))
     public LoginResponse checkUserLogin(String user, String password) {
-
+        log.info("Trying to log user in...");
         try {
             ResponseEntity<SigninResponse> signinResponse = restTemplate.postForEntity(PRE_LOGIN_URL, buildSigninRequest(user, password), SigninResponse.class);
             ResponseEntity<LoginResponse> responseEntity = restTemplate.postForEntity(LOGIN_URL, addAuthenticationDetails(signinResponse.getBody()), LoginResponse.class);
