@@ -31,6 +31,7 @@ public class SmContentProvider {
 
     public static final String LOGIN_URL = "https://admin-supermanager.acb.com/oauth/V2/open/accounttoken/getTokens";
     public static final String PRE_LOGIN_URL = "https://id.acb.com/api/signIn";
+    public static final int MAX_RETRIES = 5;
     private static final String SUPERMANAGER_HOME_URL = "http://supermanager.acb.com/index/identificar";
     public static final String ACTIVE_COMPETITION = SUPERMANAGER_HOME_URL;
     private static final String URL_TEAM_LIST = "https://supermanager.acb.com/api/basic/userteam/all";
@@ -82,15 +83,32 @@ public class SmContentProvider {
     @Retryable(maxAttempts = 5, value = InfrastructureException.class,
             backoff = @Backoff(delay = 2000, multiplier = 2))
     public LoginResponse checkUserLogin(String user, String password) {
-        log.info("Trying to log user in...");
+        //TODO: initialize beans properly so we do not need this manual retry mechanism
+        int retries = 0;
+        do {
+
+            log.info("Trying to log user in...");
+            try {
+                ResponseEntity<SigninResponse> signinResponse = restTemplate.postForEntity(PRE_LOGIN_URL, buildSigninRequest(user, password), SigninResponse.class);
+                ResponseEntity<LoginResponse> responseEntity = restTemplate.postForEntity(LOGIN_URL, addAuthenticationDetails(signinResponse.getBody()), LoginResponse.class);
+                return responseEntity.getBody();
+            } catch (HttpClientErrorException e) {
+                throw new SmException(ErrorCode.INVALID_CREDENTIALS, e);
+            } catch (Exception e) {
+                sleep(3000);
+                retries++;
+                if (retries == MAX_RETRIES)
+                    throw new InfrastructureException("Ha ocurrido un problema al intentar recuperar la información", e);
+            }
+        } while (retries < MAX_RETRIES);
+        throw new InfrastructureException("Ha ocurrido un problema desconocido al intentar recuperar la información");
+    }
+
+    private void sleep(int millis) {
         try {
-            ResponseEntity<SigninResponse> signinResponse = restTemplate.postForEntity(PRE_LOGIN_URL, buildSigninRequest(user, password), SigninResponse.class);
-            ResponseEntity<LoginResponse> responseEntity = restTemplate.postForEntity(LOGIN_URL, addAuthenticationDetails(signinResponse.getBody()), LoginResponse.class);
-            return responseEntity.getBody();
-        } catch (HttpClientErrorException e) {
-            throw new SmException(ErrorCode.INVALID_CREDENTIALS, e);
-        } catch (Exception e) {
-            throw new InfrastructureException("Ha ocurrido un problema al intentar recuperar la información", e);
+            Thread.sleep(millis);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
         }
     }
 
