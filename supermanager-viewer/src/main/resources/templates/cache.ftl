@@ -2,16 +2,16 @@
 <html>
 <head>
     <title>SuperManager</title>
-    #parse( "./include/header.vm" )
+    <#include "./include/header.vm">
 </head>
 <body>
     <div class="container">
         <div class="row">
             <div class="twelve columns">
                 <h1>Gestión de caches</h1>
-                $message
+                <p>${message}</p>
             </div>
          </div>
     </div>
 </body>
-</html>Requesting market data
+</html>
