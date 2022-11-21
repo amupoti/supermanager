@@ -1,7 +1,6 @@
 FROM maven:3.6.0-jdk-8-alpine as build
 
 WORKDIR /app
-
 COPY . .
 
 RUN mvn clean package
