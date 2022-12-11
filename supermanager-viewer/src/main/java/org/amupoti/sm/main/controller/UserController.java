@@ -1,7 +1,8 @@
 package org.amupoti.sm.main.controller;
 
 import org.amupoti.sm.main.bean.SMUser;
-import org.amupoti.sm.main.model.UserTeamViewData;
+import org.amupoti.sm.main.model.PrivateLeagueTeamData;
+import org.amupoti.sm.main.service.PrivateLeagueService;
 import org.amupoti.sm.main.service.RdmSmTeamService;
 import org.amupoti.sm.main.users.UserCredentialsHolder;
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
@@ -20,10 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.amupoti.sm.main.service.RdmSmTeamService.NEXT_MATCHES;
 
@@ -47,6 +45,9 @@ public class UserController {
 
     @Autowired
     private RdmMatchService matchService;
+
+    @Autowired
+    private PrivateLeagueService privateLeagueService;
 
     @RequestMapping(value = "/login.html", method = RequestMethod.GET)
     public String getUserTeamsForm(Model model) {
@@ -75,7 +76,7 @@ public class UserController {
         }
 
         SMUser user = credentialsByKey.get();
-        HashMap<String, UserTeamViewData> teamMap = new HashMap<>();
+        Map<String, PrivateLeagueTeamData> teamMap = new HashMap<>();
 
         if (user != null) {
             log.info("Getting teams for user " + user.getLogin());
@@ -85,7 +86,9 @@ public class UserController {
 
         List<SmTeam> userTeams = SMUserTeamService.getTeamsByCredentials(user.getLogin(), user.getPassword());
         for (SmTeam team : userTeams) {
-            teamMap.put(team.getName(), UserTeamViewData.builder()
+            teamMap.put(team.getName(), PrivateLeagueTeamData.builder()
+                    .user(user.getLogin())
+                    //TODO: .updatedAt(Instant.now())
                     .playerList(rdmSmTeamService.buildPlayerList(team.getPlayerList()))
                     .score(team.getScore())
                     .computedScore(team.getComputedScore())
@@ -99,6 +102,12 @@ public class UserController {
                     .build());
         }
 
+        privateLeagueService.storePrivateLeagueTeams(teamMap);
+        buildModel(id, model, user, teamMap);
+        return "userTeams";
+    }
+
+    private void buildModel(String id, Model model, SMUser user, Map<String, PrivateLeagueTeamData> teamMap) {
         Integer firstMatch = matchService.getNextMatch();
         int lastMatch = Math.min(34, firstMatch + NEXT_MATCHES - 1);
         model.addAttribute("firstMatch", firstMatch.intValue());
@@ -106,7 +115,6 @@ public class UserController {
         model.addAttribute("teamMap", teamMap);
         model.addAttribute("username", user.getLogin());
         model.addAttribute("id", id);
-        return "userTeams";
     }
 
 
