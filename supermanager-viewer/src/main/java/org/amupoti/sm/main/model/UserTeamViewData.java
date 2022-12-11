@@ -1,6 +1,6 @@
 package org.amupoti.sm.main.model;
 
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
  * Created by amupoti on 01/08/2017.
  */
 @Getter
-@Builder
+@AllArgsConstructor
 public class UserTeamViewData {
     private final List<ViewerPlayer> playerList;
     private final Float score;
