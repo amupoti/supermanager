@@ -19,7 +19,7 @@
                 location.reload(true);
             document.getElementById('countdown').innerHTML = "Se actualizará en " + remaining + " segundos";
             setTimeout(function(){ countdown(remaining - 1); }, 1000);
-        })(60);
+        })(120);
  });
 
 
@@ -49,7 +49,6 @@ background-color: #64b6ee
         <thead>
         <tr>
             <th>Equipo</th>
-            <th>Usuario.</th>
             <th>Val.</th>
             <th>Han jugado</th>
             <th>Media</th>
@@ -61,7 +60,6 @@ background-color: #64b6ee
         <#list teamMap as key,teamData>
             <tr>
                 <td>${key}</td>
-                <td>${teamData.user}</td>
                 <td id="biggerNum">${teamData.computedScore}</td>
                 <td>${teamData.usedPlayers}</td>
                 <td>${teamData.meanScorePerPlayer}</td>
