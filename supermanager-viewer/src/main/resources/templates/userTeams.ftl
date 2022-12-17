@@ -19,7 +19,7 @@
                 location.reload(true);
             document.getElementById('countdown').innerHTML = "Se actualizará en " + remaining + " segundos";
             setTimeout(function(){ countdown(remaining - 1); }, 1000);
-        })(60);
+        })(120);
  });
 
 
