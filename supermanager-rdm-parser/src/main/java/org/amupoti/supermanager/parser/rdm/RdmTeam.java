@@ -12,24 +12,24 @@ import static org.amupoti.supermanager.parser.rdm.RdmTeam.Quality.*;
 @Slf4j
 public enum RdmTeam {
 
-    BAS("Cazoo Baskonia", GOOD),
+    BAS("Baskonia", GOOD),
     FCB("Barça", TOP),
     RMA("Real Madrid", TOP),
-    VBC("Valencia Basket", AVERAGE),
+    VBC("Valencia Basket", GOOD),
     CAN("Lenovo Tenerife", GOOD),
     JOV("Joventut Badalona", GOOD),
     UNI("Unicaja", AVERAGE),
     GCA("Gran Canaria", AVERAGE),
     MUR("UCAM Murcia", AVERAGE),
-    BRE("Río Breogán", AVERAGE),
+    BRE("Río Breogán", POOR),
     BLB("Bilbao", AVERAGE),
     MAN("BAXI Manresa", POOR),
     ZAR("Zaragoza", POOR),
     OBR("Obradoiro", POOR),
-    CBG("Granada", WORST),
+    COV("Granada", POOR),
     GIR("Bàsquet Girona", WORST),
-    FUE("Fuenlabrada", WORST),
-    BET("Real Betis", WORST);
+    PAL("Palencia", WORST),
+    AND("Andorra", POOR);
 
     private String teamName;
     private Quality quality;
@@ -40,10 +40,6 @@ public enum RdmTeam {
         this.quality = quality;
     }
 
-    public enum Quality {
-        TOP, GOOD, AVERAGE, POOR, WORST
-    }
-
     public static RdmTeam fromTeamName(String teamName) {
 
         for (RdmTeam t : RdmTeam.values()) {
@@ -52,6 +48,10 @@ public enum RdmTeam {
             }
         }
         log.error("Could not convert team {}", teamName);
-        throw new RdmException("No se puede convertir el nombre de equipo "+teamName+" a un nombre del rincon del manager. Es posible que el equipo haya cambiado su nombre");
+        throw new RdmException("No se puede convertir el nombre de equipo " + teamName + " a un nombre del rincon del manager. Es posible que el equipo haya cambiado su nombre");
+    }
+
+    public enum Quality {
+        TOP, GOOD, AVERAGE, POOR, WORST
     }
 }
