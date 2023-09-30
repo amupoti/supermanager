@@ -38,7 +38,7 @@ background-color: #64b6ee
 <div align="right" id="countdown"></div>
 
 <div align="center">
-    <b><a class="btn btn-info" href="/private/league.html" role="button">Liga Privada en directo (BETA)</a></b>
+    <b><a class="btn btn-info" href="/private/league.html" role="button">Liga Privada en directo</a></b>
 </div>
 
 <div align="center" class="containerts">
