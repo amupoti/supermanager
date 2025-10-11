@@ -12,9 +12,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * Created by amupoti on 28/10/2018.
- */
+import static org.assertj.core.api.Assertions.*;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = RdmConfiguration.class)
 public class RdmContentParserTest {
@@ -27,21 +26,24 @@ public class RdmContentParserTest {
 
     @Test
     public void whenRetrievingMatches_thenTeamPlays34Matches() {
-        RdmTeam team = RdmTeam.FCB;
-        String teamPage = provider.getTeamPage(team);
-        List<Match> teamMatches = parser.getTeamMatches(teamPage, team);
+        for (RdmTeam team : RdmTeam.values()) {
+            String teamPage = provider.getTeamPage(team);
+            List<Match> teamMatches = parser.getTeamMatches(teamPage, team);
 
-        Assertions.assertThat(teamMatches).hasSize(34);
-
-        Set<RdmTeam> teams = teamMatches.stream().map(Match::getAgainstTeam).collect(Collectors.toSet());
-        Assertions.assertThat(teams).hasSize(17);
+            assertThat(teamMatches).hasSize(34);
+            assertThat(teamMatches.stream()
+                    .map(Match::getAgainstTeam)
+                    .collect(Collectors.toSet()))
+                    .hasSize(17);
+        }
     }
+
 
     @Test
     public void whenGetMatchNumber_thenItIsANumber() {
         String page = provider.getMainPage();
         String matchNumber = parser.getMatchNumber(page);
-        Assertions.assertThat(Integer.parseInt(matchNumber)).isBetween(1, 35);
+        assertThat(Integer.parseInt(matchNumber)).isBetween(1, 35);
     }
 
 }

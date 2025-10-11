@@ -16,7 +16,7 @@ public enum RdmTeam {
     FCB("Barça", TOP),
     RMA("Real Madrid", TOP),
     VBC("Valencia Basket", GOOD),
-    CAN("Lenovo Tenerife", GOOD),
+    CAN("Tenerife", GOOD),
     JOV("Joventut Badalona", GOOD),
     UNI("Unicaja", AVERAGE),
     GCA("Gran Canaria", AVERAGE),
@@ -25,10 +25,10 @@ public enum RdmTeam {
     BLB("Bilbao", AVERAGE),
     MAN("BAXI Manresa", POOR),
     ZAR("Zaragoza", POOR),
-    OBR("Obradoiro", POOR),
+    HIO("Lleida", AVERAGE),
     COV("Granada", POOR),
     GIR("Bàsquet Girona", WORST),
-    PAL("Palencia", WORST),
+    BUR("Burgos", WORST),
     AND("Andorra", POOR);
 
     private String teamName;

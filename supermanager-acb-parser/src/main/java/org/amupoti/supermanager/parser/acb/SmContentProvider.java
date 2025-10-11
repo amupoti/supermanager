@@ -29,7 +29,7 @@ import javax.annotation.PostConstruct;
 @Slf4j
 public class SmContentProvider {
 
-    public static final String LOGIN_URL = "https://admin-supermanager.acb.com/oauth/V2/open/accounttoken/getTokens";
+    public static final String LOGIN_URL = "https://supermanager.acb.com/oauth/V2/open/accounttoken/getTokens";
     public static final String PRE_LOGIN_URL = "https://id.acb.com/api/signIn";
     public static final int MAX_RETRIES = 5;
     private static final String SUPERMANAGER_HOME_URL = "http://supermanager.acb.com/index/identificar";
