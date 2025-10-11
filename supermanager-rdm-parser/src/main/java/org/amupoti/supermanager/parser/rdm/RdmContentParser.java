@@ -17,9 +17,9 @@ import java.util.stream.IntStream;
 public class RdmContentParser {
 
     private HtmlCleaner htmlCleaner;
-    private static String xpathMatches = "body/div[5]/div/div[2]/div/div[1]/div/table/tbody/tr[%s]/td[%s]/a";
+    private static String xpathMatches = "body/div[5]/div/div[2]/div/div[2]/table/tbody/tr[%s]/td[%s]/a/span";
 
-    private static String xPathCurrentGame = "//*[@id=\"accordion\"]/div[1]/div[1]/h4/a";
+    private static String xPathCurrentGame = "//div[@class='proxima-table-header']/h4";
 
     @PostConstruct
     public void init() {
@@ -38,6 +38,9 @@ public class RdmContentParser {
 
     private Match getMatch(RdmTeam rdmTeam, TagNode node, int row) {
         try {
+            // /html/body/div[5]/div/div[2]/div/div[2]/table/tbody/tr[1]/td[2]/a/span
+            // /html/body/div[5]/div/div[2]/div/div[2]/table/tbody/tr[1]/td[4]/a/span
+
             String homeTeam = getTeamFromXpath(node, String.format(xpathMatches, row, 2));
             String awayTeam = getTeamFromXpath(node, String.format(xpathMatches, row, 4));
             String againstTeam = homeTeam.equals(rdmTeam.name()) ? awayTeam : homeTeam;
@@ -60,7 +63,9 @@ public class RdmContentParser {
         try {
             TagNode node = htmlCleaner.clean(page);
             Object[] objects = node.evaluateXPath(xPathCurrentGame);
-            return ((TagNode) objects[0]).getAllChildren().get(0).toString().split("J")[1];
+            TagNode h4Node = (TagNode) objects[0];
+            String text = h4Node.getText().toString();
+            return text.split("Jornada ")[1];
         } catch (XPatherException e) {
             throw new RuntimeException(e);
         }
