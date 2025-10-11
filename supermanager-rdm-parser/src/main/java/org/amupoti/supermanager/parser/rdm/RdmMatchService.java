@@ -48,10 +48,10 @@ public class RdmMatchService {
                 .build();
     }
 
-    private int getCurrentMatchFromIdealTeamWidget() {
+    public int getCurrentMatchFromIdealTeamWidget() {
         String page = provider.getMainPage();
         String matchNumber = parser.getMatchNumber(page);
-        return Integer.parseInt(matchNumber);
+        return Integer.parseInt(matchNumber)-1;
     }
 
     private RdmTeamData getTeamData(RdmTeam team) {
