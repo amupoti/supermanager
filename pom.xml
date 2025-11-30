@@ -22,7 +22,7 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <spring-boot.version>2.1.9.RELEASE</spring-boot.version>
+        <spring-boot.version>3.4.10</spring-boot.version>
     </properties>
     <dependencyManagement>
         <dependencies>
