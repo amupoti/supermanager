@@ -3,8 +3,8 @@ package org.amupoti.supermanager.parser.acb.config;
 import org.amupoti.supermanager.parser.acb.SmContentParser;
 import org.amupoti.supermanager.parser.acb.SmContentProvider;
 import org.amupoti.supermanager.parser.acb.teams.SMUserTeamService;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -31,8 +31,7 @@ public class TestConfig {
 
     @Bean
     public RestTemplate getRestTemplate() {
-        CloseableHttpClient httpClient = HttpClientBuilder
-                .create()
+        CloseableHttpClient httpClient = HttpClients.custom()
                 .disableRedirectHandling()
                 .disableCookieManagement()
                 .build();

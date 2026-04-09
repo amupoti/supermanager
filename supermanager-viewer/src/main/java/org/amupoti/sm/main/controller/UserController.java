@@ -78,11 +78,7 @@ public class UserController {
         SMUser user = credentialsByKey.get();
         Map<String, PrivateLeagueTeamData> teamMap = new HashMap<>();
 
-        if (user != null) {
-            log.info("Getting teams for user " + user.getLogin());
-        } else {
-            log.info("Login was not found. Cannot provide team data");
-        }
+        log.info("Getting teams for user " + user.getLogin());
 
         List<SmTeam> userTeams = SMUserTeamService.getTeamsByCredentials(user.getLogin(), user.getPassword());
         for (SmTeam team : userTeams) {

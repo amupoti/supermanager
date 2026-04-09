@@ -1,7 +1,7 @@
 package org.amupoti.supermanager.parser.acb.exception;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.amupoti.supermanager.parser.acb.exception.ErrorCode.*;
 
@@ -10,7 +10,7 @@ import static org.amupoti.supermanager.parser.acb.exception.ErrorCode.*;
  */
 public class ErrorResolver {
 
-    private static Map<ErrorCode, String> errors = new HashMap();
+    private static Map<ErrorCode, String> errors = new ConcurrentHashMap<>();
 
     static {
         errors.put(ERROR_PARSING_TEAMS, "No se han podido obtener tus equipos. Es posible que la página supermanager.acb.com " +

@@ -4,9 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.amupoti.supermanager.parser.acb.SmContentParser;
 import org.amupoti.supermanager.parser.acb.SmContentProvider;
 import org.amupoti.supermanager.parser.acb.teams.SMUserTeamService;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.util.Timeout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -54,22 +55,31 @@ public class ApplicationConfig {
     @Bean
     public CloseableHttpClient httpClient() {
         RequestConfig requestConfig = RequestConfig.custom()
-                .setConnectionRequestTimeout(REQUEST_TIMEOUT)
-                .setConnectTimeout(CONNECT_TIMEOUT)
-                .setSocketTimeout(SOCKET_TIMEOUT).build();
+                .setConnectionRequestTimeout(Timeout.ofMilliseconds(REQUEST_TIMEOUT))
+                .setConnectTimeout(Timeout.ofMilliseconds(CONNECT_TIMEOUT))
+                .setResponseTimeout(Timeout.ofMilliseconds(SOCKET_TIMEOUT))
+                .build();
 
         return HttpClients.custom()
                 .setDefaultRequestConfig(requestConfig)
-                .setRetryHandler((exception, executionCount, context) -> {
-                    if (executionCount > 3) {
-                        log.warn("Maximum tries reached for client http pool ");
+                .setRetryStrategy(new org.apache.hc.client5.http.impl.DefaultHttpRequestRetryStrategy(3,
+                        org.apache.hc.core5.util.TimeValue.ofSeconds(1L)) {
+                    @Override
+                    public boolean retryRequest(
+                            org.apache.hc.core5.http.HttpRequest request,
+                            java.io.IOException exception,
+                            int execCount,
+                            org.apache.hc.core5.http.protocol.HttpContext context) {
+                        if (execCount > 3) {
+                            log.warn("Maximum tries reached for client http pool");
+                            return false;
+                        }
+                        if (exception instanceof org.apache.hc.core5.http.NoHttpResponseException) {
+                            log.warn("No response from server on " + execCount + " call");
+                            return true;
+                        }
                         return false;
                     }
-                    if (exception instanceof org.apache.http.NoHttpResponseException) {
-                        log.warn("No response from server on " + executionCount + " call");
-                        return true;
-                    }
-                    return false;
                 })
                 .build();
     }
@@ -89,4 +99,3 @@ public class ApplicationConfig {
         return new SmContentProvider(ACTIVE_COMPETITION);
     }
 }
-

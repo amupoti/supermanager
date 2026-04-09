@@ -2,12 +2,12 @@ package org.amupoti.sm.main.controller.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.amupoti.supermanager.parser.acb.exception.SmException;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 @ControllerAdvice
 @Slf4j
@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
         log.error("Exception ocurred", ex);
         ModelAndView mav = new ModelAndView(DEFAULT_ERROR_VIEW);
         mav.addObject("message", ex.getMessage());
-        mav.addObject("stacktrace", ExceptionUtils.getFullStackTrace(ex));
+        mav.addObject("stacktrace", ExceptionUtils.getStackTrace(ex));
         return mav;
 
     }
