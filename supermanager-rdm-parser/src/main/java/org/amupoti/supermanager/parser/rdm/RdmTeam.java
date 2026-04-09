@@ -17,7 +17,7 @@ public enum RdmTeam {
     RMA("Real Madrid", TOP),
     VBC("Valencia Basket", GOOD),
     CAN("Tenerife", GOOD),
-    JOV("Joventut Badalona", GOOD),
+    JOV("Joventut", GOOD),
     UNI("Unicaja", AVERAGE),
     GCA("Gran Canaria", AVERAGE),
     MUR("UCAM Murcia", AVERAGE),
