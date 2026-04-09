@@ -5,7 +5,7 @@ import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -49,26 +49,34 @@ public class RdmContentParser {
                     .local(homeTeam.equals(rdmTeam.name()))
                     .build();
         } catch (XPatherException e) {
-            throw new RuntimeException("Could not read matches for team " + rdmTeam.name());
+            throw new RdmException("Could not read matches for team " + rdmTeam.name());
         }
     }
 
     private String getTeamFromXpath(TagNode node, String homeTeamXpath) throws XPatherException {
         Object[] objects = node.evaluateXPath(homeTeamXpath);
-        return ((TagNode) objects[0]).getAllChildren().get(0).toString();
+        if (objects == null || objects.length == 0) {
+            throw new RdmException("XPath returned no results: " + homeTeamXpath);
+        }
+        List<?> children = ((TagNode) objects[0]).getAllChildren();
+        if (children.isEmpty()) {
+            throw new RdmException("No children found for XPath node: " + homeTeamXpath);
+        }
+        return children.get(0).toString();
     }
 
     public String getMatchNumber(String page) {
-
         try {
             TagNode node = htmlCleaner.clean(page);
             Object[] objects = node.evaluateXPath(xPathCurrentGame);
+            if (objects == null || objects.length == 0) {
+                throw new RdmException("Could not find current match number: XPath returned no results");
+            }
             TagNode h4Node = (TagNode) objects[0];
             String text = h4Node.getText().toString();
             return text.split("Jornada ")[1];
         } catch (XPatherException e) {
-            throw new RuntimeException(e);
+            throw new RdmException("Could not determine current match number: " + e.getMessage());
         }
-
     }
 }

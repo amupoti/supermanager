@@ -7,7 +7,7 @@ import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 
 /**
@@ -32,12 +32,12 @@ public class RdmContentProvider {
         log.debug("Getting page for team {}", rdmTeam);
         String url = String.format(TEAM_URL, rdmTeam.name());
         ResponseEntity<String> exchange = restTemplate.getForEntity(url, String.class);
-        return exchange.toString();
+        return exchange.getBody();
     }
 
     protected String getMainPage() {
         String url = RDM_MAIN_PAGE;
         ResponseEntity<String> exchange = restTemplate.getForEntity(url, String.class);
-        return exchange.toString();
+        return exchange.getBody();
     }
 }

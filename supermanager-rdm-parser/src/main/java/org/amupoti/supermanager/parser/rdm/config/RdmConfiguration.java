@@ -1,7 +1,7 @@
 package org.amupoti.supermanager.parser.rdm.config;
 
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -18,9 +18,7 @@ public class RdmConfiguration {
 
     @Bean
     public RestTemplate getRestTemplate() {
-        CloseableHttpClient httpClient = HttpClientBuilder
-                .create()
-                .build();
+        CloseableHttpClient httpClient = HttpClients.custom().build();
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
         RestTemplate restTemplate = new RestTemplate(factory);
         return restTemplate;

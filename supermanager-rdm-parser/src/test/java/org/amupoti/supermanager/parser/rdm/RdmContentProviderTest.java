@@ -2,16 +2,16 @@ package org.amupoti.supermanager.parser.rdm;
 
 import org.amupoti.supermanager.parser.rdm.config.RdmConfiguration;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
  * Created by amupoti on 27/10/2018.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = RdmConfiguration.class)
 public class RdmContentProviderTest {
 
@@ -25,7 +25,6 @@ public class RdmContentProviderTest {
 
     @Test
     public void whenRetrievingUrl_thenContainsTeamName() {
-
         String teamPage = rdmContentProvider.getTeamPage(RdmTeam.FCB);
         Assertions.assertThat(teamPage).containsIgnoringCase("BARÇA");
     }

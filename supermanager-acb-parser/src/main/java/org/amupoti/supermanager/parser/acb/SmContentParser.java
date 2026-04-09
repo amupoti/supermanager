@@ -97,6 +97,9 @@ public class SmContentParser {
         if (response == null) throw new SmException(ErrorCode.ERROR_PARSING_TEAMS);
         List<TeamsDescriptionResponse> teamsDescriptionList = objectMapper.readValue(response, new TypeReference<List<TeamsDescriptionResponse>>() {
         });
+        if (teamsDescriptionList.isEmpty()) {
+            throw new SmException(ErrorCode.ERROR_PARSING_TEAMS);
+        }
         //Get teams from first competition
         TeamsDescriptionResponse teamsDescriptionResponse = teamsDescriptionList.get(0);
         return teamsDescriptionResponse.getUserTeamList().stream()
