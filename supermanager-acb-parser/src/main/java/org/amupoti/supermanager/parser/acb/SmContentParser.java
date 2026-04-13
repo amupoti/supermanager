@@ -34,6 +34,7 @@ public class SmContentParser {
     public void populateTeam(String response, SmTeam team, PlayerMarketData playerMarketData) throws IOException {
         List<TeamsDetailsResponse> teamsDetailsPerCompetition = objectMapper.readValue(response, new TypeReference<List<TeamsDetailsResponse>>() {
         });
+        if (teamsDetailsPerCompetition.isEmpty()) throw new SmException(ErrorCode.TEAM_PAGE_ERROR);
         TeamsDetailsResponse teamsDetailsResponse = teamsDetailsPerCompetition.get(teamsDetailsPerCompetition.size() - 1);
         addPlayers(team, teamsDetailsResponse, playerMarketData);
         addTotalScore(team, teamsDetailsResponse);
@@ -97,7 +98,7 @@ public class SmContentParser {
         if (response == null) throw new SmException(ErrorCode.ERROR_PARSING_TEAMS);
         List<TeamsDescriptionResponse> teamsDescriptionList = objectMapper.readValue(response, new TypeReference<List<TeamsDescriptionResponse>>() {
         });
-        //Get teams from first competition
+        if (teamsDescriptionList.isEmpty()) throw new SmException(ErrorCode.ERROR_PARSING_TEAMS);
         TeamsDescriptionResponse teamsDescriptionResponse = teamsDescriptionList.get(0);
         return teamsDescriptionResponse.getUserTeamList().stream()
                 .map(team -> SmTeam.builder()

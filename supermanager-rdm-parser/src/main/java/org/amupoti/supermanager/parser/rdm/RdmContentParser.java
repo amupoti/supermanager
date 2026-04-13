@@ -1,14 +1,13 @@
 package org.amupoti.supermanager.parser.rdm;
 
-import org.htmlcleaner.HtmlCleaner;
-import org.htmlcleaner.TagNode;
-import org.htmlcleaner.XPatherException;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
-import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Created by amupoti on 28/08/2017.
@@ -16,59 +15,45 @@ import java.util.stream.IntStream;
 @Service
 public class RdmContentParser {
 
-    private HtmlCleaner htmlCleaner;
-    private static String xpathMatches = "body/div[5]/div/div[2]/div/div[2]/table/tbody/tr[%s]/td[%s]/a/span";
-
-    private static String xPathCurrentGame = "//div[@class='proxima-table-header']/h4";
-
-    @PostConstruct
-    public void init() {
-        htmlCleaner = new HtmlCleaner();
-    }
-
-
     List<Match> getTeamMatches(String html, RdmTeam rdmTeam) {
-
-        TagNode node = htmlCleaner.clean(html);
-        return IntStream
-                .range(1, 35)
-                .mapToObj(row -> getMatch(rdmTeam, node, row))
+        Document doc = Jsoup.parse(html);
+        // Anchor on the wrapper whose header says "Calendario" — resilient to other tables on the page
+        Element wrapper = doc.selectFirst("div.proxima-table-wrapper:has(h4:containsOwn(Calendario))");
+        if (wrapper == null) {
+            throw new RdmException("Could not find calendar section for team " + rdmTeam.name());
+        }
+        Elements rows = wrapper.select("tbody tr");
+        if (rows.isEmpty()) {
+            throw new RdmException("Calendar table has no rows for team " + rdmTeam.name());
+        }
+        return rows.stream()
+                .map(row -> parseMatch(row, rdmTeam))
                 .collect(Collectors.toList());
     }
 
-    private Match getMatch(RdmTeam rdmTeam, TagNode node, int row) {
-        try {
-            // /html/body/div[5]/div/div[2]/div/div[2]/table/tbody/tr[1]/td[2]/a/span
-            // /html/body/div[5]/div/div[2]/div/div[2]/table/tbody/tr[1]/td[4]/a/span
-
-            String homeTeam = getTeamFromXpath(node, String.format(xpathMatches, row, 2));
-            String awayTeam = getTeamFromXpath(node, String.format(xpathMatches, row, 4));
-            String againstTeam = homeTeam.equals(rdmTeam.name()) ? awayTeam : homeTeam;
-            return Match.builder()
-                    .againstTeam(RdmTeam.valueOf(againstTeam))
-                    .local(homeTeam.equals(rdmTeam.name()))
-                    .build();
-        } catch (XPatherException e) {
-            throw new RuntimeException("Could not read matches for team " + rdmTeam.name());
+    private Match parseMatch(Element row, RdmTeam rdmTeam) {
+        // Each row has two td.team-result cells: [0] = home, [1] = away
+        Elements teamCells = row.select("td.team-result");
+        if (teamCells.size() < 2) {
+            throw new RdmException("Row is missing team cells for team " + rdmTeam.name());
         }
-    }
-
-    private String getTeamFromXpath(TagNode node, String homeTeamXpath) throws XPatherException {
-        Object[] objects = node.evaluateXPath(homeTeamXpath);
-        return ((TagNode) objects[0]).getAllChildren().get(0).toString();
+        String homeTeam = teamCells.get(0).selectFirst("span.team-name").text();
+        String awayTeam = teamCells.get(1).selectFirst("span.team-name").text();
+        String againstTeam = homeTeam.equals(rdmTeam.name()) ? awayTeam : homeTeam;
+        return Match.builder()
+                .againstTeam(RdmTeam.valueOf(againstTeam))
+                .local(homeTeam.equals(rdmTeam.name()))
+                .build();
     }
 
     public String getMatchNumber(String page) {
-
-        try {
-            TagNode node = htmlCleaner.clean(page);
-            Object[] objects = node.evaluateXPath(xPathCurrentGame);
-            TagNode h4Node = (TagNode) objects[0];
-            String text = h4Node.getText().toString();
-            return text.split("Jornada ")[1];
-        } catch (XPatherException e) {
-            throw new RuntimeException(e);
+        Document doc = Jsoup.parse(page);
+        for (Element h4 : doc.select("div.proxima-table-header h4")) {
+            String text = h4.text();
+            if (text.startsWith("Jornada ")) {
+                return text.split("Jornada ")[1];
+            }
         }
-
+        throw new RdmException("Could not find current match number on main page");
     }
 }

@@ -2,7 +2,6 @@ package org.amupoti.sm.main.controller;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.htmlcleaner.XPatherException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +25,7 @@ public class PlayerController {
     }
 
     @RequestMapping(value = "/players/news.html")
-    public String getPLayerNews(Model model) throws URISyntaxException, ExecutionException, XPatherException, InterruptedException, IOException {
+    public String getPLayerNews(Model model) throws URISyntaxException, ExecutionException, InterruptedException, IOException {
 
         return "news";
     }

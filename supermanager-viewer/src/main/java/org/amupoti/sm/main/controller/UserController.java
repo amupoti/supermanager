@@ -12,7 +12,6 @@ import org.amupoti.supermanager.parser.acb.utils.DataUtils;
 import org.amupoti.supermanager.parser.rdm.RdmMatchService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.htmlcleaner.XPatherException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -56,7 +55,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/dologin.html", method = RequestMethod.POST)
-    public String doLogin(@ModelAttribute SMUser user, Model model) throws XPatherException {
+    public String doLogin(@ModelAttribute SMUser user, Model model) {
 
         String id = UUID.randomUUID().toString();
 
