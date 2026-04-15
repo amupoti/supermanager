@@ -7,6 +7,7 @@
         <th class="text-center">Broker</th>
         <th class="text-center">Valor</th>
         <th class="text-center">Caja</th>
+        <th class="text-center">Cambios</th>
     </tr>
     </thead>
     <tbody align="center">
@@ -17,5 +18,6 @@
             <td>${teamData.totalBroker}</td>
             <td>${teamData.teamBroker}</td>
             <td>${teamData.cash}</td>
+            <td><#assign remaining = teamData.maxChanges - teamData.changesUsed><span class="<#if remaining == 0>label label-danger<#elseif remaining == 1>label label-warning<#else>label label-success</#if>">${teamData.changesUsed}/${teamData.maxChanges}</span></td>
         </tr>
     </tbody>

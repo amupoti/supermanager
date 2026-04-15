@@ -1,11 +1,14 @@
 package org.amupoti.sm.main.controller;
 
 import org.amupoti.sm.main.bean.SMUser;
+import org.amupoti.sm.main.model.PlayerRow;
 import org.amupoti.sm.main.model.PrivateLeagueTeamData;
+import org.amupoti.sm.main.model.ViewerPlayer;
 import org.amupoti.sm.main.service.PrivateLeagueService;
 import org.amupoti.sm.main.service.RdmSmTeamService;
 import org.amupoti.sm.main.users.UserCredentialsHolder;
 import org.amupoti.supermanager.parser.acb.SmContentProvider;
+import org.amupoti.supermanager.parser.acb.beans.SmPlayer;
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
 import org.amupoti.supermanager.parser.acb.exception.ErrorCode;
 import org.amupoti.supermanager.parser.acb.exception.SmException;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by Marcel on 13/01/2016.
@@ -30,6 +34,9 @@ import java.util.*;
 @Controller
 @RequestMapping("/users")
 public class UserController {
+
+    private static final Map<String, Integer> POSITION_QUOTA = Map.of("B", 2, "A", 4, "P", 4);
+    private static final List<String> POSITION_ORDER = List.of("B", "A", "P");
 
     private final static Log log = LogFactory.getLog(UserController.class);
 
@@ -56,19 +63,14 @@ public class UserController {
 
     @RequestMapping(value = "/login.html", method = RequestMethod.GET)
     public String getUserTeamsForm(Model model) {
-
         return "form";
     }
 
     @RequestMapping(value = "/dologin.html", method = RequestMethod.POST)
     public String doLogin(@ModelAttribute SMUser user, Model model) {
-
         String id = UUID.randomUUID().toString();
-
         userCredentialsHolder.addCredentials(id, user);
-        String redirectURL = "/users/teams.html?id=" + id;
-        return "redirect:" + redirectURL;
-
+        return "redirect:/users/teams.html?id=" + id;
     }
 
     @RequestMapping(value = "/teams.html", method = RequestMethod.GET)
@@ -76,15 +78,12 @@ public class UserController {
                                @RequestParam(required = false) String error,
                                Model model) throws Exception {
 
-        //TODO: validate if null
         Optional<SMUser> credentialsByKey = userCredentialsHolder.getCredentialsByKey(id);
         if (!credentialsByKey.isPresent()) {
             throw new SmException(ErrorCode.INCORRECT_SESSION_ID);
         }
 
         SMUser user = credentialsByKey.get();
-        Map<String, PrivateLeagueTeamData> teamMap = new HashMap<>();
-
         if (user != null) {
             log.info("Getting teams for user " + user.getLogin());
         } else {
@@ -92,10 +91,13 @@ public class UserController {
         }
 
         List<SmTeam> userTeams = SMUserTeamService.getTeamsByCredentials(user.getLogin(), user.getPassword());
+        Map<String, PrivateLeagueTeamData> teamMap = new HashMap<>();
         for (SmTeam team : userTeams) {
+            List<ViewerPlayer> viewerPlayers = rdmSmTeamService.buildPlayerList(team.getPlayerList());
+            List<PlayerRow> rows = buildPlayerRows(team, viewerPlayers);
             teamMap.put(team.getName(), PrivateLeagueTeamData.builder()
                     .user(user.getLogin())
-                    .playerList(rdmSmTeamService.buildPlayerList(team.getPlayerList()))
+                    .playerList(viewerPlayers)
                     .score(team.getScore())
                     .computedScore(team.getComputedScore())
                     .usedPlayers(team.getUsedPlayers())
@@ -106,19 +108,80 @@ public class UserController {
                     .teamBroker(DataUtils.format(team.getTeamBroker()))
                     .teamUrl(team.getWebUrl())
                     .teamId(team.getTeamId())
-                    .candidateBuyPlayer(team.getCandidateBuyPlayer())
-                    .candidateAffordable(team.isCandidateAffordable())
+                    .rows(rows)
+                    .changesUsed(team.getChangesUsed())
+                    .maxChanges(team.getMaxChanges())
                     .build());
         }
 
         privateLeagueService.storePrivateLeagueTeams(teamMap);
         buildModel(id, model, user, teamMap);
+
         if ("cancel-failed".equals(error)) {
             model.addAttribute("errorMessage", "No se pudo liberar al jugador. El cambio solicitado no existe o ya fue procesado.");
         } else if ("buy-failed".equals(error)) {
             model.addAttribute("errorMessage", "No se pudo comprar al jugador. Verifica tu caja o intenta más tarde.");
+        } else if ("undo-failed".equals(error)) {
+            model.addAttribute("errorMessage", "No se pudo deshacer el cambio. Es posible que el partido ya haya comenzado.");
         }
         return "userTeams";
+    }
+
+    /**
+     * Builds the ordered row list for the players table.
+     * For each position (B → A → P): real players first, then one row per missing slot
+     * (showing the best affordable candidate for that position, or an empty slot if none found).
+     */
+    private List<PlayerRow> buildPlayerRows(SmTeam team, List<ViewerPlayer> viewerPlayers) {
+        Map<String, SmPlayer> candidates = team.getCandidatesByPosition() != null
+                ? team.getCandidatesByPosition() : Collections.emptyMap();
+
+        // Count actual team players per position (using the full unfiltered list for accuracy)
+        Map<String, Long> teamPosCounts = team.getPlayerList().stream()
+                .filter(p -> p.getPosition() != null)
+                .collect(Collectors.groupingBy(SmPlayer::getPosition, Collectors.counting()));
+
+        // Group viewer players by position (preserving existing sort order within each group)
+        Map<String, List<ViewerPlayer>> viewerByPos = viewerPlayers.stream()
+                .filter(vp -> vp.getPlayer().getPosition() != null)
+                .collect(Collectors.groupingBy(vp -> vp.getPlayer().getPosition(),
+                        LinkedHashMap::new, Collectors.toList()));
+
+        List<PlayerRow> rows = new ArrayList<>();
+        for (String pos : POSITION_ORDER) {
+            // Real players for this position
+            viewerByPos.getOrDefault(pos, Collections.emptyList())
+                    .stream()
+                    .map(PlayerRow::ofReal)
+                    .forEach(rows::add);
+
+            // Missing slots (based on the full team list, not just the viewer-filtered one)
+            int missing = POSITION_QUOTA.get(pos) - teamPosCounts.getOrDefault(pos, 0L).intValue();
+            SmPlayer candidate = candidates.get(pos);
+            for (int i = 0; i < missing; i++) {
+                rows.add(PlayerRow.ofSlot(pos, candidate));
+            }
+        }
+        return rows;
+    }
+
+    @RequestMapping(value = "/undo-change.html", method = RequestMethod.POST)
+    public String undoChange(@RequestParam String id,
+                             @RequestParam long idUserTeamPlayerChange,
+                             Model model) {
+        Optional<SMUser> credentialsByKey = userCredentialsHolder.getCredentialsByKey(id);
+        if (!credentialsByKey.isPresent()) {
+            throw new SmException(ErrorCode.INCORRECT_SESSION_ID);
+        }
+        SMUser user = credentialsByKey.get();
+        try {
+            String token = smContentProvider.authenticateUser(user.getLogin(), user.getPassword()).getJwt();
+            smContentProvider.cancelPlayerChange(idUserTeamPlayerChange, token);
+        } catch (Exception e) {
+            log.warn("Failed to undo change " + idUserTeamPlayerChange + ": " + e.getMessage());
+            return "redirect:/users/teams.html?id=" + id + "&error=undo-failed";
+        }
+        return "redirect:/users/teams.html?id=" + id;
     }
 
     @RequestMapping(value = "/buy-player.html", method = RequestMethod.POST)
@@ -170,6 +233,4 @@ public class UserController {
         model.addAttribute("username", user.getLogin());
         model.addAttribute("id", id);
     }
-
-
 }

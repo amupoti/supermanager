@@ -21,4 +21,6 @@ public class SmPlayer {
     Map<String, String> marketData;
     @Setter long idUserTeamPlayerChange;
     @Setter long idPlayer;
+    /** 0=none, 1=pending sell, 2=pending buy. Set after cross-referencing the pending-changes API. */
+    @Setter int pendingAction;
 }
