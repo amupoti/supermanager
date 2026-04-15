@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <#include "./include/header.vm">
@@ -36,6 +36,13 @@ background-color: #64b6ee
 <body>
 
 <div align="right" id="countdown"></div>
+
+<#if errorMessage??>
+<div class="alert alert-danger alert-dismissible" role="alert" style="margin: 10px">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    ${errorMessage}
+</div>
+</#if>
 
 <div align="center">
     <b><a class="btn btn-info" href="/private/league.html" role="button">Liga Privada en directo</a></b>

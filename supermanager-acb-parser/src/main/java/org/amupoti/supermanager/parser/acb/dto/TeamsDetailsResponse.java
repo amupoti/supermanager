@@ -21,6 +21,7 @@ public class TeamsDetailsResponse {
         String position;
         String journeyPoints;
         int number;
+        long idUserTeamPlayerChange;
     }
 
     @Data

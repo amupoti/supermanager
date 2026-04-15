@@ -17,6 +17,7 @@ import java.util.List;
 public class SmTeam {
 
     private String name;
+    private String teamId;
     private String apiUrl;
     private String webUrl;
     private List<SmPlayer> playerList;
@@ -28,6 +29,8 @@ public class SmTeam {
     private int cash;
     private int teamBroker;
     private int totalBroker;
+    @Setter private SmPlayer candidateBuyPlayer;
+    @Setter private boolean candidateAffordable;
 
     public static String buildUrl(String teamId) {
         return "https://supermanager.acb.com/api/basic/userteamplayer/journeys/" + teamId;

@@ -1,5 +1,6 @@
 package org.amupoti.sm.main.config;
 
+import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.extern.slf4j.Slf4j;
 import org.amupoti.supermanager.parser.acb.SmContentParser;
 import org.amupoti.supermanager.parser.acb.SmContentProvider;
@@ -13,6 +14,10 @@ import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.util.TimeValue;
 import org.apache.hc.core5.util.Timeout;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.caffeine.CaffeineCache;
+import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -22,8 +27,10 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-
-import static org.amupoti.supermanager.parser.acb.SmContentProvider.ACTIVE_COMPETITION;
+import java.time.Duration;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by Marcel on 06/08/2015.
@@ -34,9 +41,14 @@ import static org.amupoti.supermanager.parser.acb.SmContentProvider.ACTIVE_COMPE
 @Slf4j
 public class ApplicationConfig {
 
-    private static final int CONNECT_TIMEOUT = 30 * 1000;
-    private static final int REQUEST_TIMEOUT = 30 * 1000;
-    private static final int SOCKET_TIMEOUT = 60 * 1000;
+    @Value("${http.connect-timeout-ms:30000}")
+    private int connectTimeoutMs;
+
+    @Value("${http.request-timeout-ms:30000}")
+    private int requestTimeoutMs;
+
+    @Value("${http.socket-timeout-ms:60000}")
+    private int socketTimeoutMs;
 
     @Autowired
     CloseableHttpClient httpClient;
@@ -44,6 +56,37 @@ public class ApplicationConfig {
     @Bean
     public PropertySourcesPlaceholderConfigurer getPropertySourcesPlaceholderConfigurer() {
         return new PropertySourcesPlaceholderConfigurer();
+    }
+
+    @Bean
+    public CacheManager cacheManager() {
+        SimpleCacheManager manager = new SimpleCacheManager();
+        manager.setCaches(List.of(
+                caffeineCache("TeamData",    Duration.ofHours(25)),
+                caffeineCache("NextMatch",   Duration.ofHours(6)),
+                caffeineCache("RdmTeamData", Duration.ofHours(25)),
+                caffeineCache("teamsPage",   Duration.ofMinutes(30)),
+                caffeineCache("marketPage",  Duration.ofMinutes(30))
+        ));
+        return manager;
+    }
+
+    private CaffeineCache caffeineCache(String name, Duration ttl) {
+        return new CaffeineCache(name, Caffeine.newBuilder()
+                .expireAfterWrite(ttl)
+                .build());
+    }
+
+    /** Bounded pool for parallel ACB API calls (teams list, market, roster pages). */
+    @Bean(name = "acbFetchExecutor")
+    public ExecutorService acbFetchExecutor() {
+        return Executors.newFixedThreadPool(5);
+    }
+
+    /** Bounded pool for parallel RDM pre-warm in the background refresh job. */
+    @Bean(name = "rdmFetchExecutor")
+    public ExecutorService rdmFetchExecutor() {
+        return Executors.newFixedThreadPool(3);
     }
 
     @Bean
@@ -61,9 +104,9 @@ public class ApplicationConfig {
     @Bean
     public CloseableHttpClient httpClient() {
         RequestConfig requestConfig = RequestConfig.custom()
-                .setConnectionRequestTimeout(Timeout.ofMilliseconds(REQUEST_TIMEOUT))
-                .setConnectTimeout(Timeout.ofMilliseconds(CONNECT_TIMEOUT))
-                .setResponseTimeout(Timeout.ofMilliseconds(SOCKET_TIMEOUT))
+                .setConnectionRequestTimeout(Timeout.ofMilliseconds(requestTimeoutMs))
+                .setConnectTimeout(Timeout.ofMilliseconds(connectTimeoutMs))
+                .setResponseTimeout(Timeout.ofMilliseconds(socketTimeoutMs))
                 .build();
 
         return HttpClients.custom()
@@ -86,7 +129,7 @@ public class ApplicationConfig {
 
     @Bean
     public SMUserTeamService getAcbTeamService() {
-        return new SMUserTeamService(getSmContentProvider(), getSmContentParser());
+        return new SMUserTeamService(getSmContentProvider(), getSmContentParser(), acbFetchExecutor());
     }
 
     @Bean
@@ -96,6 +139,6 @@ public class ApplicationConfig {
 
     @Bean
     public SmContentProvider getSmContentProvider() {
-        return new SmContentProvider(ACTIVE_COMPETITION);
+        return new SmContentProvider();
     }
 }
