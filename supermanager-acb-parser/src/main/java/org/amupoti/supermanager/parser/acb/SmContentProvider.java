@@ -58,6 +58,7 @@ public class SmContentProvider {
         log.info("Requesting all teams page for user {}", user);
         MultiValueMap<String, String> httpHeaders = addToken(token);
         ResponseEntity<String> exchange = restTemplate.exchange(teamListUrl, HttpMethod.GET, new HttpEntity<String>(null, httpHeaders), String.class);
+        log.info("userteam/all raw response: {}", exchange.getBody());
         return exchange.getBody();
     }
 
@@ -69,7 +70,9 @@ public class SmContentProvider {
 
     public String getTeamPage(SmTeam team, String token) {
         try {
-            return restTemplate.exchange(team.getApiUrl(), HttpMethod.GET, new HttpEntity<>(addToken(token)), String.class).getBody();
+            String body = restTemplate.exchange(team.getApiUrl(), HttpMethod.GET, new HttpEntity<>(addToken(token)), String.class).getBody();
+            log.info("journeys raw response for team {}: {}", team.getName(), body);
+            return body;
         } catch (RestClientException e) {
             throw new SmException(ErrorCode.TEAM_PAGE_ERROR, e);
         }
@@ -124,12 +127,14 @@ public class SmContentProvider {
     public String getPendingChanges(String teamId, String token) {
         log.info("Requesting pending changes for team {}", teamId);
         String filters = "[{\"field\":\"idUserTeam\",\"value\":" + teamId + ",\"operator\":\"=\",\"condition\":\"AND\"}]";
-        return restTemplate.exchange(
+        String body = restTemplate.exchange(
                 "https://supermanager.acb.com/api/basic/userteamplayerchange?_filters={filters}",
                 HttpMethod.GET,
                 new HttpEntity<>(addToken(token)),
                 String.class,
                 filters).getBody();
+        log.info("pendingChanges raw response for team {}: {}", teamId, body);
+        return body;
     }
 
     public String getTeamPlayerDetails(String teamId, String token) {
