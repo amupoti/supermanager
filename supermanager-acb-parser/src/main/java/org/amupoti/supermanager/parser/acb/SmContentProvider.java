@@ -38,7 +38,7 @@ public class SmContentProvider {
     @Value("${acb.url.teams:https://supermanager.acb.com/api/basic/userteam/all}")
     private String teamListUrl;
 
-    @Value("${acb.url.market:https://supermanager.acb.com/api/basic/player?_filters={fields}&_page=1&_perPage=30}")
+    @Value("${acb.url.market:https://supermanager.acb.com/api/basic/player?_filters={fields}&_page=1&_perPage=300}")
     private String marketPageUrl;
 
     private static final String MARKET_PAGE_FIELDS =
@@ -119,6 +119,17 @@ public class SmContentProvider {
         log.info("Requesting market page");
         ResponseEntity<String> exchange = restTemplate.exchange(marketPageUrl, HttpMethod.GET, new HttpEntity<>(addToken(token)), String.class, MARKET_PAGE_FIELDS);
         return exchange.getBody();
+    }
+
+    public String getPendingChanges(String teamId, String token) {
+        log.info("Requesting pending changes for team {}", teamId);
+        String filters = "[{\"field\":\"idUserTeam\",\"value\":" + teamId + ",\"operator\":\"=\",\"condition\":\"AND\"}]";
+        return restTemplate.exchange(
+                "https://supermanager.acb.com/api/basic/userteamplayerchange?_filters={filters}",
+                HttpMethod.GET,
+                new HttpEntity<>(addToken(token)),
+                String.class,
+                filters).getBody();
     }
 
     public String getTeamPlayerDetails(String teamId, String token) {

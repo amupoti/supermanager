@@ -2,6 +2,7 @@ package org.amupoti.supermanager.parser.acb;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.amupoti.supermanager.parser.acb.dto.PendingChangeResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.amupoti.supermanager.parser.acb.beans.PlayerPosition;
 import org.amupoti.supermanager.parser.acb.beans.SmPlayer;
@@ -70,11 +71,13 @@ public class SmContentParser {
         }
         Map<String, String> marketMap = playerMarketData.getPlayerMap(player.getShortName());
         boolean injured = marketMap != null && "injured".equals(marketMap.get(FISIC_STATUS.name()));
+        boolean spanish = marketMap != null && "true".equals(marketMap.get(IS_SPANISH.name()));
+        boolean foreign = marketMap != null && "true".equals(marketMap.get(IS_FOREIGN.name()));
         return SmPlayer.builder()
                 .name(player.getShortName())
                 .position(PlayerPosition.getFromNum(player.getPosition()).getName())
                 .score(player.getJourneyPoints())
-                .status(SmPlayerStatus.builder().injured(injured).build())
+                .status(SmPlayerStatus.builder().injured(injured).spanish(spanish).foreign(foreign).build())
                 .marketData(marketMap)
                 .idUserTeamPlayerChange(player.getIdUserTeamPlayerChange())
                 .build();
@@ -118,6 +121,27 @@ public class SmContentParser {
             PlayerMarketData playerMarketData = new PlayerMarketData();
             List<MarketPlayerResponse> playerList = objectMapper.readValue(response, new TypeReference<List<MarketPlayerResponse>>() {
             });
+            log.info("Market API returned {} players", playerList.size());
+            if (!playerList.isEmpty()) {
+                MarketPlayerResponse sample = playerList.get(0);
+                log.info("Market sample player: name={} spanish={} foreign={} position={} idPlayer={}",
+                        sample.getShortName(), sample.isSpanish(), sample.isForeign(),
+                        sample.getPosition(), sample.getIdPlayer());
+                // Log raw JSON of first player to verify field names
+                int firstEnd = response.indexOf('}');
+                log.info("Market first player raw JSON: {}",
+                        firstEnd > 0 ? response.substring(1, firstEnd + 1) : response.substring(0, Math.min(300, response.length())));
+            }
+            long spanishInMarket = playerList.stream().filter(MarketPlayerResponse::isSpanish).count();
+            long foreignInMarket = playerList.stream().filter(MarketPlayerResponse::isForeign).count();
+            log.info("Market nationality summary: {} Spanish, {} foreign out of {} total",
+                    spanishInMarket, foreignInMarket, playerList.size());
+            // Log license codes from non-national players to identify the foreign indicator
+            playerList.stream()
+                    .filter(p -> !p.isSpanish())
+                    .limit(10)
+                    .forEach(p -> log.info("Non-national player: name={} license={} nationality={}",
+                            p.getShortName(), p.getLicense(), p.getNationality()));
             playerList.forEach(player -> fillMarketData(player, playerMarketData));
             return playerMarketData;
         } catch (Exception e) {
@@ -144,6 +168,8 @@ public class SmContentParser {
         playerMarketData.addPlayerData(playerName, FISIC_STATUS.name(), player.getFisicStatus());
         playerMarketData.addPlayerData(playerName, ID_PLAYER.name(), String.valueOf(player.getIdPlayer()));
         playerMarketData.addPlayerData(playerName, POSITION.name(), toPositionName(player.getPosition()));
+        playerMarketData.addPlayerData(playerName, IS_SPANISH.name(), String.valueOf(player.isSpanish()));
+        playerMarketData.addPlayerData(playerName, IS_FOREIGN.name(), String.valueOf(player.isForeign()));
     }
 
     /** Converts a position number from the API ("1", "3", "5") to its short name ("B", "A", "P"). */
@@ -161,6 +187,31 @@ public class SmContentParser {
     private String formatPrice(String price) {
         if (price == null) return "0k";
         return (Float.valueOf(price).intValue() / 1000) + "k";
+    }
+
+    /**
+     * Merges pending-change status into each player.
+     * A player whose idUserTeamPlayerChange matches one in the pending-changes list gets their
+     * pendingAction set (1=pending sell, 2=pending buy).
+     * Also sets changesUsed on the team and defaults maxChanges to 3 (rules default).
+     */
+    public void mergePendingChanges(SmTeam team, String pendingChangesJson) throws IOException {
+        List<PendingChangeResponse> changes = objectMapper.readValue(
+                pendingChangesJson, new TypeReference<List<PendingChangeResponse>>() {});
+        Map<Long, PendingChangeResponse> byChangeId = changes.stream()
+                .filter(c -> c.getIdUserTeamPlayerChange() > 0)
+                .collect(java.util.stream.Collectors.toMap(
+                        PendingChangeResponse::getIdUserTeamPlayerChange,
+                        c -> c,
+                        (a, b) -> a));
+        team.getPlayerList().forEach(player -> {
+            PendingChangeResponse change = byChangeId.get(player.getIdUserTeamPlayerChange());
+            if (change != null) {
+                player.setPendingAction(change.getAction());
+            }
+        });
+        team.setChangesUsed(changes.size());
+        team.setMaxChanges(3); // default per rules; no API field mapped yet
     }
 
     /**

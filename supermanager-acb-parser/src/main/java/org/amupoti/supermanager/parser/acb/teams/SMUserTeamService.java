@@ -89,6 +89,14 @@ public class SMUserTeamService {
                         smContentParser.populateTeam(teamPage, team, playerMarketData);
                         String playerDetails = smContentProvider.getTeamPlayerDetails(teamId, token);
                         smContentParser.mergePlayerChangeIds(team, playerDetails);
+                        try {
+                            String pendingChanges = smContentProvider.getPendingChanges(teamId, token);
+                            smContentParser.mergePendingChanges(team, pendingChanges);
+                        } catch (Exception e) {
+                            log.warn("Could not fetch pending changes for team " + team.getName() + ": " + e.getMessage());
+                            team.setChangesUsed(0);
+                            team.setMaxChanges(3);
+                        }
                         computeTeamStats(team);
                         findCandidateBuyPlayer(team, playerMarketData);
                     } catch (IOException e) {
@@ -115,34 +123,47 @@ public class SMUserTeamService {
                 .map(SmPlayer::getName)
                 .collect(Collectors.toSet());
 
-        // Which positions still have room according to the quota rules?
         Map<String, Long> positionCounts = team.getPlayerList().stream()
                 .filter(p -> p.getPosition() != null)
                 .collect(Collectors.groupingBy(SmPlayer::getPosition, Collectors.counting()));
-        Set<String> neededPositions = POSITION_QUOTA.entrySet().stream()
-                .filter(e -> positionCounts.getOrDefault(e.getKey(), 0L) < e.getValue())
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toSet());
 
-        if (neededPositions.isEmpty()) return;
+        long spanishCount = team.getPlayerList().stream()
+                .filter(p -> p.getStatus().isSpanish())
+                .count();
+        long foreignCount = team.getPlayerList().stream()
+                .filter(p -> p.getStatus().isForeign())
+                .count();
+        // Only enforce Spanish quota if the market data actually carries nationality info
+        boolean requireSpanish = marketData.hasSpanishData() && spanishCount < 4;
+        boolean excludeForeign = foreignCount >= 2;
+        log.info("Team " + team.getName() + " nationality: spanish=" + spanishCount
+                + " foreign=" + foreignCount + " hasSpanishData=" + marketData.hasSpanishData()
+                + " → requireSpanish=" + requireSpanish + " excludeForeign=" + excludeForeign);
 
-        marketData.findMostExpensiveFitPlayerName(teamNames, team.getCash(), neededPositions).ifPresent(name -> {
-            Map<String, String> data = marketData.getPlayerMap(name);
-            // POSITION is stored as "B"/"A"/"P" after parsing in SmContentParser
-            String posName = data.get(MarketCategory.POSITION.name());
-            long idPlayer = parseLong(data.get(MarketCategory.ID_PLAYER.name()));
-            log.info("Candidate buy player for team " + team.getName() + ": " + name
-                    + " (idPlayer=" + idPlayer + ", position=" + posName
-                    + ", price=" + data.get(MarketCategory.PRICE.name()) + ")");
-            SmPlayer candidate = SmPlayer.builder()
-                    .name(name)
-                    .position(posName != null ? posName : "-")
-                    .marketData(data)
-                    .idPlayer(idPlayer)
-                    .build();
-            team.setCandidateBuyPlayer(candidate);
-            team.setCandidateAffordable(true);
+        // Find one best candidate per position that has at least one open slot
+        Map<String, SmPlayer> candidatesByPosition = new java.util.HashMap<>();
+        POSITION_QUOTA.forEach((pos, quota) -> {
+            if (positionCounts.getOrDefault(pos, 0L) < quota) {
+                marketData.findMostExpensiveFitPlayerName(teamNames, team.getCash(), Set.of(pos),
+                                requireSpanish, excludeForeign)
+                        .ifPresent(name -> {
+                            Map<String, String> data = marketData.getPlayerMap(name);
+                            long idPlayer = parseLong(data.get(MarketCategory.ID_PLAYER.name()));
+                            log.info("Candidate for team " + team.getName() + " pos=" + pos + ": " + name
+                                    + " (idPlayer=" + idPlayer + ", price=" + data.get(MarketCategory.PRICE.name()) + ")");
+                            candidatesByPosition.put(pos, SmPlayer.builder()
+                                    .name(name)
+                                    .position(pos)
+                                    .marketData(data)
+                                    .idPlayer(idPlayer)
+                                    .build());
+                        });
+            }
         });
+
+        if (!candidatesByPosition.isEmpty()) {
+            team.setCandidatesByPosition(candidatesByPosition);
+        }
     }
 
     private long parseLong(String value) {
