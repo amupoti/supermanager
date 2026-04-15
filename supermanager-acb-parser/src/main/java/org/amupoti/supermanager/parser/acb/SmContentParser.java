@@ -47,6 +47,17 @@ public class SmContentParser {
         }
         addPlayers(team, teamsDetailsResponse, playerMarketData);
         addTotalScore(team, teamsDetailsResponse);
+
+        // Try to read change counts directly from the journeys response.
+        // Candidate field names reflect naming patterns seen in the ACB API.
+        int changesUsed = teamsDetailsResponse.getUnknownInt("numCambios", "numChanges", "cambiosUsados", "changesUsed");
+        int maxChanges  = teamsDetailsResponse.getUnknownInt("maxCambios", "maxChanges", "cambiosMax", "maxCambiosPosibles");
+        if (changesUsed >= 0) {
+            team.setChangesUsed(changesUsed);
+        }
+        if (maxChanges >= 0) {
+            team.setMaxChanges(maxChanges);
+        }
     }
 
     private void addPlayers(SmTeam team, TeamsDetailsResponse teamsDescriptionResponse, PlayerMarketData playerMarketData) {
@@ -104,14 +115,20 @@ public class SmContentParser {
                 .map(team -> {
                     if (team.getIdUserTeam() == null) log.warn("ACB API: idUserTeam is null for team {}", team.getNameTeam());
                     if (team.getAmount() == null) log.warn("ACB API: amount is null for team {}", team.getNameTeam());
-                    return SmTeam.builder()
+                    SmTeam.SmTeamBuilder builder = SmTeam.builder()
                             .name(team.getNameTeam())
                             .teamId(team.getIdUserTeam())
                             .apiUrl(SmTeam.buildUrl(team.getIdUserTeam()))
                             .webUrl(SmTeam.buildWebUrl(team.getIdUserTeam()))
                             .teamBroker(NumberUtils.toInt(team.getBrokerValor()))
-                            .cash(team.getAmount() != null ? Float.valueOf(team.getAmount()).intValue() : 0)
-                            .build();
+                            .cash(team.getAmount() != null ? Float.valueOf(team.getAmount()).intValue() : 0);
+                    SmTeam smTeam = builder.build();
+                    // Try to read change counts from userteam/all response (may not be present)
+                    int changesUsed = team.getUnknownInt("numCambios", "numChanges", "cambiosUsados", "changesUsed");
+                    int maxChanges  = team.getUnknownInt("maxCambios", "maxChanges", "cambiosMax", "maxCambiosPosibles");
+                    if (changesUsed >= 0) smTeam.setChangesUsed(changesUsed);
+                    if (maxChanges  >= 0) smTeam.setMaxChanges(maxChanges);
+                    return smTeam;
                 })
                 .collect(Collectors.toList());
     }
@@ -193,7 +210,11 @@ public class SmContentParser {
      * Merges pending-change status into each player.
      * A player whose idUserTeamPlayerChange matches one in the pending-changes list gets their
      * pendingAction set (1=pending sell, 2=pending buy).
-     * Also sets changesUsed on the team and defaults maxChanges to 3 (rules default).
+     *
+     * changesUsed and maxChanges are set here only when the journeys/teams endpoints did not already
+     * provide them (i.e. when they are still 0 from the SmTeam default).
+     * Note: pending changes only reflects changes not yet executed; once a match starts and changes
+     * are applied the list goes back to 0, so this count is best-effort only.
      */
     public void mergePendingChanges(SmTeam team, String pendingChangesJson) throws IOException {
         List<PendingChangeResponse> changes = objectMapper.readValue(
@@ -210,8 +231,13 @@ public class SmContentParser {
                 player.setPendingAction(change.getAction());
             }
         });
-        team.setChangesUsed(changes.size());
-        team.setMaxChanges(3); // default per rules; no API field mapped yet
+        // Only override changesUsed/maxChanges when the upstream API did not supply them
+        if (team.getChangesUsed() == 0) {
+            team.setChangesUsed(changes.size());
+        }
+        if (team.getMaxChanges() == 0) {
+            team.setMaxChanges(3); // default per rules; no API field mapped yet
+        }
     }
 
     /**
