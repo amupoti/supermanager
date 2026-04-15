@@ -13,4 +13,7 @@ public class MarketPlayerResponse {
     String down15;
     String nameTeam;
     String competitionAverage;
+    String fisicStatus;
+    int idPlayer;
+    String position;
 }

@@ -2,6 +2,7 @@ package org.amupoti.supermanager.parser.acb.beans;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Map;
@@ -18,6 +19,6 @@ public class SmPlayer {
     String score;
     SmPlayerStatus status;
     Map<String, String> marketData;
-
-    
+    @Setter long idUserTeamPlayerChange;
+    @Setter long idPlayer;
 }

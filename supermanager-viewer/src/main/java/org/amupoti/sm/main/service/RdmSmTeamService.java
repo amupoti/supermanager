@@ -10,6 +10,7 @@ import org.amupoti.supermanager.parser.rdm.RdmTeam;
 import org.amupoti.supermanager.parser.rdm.RdmTeamData;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,7 +23,9 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class RdmSmTeamService {
 
-    public static final int NEXT_MATCHES = 5;
+    @Value("${scraping.next-matches:5}")
+    private int nextMatches;
+
     private static final String TEAM_RDM = "TEAM_RDM";
 
     @Autowired
@@ -68,7 +71,7 @@ public class RdmSmTeamService {
     }
 
     private Pair<SmPlayer, RdmTeamData> toRdmTeamData(Pair<SmPlayer, RdmTeam> pair, int nextMatch) {
-        RdmTeamData teamDataFromMatchNumber = matchService.getTeamDataFromMatchNumber(pair.getValue(), nextMatch, NEXT_MATCHES);
+        RdmTeamData teamDataFromMatchNumber = matchService.getTeamDataFromMatchNumber(pair.getValue(), nextMatch, nextMatches);
         Pair<SmPlayer, RdmTeamData> pairData = Pair.of(pair.getKey(), teamDataFromMatchNumber);
         return pairData;
     }

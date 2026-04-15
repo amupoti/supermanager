@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Service
 public class RdmContentParser {
 
-    List<Match> getTeamMatches(String html, RdmTeam rdmTeam) {
+    public List<Match> getTeamMatches(String html, RdmTeam rdmTeam) {
         Document doc = Jsoup.parse(html);
         // Anchor on the wrapper whose header says "Calendario" — resilient to other tables on the page
         Element wrapper = doc.selectFirst("div.proxima-table-wrapper:has(h4:containsOwn(Calendario))");

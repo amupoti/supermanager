@@ -22,11 +22,14 @@ public class TestConfig {
 
     @Bean
     public PropertySourcesPlaceholderConfigurer getPropertySourcesPlaceholderConfigurer() {
-        PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer = new PropertySourcesPlaceholderConfigurer();
+        PropertySourcesPlaceholderConfigurer configurer = new PropertySourcesPlaceholderConfigurer();
+        // Provide defaults for @Value fields used by SmContentProvider in tests
         Properties props = new Properties();
         props.setProperty("privateLeague.id", "http://supermanager.acb.com/privadas/ver/id/72834/tipo/");
-        propertySourcesPlaceholderConfigurer.setProperties(props);
-        return propertySourcesPlaceholderConfigurer;
+        configurer.setProperties(props);
+        // Fall back to @Value default values for properties not listed here
+        configurer.setIgnoreUnresolvablePlaceholders(false);
+        return configurer;
     }
 
     @Bean
@@ -37,23 +40,22 @@ public class TestConfig {
                 .disableCookieManagement()
                 .build();
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(httpClient);
-        RestTemplate restTemplate = new RestTemplate(factory);
-        return restTemplate;
+        return new RestTemplate(factory);
     }
 
     @Bean
     public SMUserTeamService getAcbTeamsService() {
+        // 2-arg constructor creates its own internal thread pool — fine for tests
         return new SMUserTeamService(getSmContentProvider(), getSmContentParser());
     }
 
     @Bean
     public SmContentProvider getSmContentProvider() {
-        return new SmContentProvider(SmContentProvider.ACTIVE_COMPETITION);
+        return new SmContentProvider();
     }
 
     @Bean
     public SmContentParser getSmContentParser() {
         return new SmContentParser();
     }
-
 }

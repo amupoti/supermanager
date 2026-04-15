@@ -5,6 +5,7 @@ import org.amupoti.sm.main.model.PrivateLeagueTeamData;
 import org.amupoti.sm.main.service.PrivateLeagueService;
 import org.amupoti.sm.main.service.RdmSmTeamService;
 import org.amupoti.sm.main.users.UserCredentialsHolder;
+import org.amupoti.supermanager.parser.acb.SmContentProvider;
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
 import org.amupoti.supermanager.parser.acb.exception.ErrorCode;
 import org.amupoti.supermanager.parser.acb.exception.SmException;
@@ -13,6 +14,7 @@ import org.amupoti.supermanager.parser.rdm.RdmMatchService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -21,8 +23,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.*;
-
-import static org.amupoti.sm.main.service.RdmSmTeamService.NEXT_MATCHES;
 
 /**
  * Created by Marcel on 13/01/2016.
@@ -40,6 +40,9 @@ public class UserController {
     private UserCredentialsHolder userCredentialsHolder;
 
     @Autowired
+    private SmContentProvider smContentProvider;
+
+    @Autowired
     private RdmSmTeamService rdmSmTeamService;
 
     @Autowired
@@ -47,6 +50,9 @@ public class UserController {
 
     @Autowired
     private PrivateLeagueService privateLeagueService;
+
+    @Value("${scraping.next-matches:5}")
+    private int nextMatches;
 
     @RequestMapping(value = "/login.html", method = RequestMethod.GET)
     public String getUserTeamsForm(Model model) {
@@ -66,7 +72,9 @@ public class UserController {
     }
 
     @RequestMapping(value = "/teams.html", method = RequestMethod.GET)
-    public String getUserTeams(@RequestParam String id, Model model) throws Exception {
+    public String getUserTeams(@RequestParam String id,
+                               @RequestParam(required = false) String error,
+                               Model model) throws Exception {
 
         //TODO: validate if null
         Optional<SMUser> credentialsByKey = userCredentialsHolder.getCredentialsByKey(id);
@@ -87,7 +95,6 @@ public class UserController {
         for (SmTeam team : userTeams) {
             teamMap.put(team.getName(), PrivateLeagueTeamData.builder()
                     .user(user.getLogin())
-                    //TODO: .updatedAt(Instant.now())
                     .playerList(rdmSmTeamService.buildPlayerList(team.getPlayerList()))
                     .score(team.getScore())
                     .computedScore(team.getComputedScore())
@@ -98,17 +105,65 @@ public class UserController {
                     .totalBroker(DataUtils.format(team.getTotalBroker()))
                     .teamBroker(DataUtils.format(team.getTeamBroker()))
                     .teamUrl(team.getWebUrl())
+                    .teamId(team.getTeamId())
+                    .candidateBuyPlayer(team.getCandidateBuyPlayer())
+                    .candidateAffordable(team.isCandidateAffordable())
                     .build());
         }
 
         privateLeagueService.storePrivateLeagueTeams(teamMap);
         buildModel(id, model, user, teamMap);
+        if ("cancel-failed".equals(error)) {
+            model.addAttribute("errorMessage", "No se pudo liberar al jugador. El cambio solicitado no existe o ya fue procesado.");
+        } else if ("buy-failed".equals(error)) {
+            model.addAttribute("errorMessage", "No se pudo comprar al jugador. Verifica tu caja o intenta más tarde.");
+        }
         return "userTeams";
+    }
+
+    @RequestMapping(value = "/buy-player.html", method = RequestMethod.POST)
+    public String buyPlayer(@RequestParam String id,
+                            @RequestParam String teamId,
+                            @RequestParam long idPlayer,
+                            Model model) {
+        Optional<SMUser> credentialsByKey = userCredentialsHolder.getCredentialsByKey(id);
+        if (!credentialsByKey.isPresent()) {
+            throw new SmException(ErrorCode.INCORRECT_SESSION_ID);
+        }
+        SMUser user = credentialsByKey.get();
+        try {
+            String token = smContentProvider.authenticateUser(user.getLogin(), user.getPassword()).getJwt();
+            smContentProvider.buyPlayer(teamId, idPlayer, token);
+        } catch (Exception e) {
+            log.warn("Failed to buy player " + idPlayer + " for team " + teamId + ": " + e.getMessage());
+            return "redirect:/users/teams.html?id=" + id + "&error=buy-failed";
+        }
+        return "redirect:/users/teams.html?id=" + id;
+    }
+
+    @RequestMapping(value = "/cancel-player.html", method = RequestMethod.POST)
+    public String cancelPlayer(@RequestParam String id,
+                               @RequestParam String teamId,
+                               @RequestParam long idPlayer,
+                               Model model) {
+        Optional<SMUser> credentialsByKey = userCredentialsHolder.getCredentialsByKey(id);
+        if (!credentialsByKey.isPresent()) {
+            throw new SmException(ErrorCode.INCORRECT_SESSION_ID);
+        }
+        SMUser user = credentialsByKey.get();
+        try {
+            String token = smContentProvider.authenticateUser(user.getLogin(), user.getPassword()).getJwt();
+            smContentProvider.removePlayer(teamId, idPlayer, token);
+        } catch (Exception e) {
+            log.warn("Failed to remove player " + idPlayer + " from team " + teamId + ": " + e.getMessage());
+            return "redirect:/users/teams.html?id=" + id + "&error=cancel-failed";
+        }
+        return "redirect:/users/teams.html?id=" + id;
     }
 
     private void buildModel(String id, Model model, SMUser user, Map<String, PrivateLeagueTeamData> teamMap) {
         Integer firstMatch = matchService.getNextMatch();
-        int lastMatch = Math.min(34, firstMatch + NEXT_MATCHES - 1);
+        int lastMatch = Math.min(34, firstMatch + nextMatches - 1);
         model.addAttribute("firstMatch", firstMatch.intValue());
         model.addAttribute("lastMatch", lastMatch);
         model.addAttribute("teamMap", teamMap);
