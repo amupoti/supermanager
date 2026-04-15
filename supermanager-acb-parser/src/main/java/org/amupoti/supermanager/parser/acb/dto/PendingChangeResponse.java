@@ -6,28 +6,30 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+/**
+ * Maps one entry from GET /api/basic/userteamplayerchange?_filters=[{idUserTeam=X}].
+ * action=1 means a pending sell, action=2 means a pending buy.
+ *
+ * The API likely returns a status field (e.g. "status", "estado", "executed") and a journey
+ * number (e.g. "journeyNumber", "numJornada"). These are captured via @JsonAnySetter so they
+ * appear in logs and can be promoted to proper fields once confirmed.
+ */
 @Data
 @Slf4j
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TeamsDetailsResponse {
+public class PendingChangeResponse {
+    long idUserTeamPlayerChange;
+    long idPlayer;
+    int action; // 1=sell, 2=buy
 
-    List<Player> playerList;
-    int number;
-    TotalStats totalStats;
-
-    /**
-     * Captures any fields returned by the journeys API that are not yet explicitly mapped.
-     * Logged at INFO so we can identify candidate fields (e.g. numCambios, maxCambios, numChanges, maxChanges).
-     */
     private final Map<String, Object> unknownFields = new HashMap<>();
 
     @JsonAnySetter
     public void setUnknownField(String name, Object value) {
         unknownFields.put(name, value);
-        log.info("Unmapped field in journeys API response: {} = {}", name, value);
+        log.info("Unmapped field in pendingChange API response: {} = {}", name, value);
     }
 
     /** Returns the integer value of the first matching named unknown field, or -1 if absent/unparseable. */
@@ -39,22 +41,5 @@ public class TeamsDetailsResponse {
             }
         }
         return -1;
-    }
-
-    @Data
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class Player {
-        String fullName;
-        String shortName;
-        String position;
-        String journeyPoints;
-        int number;
-        long idUserTeamPlayerChange;
-    }
-
-    @Data
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class TotalStats {
-        String totalPoints;
     }
 }
