@@ -18,6 +18,14 @@
             <td>${teamData.totalBroker}</td>
             <td>${teamData.teamBroker}</td>
             <td>${teamData.cash}</td>
-            <td><#assign remaining = teamData.maxChanges - teamData.changesUsed><span class="<#if remaining == 0>label label-danger<#elseif remaining == 1>label label-warning<#else>label label-success</#if>">${teamData.changesUsed}/${teamData.maxChanges}</span></td>
+            <td><#assign remaining = teamData.maxChanges - teamData.changesUsed><span class="<#if remaining == 0>label label-danger<#elseif remaining == 1>label label-warning<#else>label label-success</#if>">${teamData.changesUsed}/${teamData.maxChanges}</span>
+                <#if teamData.changesUsed gt 0>
+                <form method="post" action="/users/cancel-all-changes.html" style="display:inline; margin-left:6px" onsubmit="return confirm('¿Cancelar todos los cambios de este equipo?')">
+                    <input type="hidden" name="id" value="${id}"/>
+                    <input type="hidden" name="teamId" value="${teamData.teamId}"/>
+                    <button type="submit" class="btn btn-xs btn-danger">Cancelar cambios</button>
+                </form>
+                </#if>
+            </td>
         </tr>
     </tbody>

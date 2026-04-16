@@ -144,6 +144,17 @@ public class SmContentProvider {
             HttpMethod.GET, new HttpEntity<>(addToken(token)), String.class).getBody();
     }
 
+    public void cancelAllChanges(String teamId, String token) {
+        log.info("Cancelling all pending changes for team {}", teamId);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + token);
+        restTemplate.exchange(
+            "https://supermanager.acb.com/api/basic/userteamplayerchange/cancelAll/" + teamId,
+            HttpMethod.GET,
+            new HttpEntity<>(headers),
+            String.class);
+    }
+
     public void cancelPlayerChange(long idUserTeamPlayerChange, String token) {
         log.info("Cancelling pending player change {}", idUserTeamPlayerChange);
         HttpHeaders headers = new HttpHeaders();
