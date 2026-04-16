@@ -55,10 +55,10 @@ public class SmContentProvider {
 
     @Cacheable("teamsPage")
     public String getTeamsPage(String user, String token) {
-        log.info("Requesting all teams page for user {}", user);
+        log.debug("Requesting all teams page for user {}", user);
         MultiValueMap<String, String> httpHeaders = addToken(token);
         ResponseEntity<String> exchange = restTemplate.exchange(teamListUrl, HttpMethod.GET, new HttpEntity<String>(null, httpHeaders), String.class);
-        log.info("userteam/all raw response: {}", exchange.getBody());
+        log.debug("userteam/all raw response: {}", exchange.getBody());
         return exchange.getBody();
     }
 
@@ -119,13 +119,13 @@ public class SmContentProvider {
 
     @Cacheable("marketPage")
     public String getMarketPage(String token) {
-        log.info("Requesting market page");
+        log.debug("Requesting market page");
         ResponseEntity<String> exchange = restTemplate.exchange(marketPageUrl, HttpMethod.GET, new HttpEntity<>(addToken(token)), String.class, MARKET_PAGE_FIELDS);
         return exchange.getBody();
     }
 
     public String getTeamPlayerDetails(String teamId, String token) {
-        log.info("Requesting player details for team {}", teamId);
+        log.debug("Requesting player details for team {}", teamId);
         return restTemplate.exchange(
             "https://supermanager.acb.com/api/basic/userteamplayer/" + teamId,
             HttpMethod.GET, new HttpEntity<>(addToken(token)), String.class).getBody();

@@ -121,26 +121,26 @@ public class SmContentParser {
             PlayerMarketData playerMarketData = new PlayerMarketData();
             List<MarketPlayerResponse> playerList = objectMapper.readValue(response, new TypeReference<List<MarketPlayerResponse>>() {
             });
-            log.info("Market API returned {} players", playerList.size());
+            log.debug("Market API returned {} players", playerList.size());
             if (!playerList.isEmpty()) {
                 MarketPlayerResponse sample = playerList.get(0);
-                log.info("Market sample player: name={} spanish={} foreign={} position={} idPlayer={}",
+                log.debug("Market sample player: name={} spanish={} foreign={} position={} idPlayer={}",
                         sample.getShortName(), sample.isSpanish(), sample.isForeign(),
                         sample.getPosition(), sample.getIdPlayer());
                 // Log raw JSON of first player to verify field names
                 int firstEnd = response.indexOf('}');
-                log.info("Market first player raw JSON: {}",
+                log.debug("Market first player raw JSON: {}",
                         firstEnd > 0 ? response.substring(1, firstEnd + 1) : response.substring(0, Math.min(300, response.length())));
             }
             long spanishInMarket = playerList.stream().filter(MarketPlayerResponse::isSpanish).count();
             long foreignInMarket = playerList.stream().filter(MarketPlayerResponse::isForeign).count();
-            log.info("Market nationality summary: {} Spanish, {} foreign out of {} total",
+            log.debug("Market nationality summary: {} Spanish, {} foreign out of {} total",
                     spanishInMarket, foreignInMarket, playerList.size());
             // Log license codes from non-national players to identify the foreign indicator
             playerList.stream()
                     .filter(p -> !p.isSpanish())
                     .limit(10)
-                    .forEach(p -> log.info("Non-national player: name={} license={} nationality={}",
+                    .forEach(p -> log.debug("Non-national player: name={} license={} nationality={}",
                             p.getShortName(), p.getLicense(), p.getNationality()));
             playerList.forEach(player -> fillMarketData(player, playerMarketData));
             return playerMarketData;
@@ -218,6 +218,6 @@ public class SmContentParser {
                 .count();
         team.setChangesUsed((int) changesUsed);
         team.setMaxChanges(3);
-        log.info("Team {}: changesUsed={} (from statusTeamSquad=new), maxChanges=3", team.getName(), changesUsed);
+        log.debug("Team {}: changesUsed={} (from statusTeamSquad=new), maxChanges=3", team.getName(), changesUsed);
     }
 }

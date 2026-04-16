@@ -128,7 +128,7 @@ public class SMUserTeamService {
         // Only enforce Spanish quota if the market data actually carries nationality info
         boolean requireSpanish = marketData.hasSpanishData() && spanishCount < 4;
         boolean excludeForeign = foreignCount >= 2;
-        log.info("Team " + team.getName() + " nationality: spanish=" + spanishCount
+        log.debug("Team " + team.getName() + " nationality: spanish=" + spanishCount
                 + " foreign=" + foreignCount + " hasSpanishData=" + marketData.hasSpanishData()
                 + " → requireSpanish=" + requireSpanish + " excludeForeign=" + excludeForeign);
 
@@ -141,7 +141,7 @@ public class SMUserTeamService {
                         .ifPresent(name -> {
                             Map<String, String> data = marketData.getPlayerMap(name);
                             long idPlayer = parseLong(data.get(MarketCategory.ID_PLAYER.name()));
-                            log.info("Candidate for team " + team.getName() + " pos=" + pos + ": " + name
+                            log.debug("Candidate for team " + team.getName() + " pos=" + pos + ": " + name
                                     + " (idPlayer=" + idPlayer + ", price=" + data.get(MarketCategory.PRICE.name()) + ")");
                             candidatesByPosition.put(pos, SmPlayer.builder()
                                     .name(name)
