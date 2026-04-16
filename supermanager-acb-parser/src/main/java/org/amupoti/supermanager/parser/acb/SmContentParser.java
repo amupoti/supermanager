@@ -9,6 +9,7 @@ import org.amupoti.supermanager.parser.acb.beans.SmPlayerStatus;
 import org.amupoti.supermanager.parser.acb.beans.SmTeam;
 import org.amupoti.supermanager.parser.acb.beans.market.PlayerMarketData;
 import org.amupoti.supermanager.parser.acb.dto.MarketPlayerResponse;
+import org.amupoti.supermanager.parser.acb.dto.PlayerStatsResponse;
 import org.amupoti.supermanager.parser.acb.dto.TeamPlayerDetailResponse;
 import org.amupoti.supermanager.parser.acb.dto.TeamsDescriptionResponse;
 import org.amupoti.supermanager.parser.acb.dto.TeamsDetailsResponse;
@@ -17,6 +18,7 @@ import org.amupoti.supermanager.parser.acb.exception.SmException;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -46,6 +48,36 @@ public class SmContentParser {
         }
         addPlayers(team, teamsDetailsResponse, playerMarketData);
         addTotalScore(team, teamsDetailsResponse);
+    }
+
+    /**
+     * Parses the JSON from /api/basic/playerstats/1/{idPlayer} and returns the
+     * average SuperManager score (including 20% win bonus where applicable) across
+     * the last 4 completed matches, formatted to one decimal place.
+     * Returns null if no played matches are found.
+     */
+    public String computeLastFourAverage(String playerStatsJson) throws IOException {
+        PlayerStatsResponse stats = objectMapper.readValue(playerStatsJson, PlayerStatsResponse.class);
+        if (stats.getPlayerStats() == null) return null;
+
+        // The list is ordered newest-first. Filter to entries with a completed match
+        // (idJourney present), take the first 4, and compute average.
+        List<Double> scores = stats.getPlayerStats().stream()
+                .filter(s -> s.getIdJourney() != null)
+                .sorted(Comparator.comparingInt(PlayerStatsResponse.JourneyStats::getNumberJourney).reversed())
+                .limit(4)
+                .map(s -> {
+                    // bonusVictory > 0 means the 20% win bonus was applied (total score).
+                    // When 0, use pointsJourney (team lost or val ≤ 0).
+                    double bonusVictory = s.getBonusVictory() != null ? s.getBonusVictory() : 0.0;
+                    double points      = s.getPointsJourney() != null ? s.getPointsJourney() : 0.0;
+                    return bonusVictory > 0 ? bonusVictory : points;
+                })
+                .collect(Collectors.toList());
+
+        if (scores.isEmpty()) return null;
+        double avg = scores.stream().mapToDouble(Double::doubleValue).average().orElse(0);
+        return String.format("%.1f", avg);
     }
 
     private void addPlayers(SmTeam team, TeamsDetailsResponse teamsDescriptionResponse, PlayerMarketData playerMarketData) {
@@ -127,10 +159,13 @@ public class SmContentParser {
                 log.debug("Market sample player: name={} spanish={} foreign={} position={} idPlayer={}",
                         sample.getShortName(), sample.isSpanish(), sample.isForeign(),
                         sample.getPosition(), sample.getIdPlayer());
-                // Log raw JSON of first player to verify field names
+                // Log raw JSON of first player at debug level
                 int firstEnd = response.indexOf('}');
                 log.debug("Market first player raw JSON: {}",
-                        firstEnd > 0 ? response.substring(1, firstEnd + 1) : response.substring(0, Math.min(300, response.length())));
+                        firstEnd > 0 ? response.substring(1, firstEnd + 1) : response.substring(0, Math.min(500, response.length())));
+                if (!sample.getUnknownFields().isEmpty()) {
+                    log.debug("Market first player unknown fields (not yet mapped): {}", sample.getUnknownFields());
+                }
             }
             long spanishInMarket = playerList.stream().filter(MarketPlayerResponse::isSpanish).count();
             long foreignInMarket = playerList.stream().filter(MarketPlayerResponse::isForeign).count();

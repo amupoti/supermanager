@@ -131,6 +131,14 @@ public class SmContentProvider {
             HttpMethod.GET, new HttpEntity<>(addToken(token)), String.class).getBody();
     }
 
+    @Cacheable(value = "playerStats", key = "#idPlayer")
+    public String getPlayerStats(long idPlayer, String token) {
+        log.debug("Requesting player stats for idPlayer {}", idPlayer);
+        return restTemplate.exchange(
+            "https://supermanager.acb.com/api/basic/playerstats/1/" + idPlayer,
+            HttpMethod.GET, new HttpEntity<>(addToken(token)), String.class).getBody();
+    }
+
     public void cancelAllChanges(String teamId, String token) {
         log.info("Cancelling all pending changes for team {}", teamId);
         HttpHeaders headers = new HttpHeaders();
