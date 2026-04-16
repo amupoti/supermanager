@@ -113,21 +113,23 @@ public class SMUserTeamService {
 
     /**
      * Fetches per-player stats from /api/basic/playerstats/1/{idPlayer} for each
-     * player on the current roster and each slot candidate, then stores the last-4-match
-     * average (with win bonus) in the shared market data map so the UI can display it.
+     * player on the current roster and each slot candidate in parallel, then stores
+     * the last-4-match average (with win bonus) in the shared market data map.
      */
     private void enrichWithLastFourAverages(SmTeam team, PlayerMarketData playerMarketData, String token) {
         Set<Long> processed = new HashSet<>();
 
-        Stream<SmPlayer> players = Stream.concat(
-                team.getPlayerList().stream(),
-                team.getCandidatesByPosition() != null
-                        ? team.getCandidatesByPosition().values().stream()
-                        : Stream.empty());
-
-        players.filter(p -> p.getIdPlayer() > 0)
+        List<SmPlayer> players = Stream.concat(
+                        team.getPlayerList().stream(),
+                        team.getCandidatesByPosition() != null
+                                ? team.getCandidatesByPosition().values().stream()
+                                : Stream.empty())
+                .filter(p -> p.getIdPlayer() > 0)
                 .filter(p -> processed.add(p.getIdPlayer()))
-                .forEach(player -> {
+                .toList();
+
+        List<CompletableFuture<Void>> futures = players.stream()
+                .map(player -> CompletableFuture.runAsync(() -> {
                     try {
                         String json = smContentProvider.getPlayerStats(player.getIdPlayer(), token);
                         String avg = smContentParser.computeLastFourAverage(json);
@@ -139,7 +141,10 @@ public class SMUserTeamService {
                         log.warn("Could not fetch player stats for " + player.getName()
                                 + " (idPlayer=" + player.getIdPlayer() + "): " + e.getMessage());
                     }
-                });
+                }, executor))
+                .toList();
+
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
     }
 
     private void findCandidateBuyPlayer(SmTeam team, PlayerMarketData marketData) {

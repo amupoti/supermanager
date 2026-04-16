@@ -81,7 +81,7 @@ public class ApplicationConfig {
     /** Bounded pool for parallel ACB API calls (teams list, market, roster pages). */
     @Bean(name = "acbFetchExecutor")
     public ExecutorService acbFetchExecutor() {
-        return Executors.newFixedThreadPool(5);
+        return Executors.newFixedThreadPool(20);
     }
 
     /** Bounded pool for parallel RDM pre-warm in the background refresh job. */
