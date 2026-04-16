@@ -164,6 +164,25 @@ public class UserController {
         return rows;
     }
 
+    @RequestMapping(value = "/cancel-all-changes.html", method = RequestMethod.POST)
+    public String cancelAllChanges(@RequestParam String id,
+                                   @RequestParam String teamId,
+                                   Model model) {
+        Optional<SMUser> credentialsByKey = userCredentialsHolder.getCredentialsByKey(id);
+        if (!credentialsByKey.isPresent()) {
+            throw new SmException(ErrorCode.INCORRECT_SESSION_ID);
+        }
+        SMUser user = credentialsByKey.get();
+        try {
+            String token = smContentProvider.authenticateUser(user.getLogin(), user.getPassword()).getJwt();
+            smContentProvider.cancelAllChanges(teamId, token);
+        } catch (Exception e) {
+            log.warn("Failed to cancel all changes for team " + teamId + ": " + e.getMessage());
+            return "redirect:/users/teams.html?id=" + id + "&error=undo-failed";
+        }
+        return "redirect:/users/teams.html?id=" + id;
+    }
+
     @RequestMapping(value = "/undo-change.html", method = RequestMethod.POST)
     public String undoChange(@RequestParam String id,
                              @RequestParam long idUserTeamPlayerChange,
