@@ -16,6 +16,7 @@ import org.apache.commons.logging.LogFactory;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.DoubleSummaryStatistics;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,6 +25,7 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by Marcel on 02/01/2016.
@@ -91,6 +93,7 @@ public class SMUserTeamService {
                         smContentParser.mergePlayerChangeIds(team, playerDetails);
                         computeTeamStats(team);
                         findCandidateBuyPlayer(team, playerMarketData);
+                        enrichWithLastFourAverages(team, playerMarketData, token);
                     } catch (IOException e) {
                         throw new UncheckedIOException(e);
                     }
@@ -106,6 +109,37 @@ public class SMUserTeamService {
 
         log.debug("Teams found: " + teams);
         return teams;
+    }
+
+    /**
+     * Fetches per-player stats from /api/basic/playerstats/1/{idPlayer} for each
+     * player on the current roster and each slot candidate, then stores the last-4-match
+     * average (with win bonus) in the shared market data map so the UI can display it.
+     */
+    private void enrichWithLastFourAverages(SmTeam team, PlayerMarketData playerMarketData, String token) {
+        Set<Long> processed = new HashSet<>();
+
+        Stream<SmPlayer> players = Stream.concat(
+                team.getPlayerList().stream(),
+                team.getCandidatesByPosition() != null
+                        ? team.getCandidatesByPosition().values().stream()
+                        : Stream.empty());
+
+        players.filter(p -> p.getIdPlayer() > 0)
+                .filter(p -> processed.add(p.getIdPlayer()))
+                .forEach(player -> {
+                    try {
+                        String json = smContentProvider.getPlayerStats(player.getIdPlayer(), token);
+                        String avg = smContentParser.computeLastFourAverage(json);
+                        Map<String, String> data = playerMarketData.getPlayerMap(player.getName());
+                        if (data != null && avg != null) {
+                            data.put(MarketCategory.LAST_FOUR_VAL.name(), avg);
+                        }
+                    } catch (Exception e) {
+                        log.warn("Could not fetch player stats for " + player.getName()
+                                + " (idPlayer=" + player.getIdPlayer() + "): " + e.getMessage());
+                    }
+                });
     }
 
     private void findCandidateBuyPlayer(SmTeam team, PlayerMarketData marketData) {

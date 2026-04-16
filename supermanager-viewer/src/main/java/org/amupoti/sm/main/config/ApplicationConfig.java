@@ -66,7 +66,8 @@ public class ApplicationConfig {
                 caffeineCache("NextMatch",   Duration.ofHours(6)),
                 caffeineCache("RdmTeamData", Duration.ofHours(25)),
                 caffeineCache("teamsPage",   Duration.ofMinutes(30)),
-                caffeineCache("marketPage",  Duration.ofMinutes(30))
+                caffeineCache("marketPage",  Duration.ofMinutes(30)),
+                caffeineCache("playerStats", Duration.ofHours(6))
         ));
         return manager;
     }

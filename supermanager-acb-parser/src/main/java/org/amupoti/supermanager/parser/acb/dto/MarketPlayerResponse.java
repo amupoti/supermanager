@@ -1,10 +1,16 @@
 package org.amupoti.supermanager.parser.acb.dto;
 
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Data
+@Slf4j
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MarketPlayerResponse {
     String shortName;
@@ -23,4 +29,12 @@ public class MarketPlayerResponse {
     boolean spanish;
     @JsonProperty("isExtracomunitario")
     boolean foreign;
+
+    private final Map<String, Object> unknownFields = new HashMap<>();
+
+    @JsonAnySetter
+    public void setUnknownField(String name, Object value) {
+        unknownFields.put(name, value);
+        log.debug("Unmapped market API field: {} = {}", name, value);
+    }
 }

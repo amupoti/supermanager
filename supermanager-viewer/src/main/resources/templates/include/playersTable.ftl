@@ -7,6 +7,7 @@
         <th class="text-center">= broker</th>
         <th class="text-center">+15% broker</th>
         <th class="text-center">Media</th>
+        <th class="text-center">M.4J</th>
         <th class="text-center">Pos.</th>
         <#list firstMatch..lastMatch as i>
             <th align="center">J ${i}</th>
@@ -28,6 +29,7 @@
                     <td>${(p.marketData["KEEP_BROKER"])!"-"}</td>
                     <td>${(p.marketData["PLUS_15_BROKER"])!"-"}</td>
                     <td>${(p.marketData["MEAN_VAL"])!"-"}</td>
+                    <td><b>${(p.marketData["LAST_FOUR_VAL"])!"-"}</b></td>
                     <td>${(p.position)!"-"}</td>
                     <#list row.realPlayer.matches as match>
                         <td class="${match.againstTeam.quality}" align="center" style="font-size: 80%">
@@ -70,6 +72,7 @@
                         <td>${(row.candidate.marketData["KEEP_BROKER"])!"-"}</td>
                         <td>${(row.candidate.marketData["PLUS_15_BROKER"])!"-"}</td>
                         <td>${(row.candidate.marketData["MEAN_VAL"])!"-"}</td>
+                        <td>${(row.candidate.marketData["LAST_FOUR_VAL"])!"-"}</td>
                         <td>${row.candidate.position}</td>
                         <#list firstMatch..lastMatch as i><td>-</td></#list>
                         <td>
@@ -85,7 +88,7 @@
                     <#else>
                         <#-- Slot with no candidate available -->
                         <td align="left"><em style="color:#aaa">— plaza libre —</em></td>
-                        <td colspan="7" style="color:#aaa">Sin candidato disponible (${row.missingPosition})</td>
+                        <td colspan="8" style="color:#aaa">Sin candidato disponible (${row.missingPosition})</td>
                         <#list firstMatch..lastMatch as i><td>-</td></#list>
                         <td></td>
                     </#if>
