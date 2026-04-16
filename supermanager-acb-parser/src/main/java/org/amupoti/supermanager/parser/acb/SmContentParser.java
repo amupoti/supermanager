@@ -2,7 +2,6 @@ package org.amupoti.supermanager.parser.acb;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.amupoti.supermanager.parser.acb.dto.PendingChangeResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.amupoti.supermanager.parser.acb.beans.PlayerPosition;
 import org.amupoti.supermanager.parser.acb.beans.SmPlayer;
@@ -188,35 +187,6 @@ public class SmContentParser {
     private String formatPrice(String price) {
         if (price == null) return "0k";
         return (Float.valueOf(price).intValue() / 1000) + "k";
-    }
-
-    /**
-     * Merges pending-change status into each player.
-     * A player whose idUserTeamPlayerChange matches one in the pending-changes list gets their
-     * pendingAction set (1=pending sell, 2=pending buy).
-     *
-     * changesUsed and maxChanges are set here only when the journeys/teams endpoints did not already
-     * provide them (i.e. when they are still 0 from the SmTeam default).
-     * Note: pending changes only reflects changes not yet executed; once a match starts and changes
-     * are applied the list goes back to 0, so this count is best-effort only.
-     */
-    public void mergePendingChanges(SmTeam team, String pendingChangesJson) throws IOException {
-        List<PendingChangeResponse> changes = objectMapper.readValue(
-                pendingChangesJson, new TypeReference<List<PendingChangeResponse>>() {});
-        Map<Long, PendingChangeResponse> byChangeId = changes.stream()
-                .filter(c -> c.getIdUserTeamPlayerChange() > 0)
-                .collect(java.util.stream.Collectors.toMap(
-                        PendingChangeResponse::getIdUserTeamPlayerChange,
-                        c -> c,
-                        (a, b) -> a));
-        team.getPlayerList().forEach(player -> {
-            PendingChangeResponse change = byChangeId.get(player.getIdUserTeamPlayerChange());
-            if (change != null) {
-                player.setPendingAction(change.getAction());
-            }
-        });
-        // changesUsed/maxChanges are now derived from statusTeamSquad in mergePlayerChangeIds.
-        // The pending-changes endpoint is 404 for this API, so no fallback is applied here.
     }
 
     /**

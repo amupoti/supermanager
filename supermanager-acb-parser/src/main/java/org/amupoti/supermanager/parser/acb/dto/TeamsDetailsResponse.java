@@ -27,7 +27,7 @@ public class TeamsDetailsResponse {
     @JsonAnySetter
     public void setUnknownField(String name, Object value) {
         unknownFields.put(name, value);
-        log.info("Unmapped field in journeys API response: {} = {}", name, value);
+        log.debug("Unmapped field in journeys API response: {} = {}", name, value);
     }
 
     /** Returns the integer value of the first matching named unknown field, or -1 if absent/unparseable. */
