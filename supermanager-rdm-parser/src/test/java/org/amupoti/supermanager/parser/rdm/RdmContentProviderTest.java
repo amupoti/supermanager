@@ -1,6 +1,7 @@
 package org.amupoti.supermanager.parser.rdm;
 
 import org.amupoti.supermanager.parser.rdm.config.RdmConfiguration;
+import org.amupoti.supermanager.rdm.domain.model.LeagueTeam;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,13 +21,13 @@ public class RdmContentProviderTest {
 
     @Test
     public void whenGettingTeams_thenAre18Teams() {
-        Assertions.assertThat(RdmTeam.values().length).isEqualTo(18);
+        Assertions.assertThat(LeagueTeam.values().length).isEqualTo(18);
     }
 
     @Test
     public void whenRetrievingUrl_thenContainsTeamName() {
 
-        String teamPage = rdmContentProvider.getTeamPage(RdmTeam.FCB);
+        String teamPage = rdmContentProvider.getTeamPage(LeagueTeam.FCB);
         Assertions.assertThat(teamPage).containsIgnoringCase("BARÇA");
     }
 }

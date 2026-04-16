@@ -1,16 +1,17 @@
-package org.amupoti.supermanager.parser.rdm;
+package org.amupoti.supermanager.rdm.domain.model;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import static org.amupoti.supermanager.parser.rdm.RdmTeam.Quality.*;
+import static org.amupoti.supermanager.rdm.domain.model.LeagueTeam.Quality.*;
 
 /**
- * Created by amupoti on 27/10/2018.
+ * Represents a Liga Endesa basketball club in the SuperManager context.
+ * Quality tiers are static assessments used for upcoming fixture difficulty ratings.
  */
 @Getter
 @Slf4j
-public enum RdmTeam {
+public enum LeagueTeam {
 
     BAS("Baskonia", GOOD),
     FCB("Barça", TOP),
@@ -34,21 +35,21 @@ public enum RdmTeam {
     private String teamName;
     private Quality quality;
 
-    RdmTeam(String teamName, Quality quality) {
-
+    LeagueTeam(String teamName, Quality quality) {
         this.teamName = teamName;
         this.quality = quality;
     }
 
-    public static RdmTeam fromTeamName(String teamName) {
-
-        for (RdmTeam t : RdmTeam.values()) {
+    public static LeagueTeam fromTeamName(String teamName) {
+        for (LeagueTeam t : LeagueTeam.values()) {
             if (teamName.contains(t.teamName)) {
                 return t;
             }
         }
         log.error("Could not convert team {}", teamName);
-        throw new RdmException("No se puede convertir el nombre de equipo " + teamName + " a un nombre del rincon del manager. Es posible que el equipo haya cambiado su nombre");
+        throw new org.amupoti.supermanager.parser.rdm.RdmException(
+                "No se puede convertir el nombre de equipo " + teamName
+                        + " a un nombre del rincon del manager. Es posible que el equipo haya cambiado su nombre");
     }
 
     public enum Quality {

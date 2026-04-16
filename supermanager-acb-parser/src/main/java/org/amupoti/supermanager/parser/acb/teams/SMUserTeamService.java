@@ -2,10 +2,10 @@ package org.amupoti.supermanager.parser.acb.teams;
 
 import org.amupoti.supermanager.parser.acb.SmContentParser;
 import org.amupoti.supermanager.parser.acb.SmContentProvider;
-import org.amupoti.supermanager.parser.acb.beans.SmPlayer;
-import org.amupoti.supermanager.parser.acb.beans.SmTeam;
-import org.amupoti.supermanager.parser.acb.beans.market.MarketCategory;
-import org.amupoti.supermanager.parser.acb.beans.market.PlayerMarketData;
+import org.amupoti.supermanager.acb.domain.model.MarketCategory;
+import org.amupoti.supermanager.acb.domain.model.MarketData;
+import org.amupoti.supermanager.acb.domain.model.Player;
+import org.amupoti.supermanager.acb.domain.model.Team;
 import org.amupoti.supermanager.parser.acb.dto.LoginResponse;
 import org.amupoti.supermanager.parser.acb.exception.ErrorCode;
 import org.amupoti.supermanager.parser.acb.exception.SmException;
@@ -54,13 +54,13 @@ public class SMUserTeamService {
         this(smContentProvider, smContentParser, Executors.newFixedThreadPool(5));
     }
 
-    public List<SmTeam> getTeamsByCredentials(String user, String password) throws IOException {
+    public List<Team> getTeamsByCredentials(String user, String password) throws IOException {
 
         LoginResponse loginResponse = smContentProvider.authenticateUser(user, password);
         String token = loginResponse.getJwt();
 
         // Fetch teams list and market data in parallel — both only need the token
-        CompletableFuture<List<SmTeam>> teamsFuture = CompletableFuture.supplyAsync(() -> {
+        CompletableFuture<List<Team>> teamsFuture = CompletableFuture.supplyAsync(() -> {
             try {
                 return smContentParser.getTeams(smContentProvider.getTeamsPage(user, token));
             } catch (IOException e) {
@@ -68,12 +68,12 @@ public class SMUserTeamService {
             }
         }, executor);
 
-        CompletableFuture<PlayerMarketData> marketFuture = CompletableFuture.supplyAsync(
+        CompletableFuture<MarketData> marketFuture = CompletableFuture.supplyAsync(
                 () -> smContentParser.providePlayerData(smContentProvider.getMarketPage(token)),
                 executor);
 
-        List<SmTeam> teams;
-        PlayerMarketData playerMarketData;
+        List<Team> teams;
+        MarketData playerMarketData;
         try {
             teams = teamsFuture.join();
             playerMarketData = marketFuture.join();
@@ -116,10 +116,10 @@ public class SMUserTeamService {
      * player on the current roster and each slot candidate in parallel, then stores
      * the last-4-match average (with win bonus) in the shared market data map.
      */
-    private void enrichWithLastFourAverages(SmTeam team, PlayerMarketData playerMarketData, String token) {
+    private void enrichWithLastFourAverages(Team team, MarketData playerMarketData, String token) {
         Set<Long> processed = new HashSet<>();
 
-        List<SmPlayer> players = Stream.concat(
+        List<Player> players = Stream.concat(
                         team.getPlayerList().stream(),
                         team.getCandidatesByPosition() != null
                                 ? team.getCandidatesByPosition().values().stream()
@@ -147,16 +147,16 @@ public class SMUserTeamService {
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
     }
 
-    private void findCandidateBuyPlayer(SmTeam team, PlayerMarketData marketData) {
+    private void findCandidateBuyPlayer(Team team, MarketData marketData) {
         if (team.getPlayerList().size() >= MAX_TEAM_SIZE) return;
 
         Set<String> teamNames = team.getPlayerList().stream()
-                .map(SmPlayer::getName)
+                .map(Player::getName)
                 .collect(Collectors.toSet());
 
         Map<String, Long> positionCounts = team.getPlayerList().stream()
                 .filter(p -> p.getPosition() != null)
-                .collect(Collectors.groupingBy(SmPlayer::getPosition, Collectors.counting()));
+                .collect(Collectors.groupingBy(Player::getPosition, Collectors.counting()));
 
         long spanishCount = team.getPlayerList().stream()
                 .filter(p -> p.getStatus().isSpanish())
@@ -172,7 +172,7 @@ public class SMUserTeamService {
                 + " → requireSpanish=" + requireSpanish + " excludeForeign=" + excludeForeign);
 
         // Find one best candidate per position that has at least one open slot
-        Map<String, SmPlayer> candidatesByPosition = new java.util.HashMap<>();
+        Map<String, Player> candidatesByPosition = new java.util.HashMap<>();
         POSITION_QUOTA.forEach((pos, quota) -> {
             if (positionCounts.getOrDefault(pos, 0L) < quota) {
                 marketData.findMostExpensiveFitPlayerName(teamNames, team.getCash(), Set.of(pos),
@@ -182,7 +182,7 @@ public class SMUserTeamService {
                             long idPlayer = parseLong(data.get(MarketCategory.ID_PLAYER.name()));
                             log.debug("Candidate for team " + team.getName() + " pos=" + pos + ": " + name
                                     + " (idPlayer=" + idPlayer + ", price=" + data.get(MarketCategory.PRICE.name()) + ")");
-                            candidatesByPosition.put(pos, SmPlayer.builder()
+                            candidatesByPosition.put(pos, Player.builder()
                                     .name(name)
                                     .position(pos)
                                     .marketData(data)
@@ -213,7 +213,7 @@ public class SMUserTeamService {
         }
     }
 
-    private void computeTeamStats(SmTeam team) {
+    private void computeTeamStats(Team team) {
         DoubleSummaryStatistics stats = team.getPlayerList().stream()
                 .filter(p -> p.getScore() != null && !p.getScore().equals("-"))
                 .mapToDouble(p -> DataUtils.getScoreFromStringValue(p.getScore()))
@@ -227,7 +227,7 @@ public class SMUserTeamService {
         team.setTotalBroker(team.getCash() + brokerSum);
     }
 
-    private int getBrokerSum(SmTeam team) {
+    private int getBrokerSum(Team team) {
         return team.getPlayerList().stream()
                 .filter(p -> p.getMarketData() != null)
                 .map(p -> p.getMarketData().get(MarketCategory.PRICE.name()))
@@ -236,7 +236,7 @@ public class SMUserTeamService {
                 .sum();
     }
 
-    private float computeTeamScorePrediction(DoubleSummaryStatistics stats, SmTeam team) {
+    private float computeTeamScorePrediction(DoubleSummaryStatistics stats, Team team) {
         return (float) stats.getAverage() * (team.getPlayerList().size()
                 - team.getPlayerList().stream().filter(p -> !p.getStatus().isActive() || p.getStatus().isInjured()).count());
     }

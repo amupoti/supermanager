@@ -3,11 +3,12 @@ package org.amupoti.supermanager.parser.acb;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.amupoti.supermanager.parser.acb.beans.PlayerPosition;
-import org.amupoti.supermanager.parser.acb.beans.SmPlayer;
-import org.amupoti.supermanager.parser.acb.beans.SmPlayerStatus;
-import org.amupoti.supermanager.parser.acb.beans.SmTeam;
-import org.amupoti.supermanager.parser.acb.beans.market.PlayerMarketData;
+import org.amupoti.supermanager.acb.domain.model.MarketCategory;
+import org.amupoti.supermanager.acb.domain.model.MarketData;
+import org.amupoti.supermanager.acb.domain.model.Player;
+import org.amupoti.supermanager.acb.domain.model.PlayerPosition;
+import org.amupoti.supermanager.acb.domain.model.PlayerStatus;
+import org.amupoti.supermanager.acb.domain.model.Team;
 import org.amupoti.supermanager.parser.acb.dto.MarketPlayerResponse;
 import org.amupoti.supermanager.parser.acb.dto.PlayerStatsResponse;
 import org.amupoti.supermanager.parser.acb.dto.TeamPlayerDetailResponse;
@@ -23,8 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.amupoti.supermanager.parser.acb.beans.PlayerPosition.getFromName;
-import static org.amupoti.supermanager.parser.acb.beans.market.MarketCategory.*;
+import static org.amupoti.supermanager.acb.domain.model.PlayerPosition.getFromName;
+import static org.amupoti.supermanager.acb.domain.model.MarketCategory.*;
 import static org.amupoti.supermanager.parser.acb.utils.DataUtils.toFloat;
 
 /**
@@ -35,7 +36,7 @@ public class SmContentParser {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public void populateTeam(String response, SmTeam team, PlayerMarketData playerMarketData) throws IOException {
+    public void populateTeam(String response, Team team, MarketData marketData) throws IOException {
         List<TeamsDetailsResponse> teamsDetailsPerCompetition = objectMapper.readValue(response, new TypeReference<List<TeamsDetailsResponse>>() {
         });
         if (teamsDetailsPerCompetition.isEmpty()) throw new SmException(ErrorCode.TEAM_PAGE_ERROR);
@@ -46,7 +47,7 @@ public class SmContentParser {
         if (teamsDetailsResponse.getTotalStats() == null) {
             log.warn("ACB API: totalStats is null for team {} — field may have been renamed", team.getName());
         }
-        addPlayers(team, teamsDetailsResponse, playerMarketData);
+        addPlayers(team, teamsDetailsResponse, marketData);
         addTotalScore(team, teamsDetailsResponse);
     }
 
@@ -80,47 +81,47 @@ public class SmContentParser {
         return String.format("%.1f", avg);
     }
 
-    private void addPlayers(SmTeam team, TeamsDetailsResponse teamsDescriptionResponse, PlayerMarketData playerMarketData) {
+    private void addPlayers(Team team, TeamsDetailsResponse teamsDescriptionResponse, MarketData marketData) {
 
-        List<SmPlayer> players = teamsDescriptionResponse.getPlayerList().stream()
-                .map(player -> buildPlayer(player, playerMarketData))
+        List<Player> players = teamsDescriptionResponse.getPlayerList().stream()
+                .map(player -> buildPlayer(player, marketData))
                 .sorted(this::comparePosition)
                 .collect(Collectors.toList());
 
         team.setPlayerList(players);
     }
 
-    private int comparePosition(SmPlayer p1, SmPlayer p2) {
+    private int comparePosition(Player p1, Player p2) {
         int pos1 = getFromName(p1.getPosition());
         int pos2 = getFromName(p2.getPosition());
         return Integer.compare(pos1, pos2);
     }
 
-    private SmPlayer buildPlayer(TeamsDetailsResponse.Player player, PlayerMarketData playerMarketData) {
+    private Player buildPlayer(TeamsDetailsResponse.Player player, MarketData marketData) {
         if (player.getShortName() == null) {
             log.warn("ACB API: player shortName is null — API response may have changed");
         }
-        Map<String, String> marketMap = playerMarketData.getPlayerMap(player.getShortName());
+        Map<String, String> marketMap = marketData.getPlayerMap(player.getShortName());
         boolean injured = marketMap != null && "injured".equals(marketMap.get(FISIC_STATUS.name()));
         boolean spanish = marketMap != null && "true".equals(marketMap.get(IS_SPANISH.name()));
         boolean foreign = marketMap != null && "true".equals(marketMap.get(IS_FOREIGN.name()));
-        return SmPlayer.builder()
+        return Player.builder()
                 .name(player.getShortName())
                 .position(PlayerPosition.getFromNum(player.getPosition()).getName())
                 .score(player.getJourneyPoints())
-                .status(SmPlayerStatus.builder().injured(injured).spanish(spanish).foreign(foreign).build())
+                .status(PlayerStatus.builder().injured(injured).spanish(spanish).foreign(foreign).build())
                 .marketData(marketMap)
                 .idUserTeamPlayerChange(player.getIdUserTeamPlayerChange())
                 .build();
     }
 
-    private void addTotalScore(SmTeam team, TeamsDetailsResponse teamDetails) {
+    private void addTotalScore(Team team, TeamsDetailsResponse teamDetails) {
         if (teamDetails.getTotalStats() != null) {
             team.setScore(toFloat(teamDetails.getTotalStats().getTotalPoints()));
         }
     }
 
-    public List<SmTeam> getTeams(String response) throws IOException {
+    public List<Team> getTeams(String response) throws IOException {
 
         if (response == null) throw new SmException(ErrorCode.ERROR_PARSING_TEAMS);
         List<TeamsDescriptionResponse> teamsDescriptionList = objectMapper.readValue(response, new TypeReference<List<TeamsDescriptionResponse>>() {
@@ -135,22 +136,21 @@ public class SmContentParser {
                 .map(team -> {
                     if (team.getIdUserTeam() == null) log.warn("ACB API: idUserTeam is null for team {}", team.getNameTeam());
                     if (team.getAmount() == null) log.warn("ACB API: amount is null for team {}", team.getNameTeam());
-                    SmTeam.SmTeamBuilder builder = SmTeam.builder()
+                    Team.TeamBuilder builder = Team.builder()
                             .name(team.getNameTeam())
                             .teamId(team.getIdUserTeam())
-                            .apiUrl(SmTeam.buildUrl(team.getIdUserTeam()))
-                            .webUrl(SmTeam.buildWebUrl(team.getIdUserTeam()))
+                            .apiUrl("https://supermanager.acb.com/api/basic/userteamplayer/journeys/" + team.getIdUserTeam())
+                            .webUrl("https://supermanager.acb.com/#/teams/detail/" + team.getIdUserTeam())
                             .teamBroker(NumberUtils.toInt(team.getBrokerValor()))
                             .cash(team.getAmount() != null ? Float.valueOf(team.getAmount()).intValue() : 0);
-                    SmTeam smTeam = builder.build();
-                    return smTeam;
+                    return builder.build();
                 })
                 .collect(Collectors.toList());
     }
 
-    public PlayerMarketData providePlayerData(String response) {
+    public MarketData providePlayerData(String response) {
         try {
-            PlayerMarketData playerMarketData = new PlayerMarketData();
+            MarketData marketData = new MarketData();
             List<MarketPlayerResponse> playerList = objectMapper.readValue(response, new TypeReference<List<MarketPlayerResponse>>() {
             });
             log.debug("Market API returned {} players", playerList.size());
@@ -177,14 +177,14 @@ public class SmContentParser {
                     .limit(10)
                     .forEach(p -> log.debug("Non-national player: name={} license={} nationality={}",
                             p.getShortName(), p.getLicense(), p.getNationality()));
-            playerList.forEach(player -> fillMarketData(player, playerMarketData));
-            return playerMarketData;
+            playerList.forEach(player -> fillMarketData(player, marketData));
+            return marketData;
         } catch (Exception e) {
             throw new SmException(ErrorCode.ERROR_PARSING_MARKET, e);
         }
     }
 
-    private void fillMarketData(MarketPlayerResponse player, PlayerMarketData playerMarketData) {
+    private void fillMarketData(MarketPlayerResponse player, MarketData marketData) {
         if (player.getShortName() == null) {
             log.warn("ACB API: market player has null shortName — skipping");
             return;
@@ -193,18 +193,18 @@ public class SmContentParser {
             log.warn("ACB API: market player {} has null price — API field may have changed", player.getShortName());
         }
         String playerName = player.getShortName();
-        playerMarketData.addPlayer(playerName);
-        playerMarketData.addPlayerData(playerName, PRICE.name(), player.getPrice());
-        playerMarketData.addPlayerData(playerName, PRICE_FORMATTED.name(), formatPrice(player.getPrice()));
-        playerMarketData.addPlayerData(playerName, PLUS_15_BROKER.name(), player.getUp15());
-        playerMarketData.addPlayerData(playerName, KEEP_BROKER.name(), player.getKeep());
-        playerMarketData.addPlayerData(playerName, MEAN_VAL.name(), player.getCompetitionAverage());
-        playerMarketData.addPlayerData(playerName, TEAM.name(), player.getNameTeam());
-        playerMarketData.addPlayerData(playerName, FISIC_STATUS.name(), player.getFisicStatus());
-        playerMarketData.addPlayerData(playerName, ID_PLAYER.name(), String.valueOf(player.getIdPlayer()));
-        playerMarketData.addPlayerData(playerName, POSITION.name(), toPositionName(player.getPosition()));
-        playerMarketData.addPlayerData(playerName, IS_SPANISH.name(), String.valueOf(player.isSpanish()));
-        playerMarketData.addPlayerData(playerName, IS_FOREIGN.name(), String.valueOf(player.isForeign()));
+        marketData.addPlayer(playerName);
+        marketData.addPlayerData(playerName, PRICE.name(), player.getPrice());
+        marketData.addPlayerData(playerName, PRICE_FORMATTED.name(), formatPrice(player.getPrice()));
+        marketData.addPlayerData(playerName, PLUS_15_BROKER.name(), player.getUp15());
+        marketData.addPlayerData(playerName, KEEP_BROKER.name(), player.getKeep());
+        marketData.addPlayerData(playerName, MEAN_VAL.name(), player.getCompetitionAverage());
+        marketData.addPlayerData(playerName, TEAM.name(), player.getNameTeam());
+        marketData.addPlayerData(playerName, FISIC_STATUS.name(), player.getFisicStatus());
+        marketData.addPlayerData(playerName, ID_PLAYER.name(), String.valueOf(player.getIdPlayer()));
+        marketData.addPlayerData(playerName, POSITION.name(), toPositionName(player.getPosition()));
+        marketData.addPlayerData(playerName, IS_SPANISH.name(), String.valueOf(player.isSpanish()));
+        marketData.addPlayerData(playerName, IS_FOREIGN.name(), String.valueOf(player.isForeign()));
     }
 
     /** Converts a position number from the API ("1", "3", "5") to its short name ("B", "A", "P"). */
@@ -225,13 +225,13 @@ public class SmContentParser {
     }
 
     /**
-     * Merges idPlayer and idUserTeamPlayerChange from the direct player endpoint into each SmPlayer,
+     * Merges idPlayer and idUserTeamPlayerChange from the direct player endpoint into each Player,
      * and computes changesUsed / maxChanges from the statusTeamSquad field.
      *
      * statusTeamSquad == "new" means the player was acquired via a change this season.
      * The game allows a maximum of 3 changes; this is a fixed rule not returned by the API.
      */
-    public void mergePlayerChangeIds(SmTeam team, String playerDetailsJson) throws IOException {
+    public void mergePlayerChangeIds(Team team, String playerDetailsJson) throws IOException {
         List<TeamPlayerDetailResponse> details = objectMapper.readValue(
             playerDetailsJson, new TypeReference<List<TeamPlayerDetailResponse>>() {});
         Map<String, TeamPlayerDetailResponse> byName = details.stream()

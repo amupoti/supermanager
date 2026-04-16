@@ -1,5 +1,7 @@
 package org.amupoti.supermanager.parser.rdm;
 
+import org.amupoti.supermanager.rdm.domain.model.LeagueTeam;
+import org.amupoti.supermanager.rdm.domain.model.Match;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -15,7 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class RdmContentParser {
 
-    public List<Match> getTeamMatches(String html, RdmTeam rdmTeam) {
+    public List<Match> getTeamMatches(String html, LeagueTeam rdmTeam) {
         Document doc = Jsoup.parse(html);
         // Anchor on the wrapper whose header says "Calendario" — resilient to other tables on the page
         Element wrapper = doc.selectFirst("div.proxima-table-wrapper:has(h4:containsOwn(Calendario))");
@@ -31,7 +33,7 @@ public class RdmContentParser {
                 .collect(Collectors.toList());
     }
 
-    private Match parseMatch(Element row, RdmTeam rdmTeam) {
+    private Match parseMatch(Element row, LeagueTeam rdmTeam) {
         // Each row has two td.team-result cells: [0] = home, [1] = away
         Elements teamCells = row.select("td.team-result");
         if (teamCells.size() < 2) {
@@ -41,7 +43,7 @@ public class RdmContentParser {
         String awayTeam = teamCells.get(1).selectFirst("span.team-name").text();
         String againstTeam = homeTeam.equals(rdmTeam.name()) ? awayTeam : homeTeam;
         return Match.builder()
-                .againstTeam(RdmTeam.valueOf(againstTeam))
+                .againstTeam(LeagueTeam.valueOf(againstTeam))
                 .local(homeTeam.equals(rdmTeam.name()))
                 .build();
     }

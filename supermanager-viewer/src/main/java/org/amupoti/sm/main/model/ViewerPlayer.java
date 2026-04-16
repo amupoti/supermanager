@@ -2,7 +2,7 @@ package org.amupoti.sm.main.model;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.amupoti.supermanager.parser.acb.beans.SmPlayer;
+import org.amupoti.supermanager.acb.domain.model.Player;
 
 import java.util.List;
 
@@ -13,6 +13,6 @@ import java.util.List;
 @Getter
 public class ViewerPlayer {
 
-    private SmPlayer player;
+    private Player player;
     private List<ViewerMatch> matches;
 }

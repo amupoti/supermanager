@@ -1,5 +1,6 @@
 package org.amupoti.supermanager.parser.rdm;
 
+import org.amupoti.supermanager.rdm.domain.model.LeagueTeam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,7 +39,7 @@ public class RdmContentProvider {
         restTemplate.getMessageConverters().add(new FormHttpMessageConverter());
     }
 
-    public String getTeamPage(RdmTeam rdmTeam) {
+    public String getTeamPage(LeagueTeam rdmTeam) {
         log.debug("Getting page for team {}", rdmTeam);
         throttle();
         String url = String.format(teamUrl, rdmTeam.name());

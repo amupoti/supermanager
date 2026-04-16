@@ -2,7 +2,7 @@ package org.amupoti.sm.main.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.amupoti.supermanager.parser.rdm.RdmMatchService;
-import org.amupoti.supermanager.parser.rdm.RdmTeam;
+import org.amupoti.supermanager.rdm.domain.model.LeagueTeam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,7 +48,7 @@ public class ScrapingRefreshJob {
             int currentMatch = rdmMatchService.getNextMatch();
 
             // Pre-warm per-team match-window entries in parallel (used by user team views)
-            List<CompletableFuture<Void>> futures = Arrays.stream(RdmTeam.values())
+            List<CompletableFuture<Void>> futures = Arrays.stream(LeagueTeam.values())
                     .map(team -> CompletableFuture.runAsync(
                             () -> rdmMatchService.getTeamDataFromMatchNumber(team, currentMatch, nextMatches),
                             rdmFetchExecutor))
@@ -56,7 +56,7 @@ public class ScrapingRefreshJob {
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
             log.info("RDM cache refresh completed — {} teams pre-warmed for match window [{}, {}]",
-                    RdmTeam.values().length, currentMatch, currentMatch + nextMatches - 1);
+                    LeagueTeam.values().length, currentMatch, currentMatch + nextMatches - 1);
         } catch (Exception e) {
             log.warn("RDM cache refresh failed — stale fallback data will be served until the next cycle", e);
         }

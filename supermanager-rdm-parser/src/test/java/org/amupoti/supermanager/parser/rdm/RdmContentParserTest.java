@@ -1,6 +1,8 @@
 package org.amupoti.supermanager.parser.rdm;
 
 import org.amupoti.supermanager.parser.rdm.config.RdmConfiguration;
+import org.amupoti.supermanager.rdm.domain.model.LeagueTeam;
+import org.amupoti.supermanager.rdm.domain.model.Match;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,7 +28,7 @@ public class RdmContentParserTest {
 
     @Test
     public void whenRetrievingMatches_thenTeamPlays34Matches() {
-        for (RdmTeam team : RdmTeam.values()) {
+        for (LeagueTeam team : LeagueTeam.values()) {
             String teamPage = provider.getTeamPage(team);
             List<Match> teamMatches = parser.getTeamMatches(teamPage, team);
 
