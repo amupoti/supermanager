@@ -4,10 +4,10 @@ import org.amupoti.sm.main.model.ViewerMatch;
 import org.amupoti.sm.main.model.ViewerPlayer;
 import org.amupoti.supermanager.acb.domain.model.MarketCategory;
 import org.amupoti.supermanager.acb.domain.model.Player;
+import org.amupoti.supermanager.rdm.application.port.in.GetTeamScheduleUseCase;
 import org.amupoti.supermanager.rdm.domain.model.LeagueTeam;
 import org.amupoti.supermanager.rdm.domain.model.Match;
 import org.amupoti.supermanager.rdm.domain.model.TeamSchedule;
-import org.amupoti.supermanager.parser.rdm.RdmMatchService;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,7 +29,7 @@ public class RdmSmTeamService {
     private static final String TEAM_RDM = "TEAM_RDM";
 
     @Autowired
-    private RdmMatchService matchService;
+    private GetTeamScheduleUseCase matchService;
 
     public List<ViewerPlayer> buildPlayerList(List<Player> playerList) {
 
@@ -63,7 +63,7 @@ public class RdmSmTeamService {
     }
 
     private Pair<Player, TeamSchedule> toRdmTeamData(Pair<Player, LeagueTeam> pair, int nextMatch) {
-        TeamSchedule teamDataFromMatchNumber = matchService.getTeamDataFromMatchNumber(pair.getValue(), nextMatch, nextMatches);
+        TeamSchedule teamDataFromMatchNumber = matchService.getTeamSchedule(pair.getValue(), nextMatch, nextMatches);
         return Pair.of(pair.getKey(), teamDataFromMatchNumber);
     }
 
