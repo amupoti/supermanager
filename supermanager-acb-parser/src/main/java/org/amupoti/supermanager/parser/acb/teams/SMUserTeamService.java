@@ -93,9 +93,7 @@ public class SMUserTeamService {
                             String pendingChanges = smContentProvider.getPendingChanges(teamId, token);
                             smContentParser.mergePendingChanges(team, pendingChanges);
                         } catch (Exception e) {
-                            log.warn("Could not fetch pending changes for team " + team.getName() + ": " + e.getMessage());
-                            team.setChangesUsed(0);
-                            team.setMaxChanges(3);
+                            log.warn("Could not fetch pending changes for team " + team.getName() + ": " + e.getMessage() + " — using changesUsed=" + team.getChangesUsed() + " from statusTeamSquad");
                         }
                         computeTeamStats(team);
                         findCandidateBuyPlayer(team, playerMarketData);
