@@ -87,7 +87,7 @@ public class UserController {
         if (user != null) {
             log.info("Getting teams for user " + user.getLogin());
         } else {
-            log.info("Login was not found. Cannot provide team data");
+            log.warn("Login was not found. Cannot provide team data");
         }
 
         List<SmTeam> userTeams = SMUserTeamService.getTeamsByCredentials(user.getLogin(), user.getPassword());
