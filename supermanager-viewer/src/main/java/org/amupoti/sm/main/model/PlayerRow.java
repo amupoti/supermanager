@@ -1,7 +1,7 @@
 package org.amupoti.sm.main.model;
 
 import lombok.Getter;
-import org.amupoti.supermanager.parser.acb.beans.SmPlayer;
+import org.amupoti.supermanager.acb.domain.model.Player;
 
 /**
  * One row in the players table: either a real team player or an empty roster slot
@@ -17,12 +17,12 @@ public class PlayerRow {
      * Non-null when a buyable candidate was found for this slot.
      * Null when the slot is empty but nothing affordable / in the right position is available.
      */
-    private final SmPlayer candidate;
+    private final Player candidate;
 
     /** Position label ("B", "A", "P") for empty slots; null for real-player rows. */
     private final String missingPosition;
 
-    private PlayerRow(ViewerPlayer realPlayer, SmPlayer candidate, String missingPosition) {
+    private PlayerRow(ViewerPlayer realPlayer, Player candidate, String missingPosition) {
         this.realPlayer = realPlayer;
         this.candidate = candidate;
         this.missingPosition = missingPosition;
@@ -32,7 +32,7 @@ public class PlayerRow {
         return new PlayerRow(vp, null, null);
     }
 
-    public static PlayerRow ofSlot(String position, SmPlayer candidate) {
+    public static PlayerRow ofSlot(String position, Player candidate) {
         return new PlayerRow(null, candidate, position);
     }
 

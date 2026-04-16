@@ -8,8 +8,8 @@ import org.amupoti.sm.main.service.PrivateLeagueService;
 import org.amupoti.sm.main.service.RdmSmTeamService;
 import org.amupoti.sm.main.users.UserCredentialsHolder;
 import org.amupoti.supermanager.parser.acb.SmContentProvider;
-import org.amupoti.supermanager.parser.acb.beans.SmPlayer;
-import org.amupoti.supermanager.parser.acb.beans.SmTeam;
+import org.amupoti.supermanager.acb.domain.model.Player;
+import org.amupoti.supermanager.acb.domain.model.Team;
 import org.amupoti.supermanager.parser.acb.exception.ErrorCode;
 import org.amupoti.supermanager.parser.acb.exception.SmException;
 import org.amupoti.supermanager.parser.acb.utils.DataUtils;
@@ -90,9 +90,9 @@ public class UserController {
             log.warn("Login was not found. Cannot provide team data");
         }
 
-        List<SmTeam> userTeams = SMUserTeamService.getTeamsByCredentials(user.getLogin(), user.getPassword());
+        List<Team> userTeams = SMUserTeamService.getTeamsByCredentials(user.getLogin(), user.getPassword());
         Map<String, PrivateLeagueTeamData> teamMap = new HashMap<>();
-        for (SmTeam team : userTeams) {
+        for (Team team : userTeams) {
             List<ViewerPlayer> viewerPlayers = rdmSmTeamService.buildPlayerList(team.getPlayerList());
             List<PlayerRow> rows = buildPlayerRows(team, viewerPlayers);
             teamMap.put(team.getName(), PrivateLeagueTeamData.builder()
@@ -131,14 +131,14 @@ public class UserController {
      * For each position (B → A → P): real players first, then one row per missing slot
      * (showing the best affordable candidate for that position, or an empty slot if none found).
      */
-    private List<PlayerRow> buildPlayerRows(SmTeam team, List<ViewerPlayer> viewerPlayers) {
-        Map<String, SmPlayer> candidates = team.getCandidatesByPosition() != null
+    private List<PlayerRow> buildPlayerRows(Team team, List<ViewerPlayer> viewerPlayers) {
+        Map<String, Player> candidates = team.getCandidatesByPosition() != null
                 ? team.getCandidatesByPosition() : Collections.emptyMap();
 
         // Count actual team players per position (using the full unfiltered list for accuracy)
         Map<String, Long> teamPosCounts = team.getPlayerList().stream()
                 .filter(p -> p.getPosition() != null)
-                .collect(Collectors.groupingBy(SmPlayer::getPosition, Collectors.counting()));
+                .collect(Collectors.groupingBy(Player::getPosition, Collectors.counting()));
 
         // Group viewer players by position (preserving existing sort order within each group)
         Map<String, List<ViewerPlayer>> viewerByPos = viewerPlayers.stream()
@@ -156,7 +156,7 @@ public class UserController {
 
             // Missing slots (based on the full team list, not just the viewer-filtered one)
             int missing = POSITION_QUOTA.get(pos) - teamPosCounts.getOrDefault(pos, 0L).intValue();
-            SmPlayer candidate = candidates.get(pos);
+            Player candidate = candidates.get(pos);
             for (int i = 0; i < missing; i++) {
                 rows.add(PlayerRow.ofSlot(pos, candidate));
             }

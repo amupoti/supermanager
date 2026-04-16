@@ -2,12 +2,12 @@ package org.amupoti.sm.main.service;
 
 import org.amupoti.sm.main.model.ViewerMatch;
 import org.amupoti.sm.main.model.ViewerPlayer;
-import org.amupoti.supermanager.parser.acb.beans.SmPlayer;
-import org.amupoti.supermanager.parser.acb.beans.market.MarketCategory;
-import org.amupoti.supermanager.parser.rdm.Match;
+import org.amupoti.supermanager.acb.domain.model.MarketCategory;
+import org.amupoti.supermanager.acb.domain.model.Player;
+import org.amupoti.supermanager.rdm.domain.model.LeagueTeam;
+import org.amupoti.supermanager.rdm.domain.model.Match;
+import org.amupoti.supermanager.rdm.domain.model.TeamSchedule;
 import org.amupoti.supermanager.parser.rdm.RdmMatchService;
-import org.amupoti.supermanager.parser.rdm.RdmTeam;
-import org.amupoti.supermanager.parser.rdm.RdmTeamData;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +31,7 @@ public class RdmSmTeamService {
     @Autowired
     private RdmMatchService matchService;
 
-    public List<ViewerPlayer> buildPlayerList(List<SmPlayer> playerList) {
+    public List<ViewerPlayer> buildPlayerList(List<Player> playerList) {
 
         final int nextMatch = matchService.getNextMatch();
         List<ViewerPlayer> collect = playerList.stream()
@@ -41,20 +41,12 @@ public class RdmSmTeamService {
                 .map(this::toRdmTeam)
                 .map(playerAndTeam -> toRdmTeamData(playerAndTeam, nextMatch))
                 .map(this::toViewerPlayer)
-//                .map((Pair<SmPlayer, RdmTeam> smPlayer) -> toSimpleViewerPlayer(smPlayer))
                 .collect(toList());
 
         return collect;
     }
 
-    private ViewerPlayer toSimpleViewerPlayer(Pair<SmPlayer, RdmTeam> smPlayer) {
-        return ViewerPlayer.builder()
-                // .player(smPlayer)
-                .build();
-    }
-
-
-    private ViewerPlayer toViewerPlayer(Pair<SmPlayer, RdmTeamData> pair) {
+    private ViewerPlayer toViewerPlayer(Pair<Player, TeamSchedule> pair) {
         List<ViewerMatch> matches = pair.getValue().getMatches().stream()
                 .map(this::buildViewerMatch)
                 .collect(toList());
@@ -70,17 +62,15 @@ public class RdmSmTeamService {
                 .againstTeam(m.getAgainstTeam()).local(m.isLocal()).build();
     }
 
-    private Pair<SmPlayer, RdmTeamData> toRdmTeamData(Pair<SmPlayer, RdmTeam> pair, int nextMatch) {
-        RdmTeamData teamDataFromMatchNumber = matchService.getTeamDataFromMatchNumber(pair.getValue(), nextMatch, nextMatches);
-        Pair<SmPlayer, RdmTeamData> pairData = Pair.of(pair.getKey(), teamDataFromMatchNumber);
-        return pairData;
+    private Pair<Player, TeamSchedule> toRdmTeamData(Pair<Player, LeagueTeam> pair, int nextMatch) {
+        TeamSchedule teamDataFromMatchNumber = matchService.getTeamDataFromMatchNumber(pair.getValue(), nextMatch, nextMatches);
+        return Pair.of(pair.getKey(), teamDataFromMatchNumber);
     }
 
-    private Pair<SmPlayer, RdmTeam> toRdmTeam(SmPlayer p) {
+    private Pair<Player, LeagueTeam> toRdmTeam(Player p) {
         String smTeamName = p.getMarketData().get(MarketCategory.TEAM.name());
-        RdmTeam rdmTeam = RdmTeam.fromTeamName(smTeamName);
+        LeagueTeam rdmTeam = LeagueTeam.fromTeamName(smTeamName);
         p.getMarketData().put(TEAM_RDM, rdmTeam.name());
         return Pair.of(p, rdmTeam);
-
     }
 }

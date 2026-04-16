@@ -1,7 +1,7 @@
 package org.amupoti.supermanager.parser.acb;
 
 import lombok.extern.slf4j.Slf4j;
-import org.amupoti.supermanager.parser.acb.beans.SmTeam;
+import org.amupoti.supermanager.acb.domain.model.Team;
 import org.amupoti.supermanager.parser.acb.dto.LoginRequest;
 import org.amupoti.supermanager.parser.acb.dto.LoginResponse;
 import org.amupoti.supermanager.parser.acb.dto.SigninResponse;
@@ -68,7 +68,7 @@ public class SmContentProvider {
         return httpHeaders;
     }
 
-    public String getTeamPage(SmTeam team, String token) {
+    public String getTeamPage(Team team, String token) {
         try {
             String body = restTemplate.exchange(team.getApiUrl(), HttpMethod.GET, new HttpEntity<>(addToken(token)), String.class).getBody();
             log.debug("journeys raw response for team {}: {}", team.getName(), body);
@@ -188,5 +188,17 @@ public class SmContentProvider {
             HttpMethod.POST,
             new HttpEntity<>(body, headers),
             String.class);
+    }
+
+    public String getPendingChanges(String teamId, String token) {
+        log.debug("Requesting pending changes for team {}", teamId);
+        String filters = "[{\"field\":\"idUserTeam\",\"value\":" + teamId
+                + ",\"operator\":\"=\",\"condition\":\"AND\"}]";
+        return restTemplate.exchange(
+                "https://supermanager.acb.com/api/basic/userteamplayerchange?_filters={filters}",
+                HttpMethod.GET,
+                new HttpEntity<>(addToken(token)),
+                String.class,
+                filters).getBody();
     }
 }

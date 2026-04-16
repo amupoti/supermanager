@@ -3,9 +3,9 @@ package org.amupoti.supermanager.parser.acb;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.amupoti.supermanager.parser.acb.beans.SmPlayer;
-import org.amupoti.supermanager.parser.acb.beans.SmTeam;
-import org.amupoti.supermanager.parser.acb.beans.market.PlayerMarketData;
+import org.amupoti.supermanager.acb.domain.model.MarketData;
+import org.amupoti.supermanager.acb.domain.model.Player;
+import org.amupoti.supermanager.acb.domain.model.Team;
 import org.amupoti.supermanager.parser.acb.config.TestConfig;
 import org.junit.Assert;
 import org.junit.Test;
@@ -100,14 +100,14 @@ public class SmApiIntegrationTest {
     public void testGetTeamJourneysAndParsePlayersWithMarketData() throws Exception {
         // given
         String token = authenticate();
-        PlayerMarketData marketData = fetchMarketData(token);
+        MarketData marketData = fetchMarketData(token);
 
         // when
-        SmTeam team = buildAndPopulateTeam(token, marketData);
+        Team team = buildAndPopulateTeam(token, marketData);
 
         // then
         assertFalse("Team must have players", team.getPlayerList().isEmpty());
-        for (SmPlayer player : team.getPlayerList()) {
+        for (Player player : team.getPlayerList()) {
             assertNotNull("Player name must not be null", player.getName());
             assertNotNull("Player status must not be null", player.getStatus());
         }
@@ -117,14 +117,14 @@ public class SmApiIntegrationTest {
     public void testGetTeamPlayerDetailsAndMergeChangeIds() throws Exception {
         // given
         String token = authenticate();
-        SmTeam team = buildAndPopulateTeam(token, fetchMarketData(token));
+        Team team = buildAndPopulateTeam(token, fetchMarketData(token));
 
         // when
         String playerDetails = smContentProvider.getTeamPlayerDetails(String.valueOf(TEAM_ID), token);
         smContentParser.mergePlayerChangeIds(team, playerDetails);
 
         // then
-        for (SmPlayer player : team.getPlayerList()) {
+        for (Player player : team.getPlayerList()) {
             assertTrue(
                     "idUserTeamPlayerChange must be > 0 for " + player.getName(),
                     player.getIdUserTeamPlayerChange() > 0);
@@ -182,7 +182,7 @@ public class SmApiIntegrationTest {
         return mapper.readValue(json, new TypeReference<>() {});
     }
 
-    private PlayerMarketData fetchMarketData(String token) throws Exception {
+    private MarketData fetchMarketData(String token) throws Exception {
         return smContentParser.providePlayerData(fetchMarketPageWithRetry(token));
     }
 
@@ -199,11 +199,11 @@ public class SmApiIntegrationTest {
         throw last;
     }
 
-    private SmTeam buildAndPopulateTeam(String token, PlayerMarketData marketData) throws IOException {
-        SmTeam team = SmTeam.builder()
+    private Team buildAndPopulateTeam(String token, MarketData marketData) throws IOException {
+        Team team = Team.builder()
                 .name("Test1")
-                .apiUrl(SmTeam.buildUrl(String.valueOf(TEAM_ID)))
-                .webUrl(SmTeam.buildWebUrl(String.valueOf(TEAM_ID)))
+                .apiUrl("https://supermanager.acb.com/api/basic/userteamplayerjourney?_filters=[{\"field\":\"idUserTeam\",\"value\":" + TEAM_ID + ",\"operator\":\"=\",\"condition\":\"AND\"}]")
+                .webUrl("https://supermanager.acb.com/equipo/" + TEAM_ID)
                 .build();
         smContentParser.populateTeam(smContentProvider.getTeamPage(team, token), team, marketData);
         return team;
@@ -295,9 +295,9 @@ public class SmApiIntegrationTest {
 
         for (int teamId : new int[]{TEAM_ID, REAL_TEAM_ID}) {
             System.out.println("\n========== ENDPOINT: journeys for team " + teamId + " ==========");
-            SmTeam smTeam = SmTeam.builder().name("team-" + teamId)
-                    .apiUrl(SmTeam.buildUrl(String.valueOf(teamId)))
-                    .webUrl(SmTeam.buildWebUrl(String.valueOf(teamId))).build();
+            Team smTeam = Team.builder().name("team-" + teamId)
+                    .apiUrl("https://supermanager.acb.com/api/basic/userteamplayerjourney?_filters=[{\"field\":\"idUserTeam\",\"value\":" + teamId + ",\"operator\":\"=\",\"condition\":\"AND\"}]")
+                    .webUrl("https://supermanager.acb.com/equipo/" + teamId).build();
             String journeysJson = smContentProvider.getTeamPage(smTeam, token);
             List<JsonNode> journeys = mapper.readValue(journeysJson, new TypeReference<>() {});
             // Print only the last journey (current round) in full

@@ -1,4 +1,4 @@
-package org.amupoti.supermanager.parser.acb.beans.market;
+package org.amupoti.supermanager.acb.domain.model;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -7,9 +7,10 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Created by amupoti on 29/09/2017.
+ * Domain index of market data keyed by player name.
+ * Contains domain logic for finding candidates based on business rules.
  */
-public class PlayerMarketData {
+public class MarketData {
 
     private Map<String, Map<String, String>> playerData = new HashMap<>();
 

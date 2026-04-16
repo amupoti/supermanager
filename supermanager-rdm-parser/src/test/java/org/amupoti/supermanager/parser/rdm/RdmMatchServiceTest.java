@@ -1,6 +1,8 @@
 package org.amupoti.supermanager.parser.rdm;
 
 import org.amupoti.supermanager.parser.rdm.config.RdmConfiguration;
+import org.amupoti.supermanager.rdm.domain.model.LeagueTeam;
+import org.amupoti.supermanager.rdm.domain.model.TeamSchedule;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,13 +22,13 @@ public class RdmMatchServiceTest {
 
     @Test
     public void whenGettingMatchesForATeam_thenReturnMatches() {
-        RdmTeamData teamData = matchService.getTeamDataFromMatchNumber(RdmTeam.FCB, 1, 3);
+        TeamSchedule teamData = matchService.getTeamDataFromMatchNumber(LeagueTeam.FCB, 1, 3);
         Assertions.assertThat(teamData.getMatches()).hasSize(3);
     }
 
     @Test
     public void whenGettingMatchesForLastMatch_thenReturnOneMatch() {
-        RdmTeamData teamData = matchService.getTeamDataFromMatchNumber(RdmTeam.FCB, 34, 3);
+        TeamSchedule teamData = matchService.getTeamDataFromMatchNumber(LeagueTeam.FCB, 34, 3);
         Assertions.assertThat(teamData.getMatches()).hasSize(1);
     }
 }

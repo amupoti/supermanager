@@ -2,7 +2,7 @@ package org.amupoti.sm.main.model;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.amupoti.supermanager.parser.rdm.RdmTeam;
+import org.amupoti.supermanager.rdm.domain.model.LeagueTeam;
 
 /**
  * Created by amupoti on 05/11/2018.
@@ -11,6 +11,6 @@ import org.amupoti.supermanager.parser.rdm.RdmTeam;
 @Getter
 public class ViewerMatch {
 
-    private RdmTeam againstTeam;
+    private LeagueTeam againstTeam;
     private boolean local;
 }
