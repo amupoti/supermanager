@@ -113,8 +113,7 @@ public class UserController {
                     .maxChanges(team.getMaxChanges())
                     .build());
         }
-
-        privateLeagueService.storePrivateLeagueTeams(teamMap);
+     privateLeagueService.storePrivateLeagueTeams(teamMap);
         buildModel(id, model, user, teamMap);
 
         if ("cancel-failed".equals(error)) {
