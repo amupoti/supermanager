@@ -10,7 +10,12 @@ import java.util.Map;
 
 /**
  * Maps a player entry from GET /api/basic/userteamplayer/{teamId}.
- * This endpoint includes idUserTeamPlayerChange which the journeys endpoint does not provide.
+ * This endpoint includes idUserTeamPlayerChange and statusTeamSquad, which the journeys endpoint does not provide.
+ *
+ * statusTeamSquad values:
+ *   "normal" — original player, no change made
+ *   "new"    — player acquired via a change (counts toward changesUsed)
+ *   "empty"  — sold player slot
  */
 @Data
 @Slf4j
@@ -19,6 +24,7 @@ public class TeamPlayerDetailResponse {
     String shortName;
     long idUserTeamPlayerChange;
     long idPlayer;
+    String statusTeamSquad;
 
     private final Map<String, Object> unknownFields = new HashMap<>();
 

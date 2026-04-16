@@ -47,17 +47,6 @@ public class SmContentParser {
         }
         addPlayers(team, teamsDetailsResponse, playerMarketData);
         addTotalScore(team, teamsDetailsResponse);
-
-        // Try to read change counts directly from the journeys response.
-        // Candidate field names reflect naming patterns seen in the ACB API.
-        int changesUsed = teamsDetailsResponse.getUnknownInt("numCambios", "numChanges", "cambiosUsados", "changesUsed");
-        int maxChanges  = teamsDetailsResponse.getUnknownInt("maxCambios", "maxChanges", "cambiosMax", "maxCambiosPosibles");
-        if (changesUsed >= 0) {
-            team.setChangesUsed(changesUsed);
-        }
-        if (maxChanges >= 0) {
-            team.setMaxChanges(maxChanges);
-        }
     }
 
     private void addPlayers(SmTeam team, TeamsDetailsResponse teamsDescriptionResponse, PlayerMarketData playerMarketData) {
@@ -123,11 +112,6 @@ public class SmContentParser {
                             .teamBroker(NumberUtils.toInt(team.getBrokerValor()))
                             .cash(team.getAmount() != null ? Float.valueOf(team.getAmount()).intValue() : 0);
                     SmTeam smTeam = builder.build();
-                    // Try to read change counts from userteam/all response (may not be present)
-                    int changesUsed = team.getUnknownInt("numCambios", "numChanges", "cambiosUsados", "changesUsed");
-                    int maxChanges  = team.getUnknownInt("maxCambios", "maxChanges", "cambiosMax", "maxCambiosPosibles");
-                    if (changesUsed >= 0) smTeam.setChangesUsed(changesUsed);
-                    if (maxChanges  >= 0) smTeam.setMaxChanges(maxChanges);
                     return smTeam;
                 })
                 .collect(Collectors.toList());
@@ -231,19 +215,16 @@ public class SmContentParser {
                 player.setPendingAction(change.getAction());
             }
         });
-        // Only override changesUsed/maxChanges when the upstream API did not supply them
-        if (team.getChangesUsed() == 0) {
-            team.setChangesUsed(changes.size());
-        }
-        if (team.getMaxChanges() == 0) {
-            team.setMaxChanges(3); // default per rules; no API field mapped yet
-        }
+        // changesUsed/maxChanges are now derived from statusTeamSquad in mergePlayerChangeIds.
+        // The pending-changes endpoint is 404 for this API, so no fallback is applied here.
     }
 
     /**
-     * Merges idPlayer and idUserTeamPlayerChange from the direct player endpoint into each SmPlayer.
-     * The journeys endpoint (used to build the team) does not include these fields,
-     * so a second call to /api/basic/userteamplayer/{teamId} is required.
+     * Merges idPlayer and idUserTeamPlayerChange from the direct player endpoint into each SmPlayer,
+     * and computes changesUsed / maxChanges from the statusTeamSquad field.
+     *
+     * statusTeamSquad == "new" means the player was acquired via a change this season.
+     * The game allows a maximum of 3 changes; this is a fixed rule not returned by the API.
      */
     public void mergePlayerChangeIds(SmTeam team, String playerDetailsJson) throws IOException {
         List<TeamPlayerDetailResponse> details = objectMapper.readValue(
@@ -261,5 +242,12 @@ public class SmContentParser {
                 player.setIdPlayer(detail.getIdPlayer());
             }
         });
+
+        long changesUsed = details.stream()
+                .filter(d -> "new".equals(d.getStatusTeamSquad()))
+                .count();
+        team.setChangesUsed((int) changesUsed);
+        team.setMaxChanges(3);
+        log.info("Team {}: changesUsed={} (from statusTeamSquad=new), maxChanges=3", team.getName(), changesUsed);
     }
 }
