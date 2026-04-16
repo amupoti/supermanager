@@ -2,9 +2,23 @@ package org.amupoti.sm.main.config;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.extern.slf4j.Slf4j;
+import org.amupoti.supermanager.acb.application.port.in.BuyPlayerUseCase;
+import org.amupoti.supermanager.acb.application.port.in.CancelAllChangesUseCase;
+import org.amupoti.supermanager.acb.application.port.in.LoadUserTeamsUseCase;
+import org.amupoti.supermanager.acb.application.port.in.SellPlayerUseCase;
+import org.amupoti.supermanager.acb.application.port.in.UndoChangeUseCase;
+import org.amupoti.supermanager.acb.application.port.out.AuthenticationPort;
+import org.amupoti.supermanager.acb.application.port.out.MarketDataPort;
+import org.amupoti.supermanager.acb.application.port.out.PlayerChangePort;
+import org.amupoti.supermanager.acb.application.port.out.PlayerStatsPort;
+import org.amupoti.supermanager.acb.application.port.out.TeamDataPort;
+import org.amupoti.supermanager.acb.application.service.BuyPlayerService;
+import org.amupoti.supermanager.acb.application.service.CancelAllChangesService;
+import org.amupoti.supermanager.acb.application.service.LoadUserTeamsService;
+import org.amupoti.supermanager.acb.application.service.SellPlayerService;
+import org.amupoti.supermanager.acb.application.service.UndoChangeService;
 import org.amupoti.supermanager.parser.acb.SmContentParser;
 import org.amupoti.supermanager.parser.acb.SmContentProvider;
-import org.amupoti.supermanager.parser.acb.teams.SMUserTeamService;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.DefaultHttpRequestRetryStrategy;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
@@ -37,7 +51,13 @@ import java.util.concurrent.Executors;
  */
 @Configuration
 @PropertySource("classpath:urls.properties")
-@ComponentScan("org.amupoti.supermanager.parser.rdm")
+@ComponentScan({
+    "org.amupoti.supermanager.parser.rdm",
+    "org.amupoti.supermanager.acb.adapter.out",
+    "org.amupoti.supermanager.rdm.adapter.out",
+    "org.amupoti.supermanager.rdm.application.service",
+    "org.amupoti.supermanager.viewer.adapter.out"
+})
 @Slf4j
 public class ApplicationConfig {
 
@@ -129,8 +149,31 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public SMUserTeamService getAcbTeamService() {
-        return new SMUserTeamService(getSmContentProvider(), getSmContentParser(), acbFetchExecutor());
+    public LoadUserTeamsUseCase loadUserTeamsUseCase(AuthenticationPort authPort,
+                                                      TeamDataPort teamDataPort,
+                                                      MarketDataPort marketDataPort,
+                                                      PlayerStatsPort playerStatsPort) {
+        return new LoadUserTeamsService(authPort, teamDataPort, marketDataPort, playerStatsPort, acbFetchExecutor());
+    }
+
+    @Bean
+    public BuyPlayerUseCase buyPlayerUseCase(PlayerChangePort playerChangePort) {
+        return new BuyPlayerService(playerChangePort);
+    }
+
+    @Bean
+    public SellPlayerUseCase sellPlayerUseCase(PlayerChangePort playerChangePort) {
+        return new SellPlayerService(playerChangePort);
+    }
+
+    @Bean
+    public UndoChangeUseCase undoChangeUseCase(PlayerChangePort playerChangePort) {
+        return new UndoChangeService(playerChangePort);
+    }
+
+    @Bean
+    public CancelAllChangesUseCase cancelAllChangesUseCase(PlayerChangePort playerChangePort) {
+        return new CancelAllChangesService(playerChangePort);
     }
 
     @Bean

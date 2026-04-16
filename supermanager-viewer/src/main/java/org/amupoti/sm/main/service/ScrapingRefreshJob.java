@@ -1,7 +1,8 @@
 package org.amupoti.sm.main.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.amupoti.supermanager.parser.rdm.RdmMatchService;
+import org.amupoti.supermanager.rdm.application.port.in.GetTeamScheduleUseCase;
+import org.amupoti.supermanager.rdm.application.service.TeamScheduleService;
 import org.amupoti.supermanager.rdm.domain.model.LeagueTeam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,15 +20,16 @@ import java.util.concurrent.ExecutorService;
  * hit warm cache entries rather than triggering live HTTP calls.
  *
  * ACB data is not refreshed here because it requires per-user credentials.
- * ACB caches (teamsPage, marketPage) expire via Caffeine TTL and are
- * re-populated automatically on the next user login.
  */
 @Service
 @Slf4j
 public class ScrapingRefreshJob {
 
     @Autowired
-    private RdmMatchService rdmMatchService;
+    private TeamScheduleService teamScheduleService;
+
+    @Autowired
+    private GetTeamScheduleUseCase scheduleUseCase;
 
     @Autowired
     @Qualifier("rdmFetchExecutor")
@@ -39,18 +41,15 @@ public class ScrapingRefreshJob {
     @Scheduled(fixedDelayString = "${scraping.rdm.refresh-interval-ms:3600000}")
     public void refreshRdmData() {
         log.info("Starting scheduled RDM cache refresh");
-        rdmMatchService.evictRdmCaches();
+        teamScheduleService.evictCaches();
         try {
-            // Pre-warm TeamData (all 34 rounds for all teams — used by the calendar page)
-            rdmMatchService.getTeamsData();
+            teamScheduleService.getAllSchedules();
 
-            // Pre-warm NextMatch (used to compute match window shown to users)
-            int currentMatch = rdmMatchService.getNextMatch();
+            int currentMatch = scheduleUseCase.getNextMatch();
 
-            // Pre-warm per-team match-window entries in parallel (used by user team views)
             List<CompletableFuture<Void>> futures = Arrays.stream(LeagueTeam.values())
                     .map(team -> CompletableFuture.runAsync(
-                            () -> rdmMatchService.getTeamDataFromMatchNumber(team, currentMatch, nextMatches),
+                            () -> scheduleUseCase.getTeamSchedule(team, currentMatch, nextMatches),
                             rdmFetchExecutor))
                     .toList();
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
