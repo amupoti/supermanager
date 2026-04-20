@@ -139,7 +139,7 @@ public class AcbTeamDataAdapter implements TeamDataPort {
     private Player buildPlayer(TeamsDetailsResponse.Player p, MarketData marketData) {
         if (p.getShortName() == null)
             log.warn("ACB API: player shortName is null — API response may have changed");
-        Map<String, String> marketMap = marketData.getPlayerMap(p.getShortName());
+        Map<String, String> marketMap = marketData.getPlayerMap(p.getIdPlayer());
         String fisicStatus = marketMap != null ? marketMap.get(FISIC_STATUS.name()) : null;
         boolean injured = "injured".equals(fisicStatus);
         boolean postponed = "postponed".equals(fisicStatus);
@@ -153,6 +153,7 @@ public class AcbTeamDataAdapter implements TeamDataPort {
                 .score(p.getJourneyPoints())
                 .status(PlayerStatus.builder().injured(injured).postponed(postponed).doubtful(doubtful).blocked(blocked).spanish(spanish).foreign(foreign).build())
                 .marketData(marketMap)
+                .idPlayer(p.getIdPlayer())
                 .idUserTeamPlayerChange(p.getIdUserTeamPlayerChange())
                 .build();
     }
@@ -160,14 +161,13 @@ public class AcbTeamDataAdapter implements TeamDataPort {
     private void mergeChangeIds(Team team, String json) throws IOException {
         List<TeamPlayerDetailResponse> details = objectMapper.readValue(
                 json, new TypeReference<List<TeamPlayerDetailResponse>>() {});
-        Map<String, TeamPlayerDetailResponse> byName = details.stream()
-                .filter(d -> d.getShortName() != null)
-                .collect(Collectors.toMap(TeamPlayerDetailResponse::getShortName, d -> d, (a, b) -> a));
+        Map<Long, TeamPlayerDetailResponse> byId = details.stream()
+                .filter(d -> d.getIdPlayer() > 0)
+                .collect(Collectors.toMap(TeamPlayerDetailResponse::getIdPlayer, d -> d, (a, b) -> a));
         team.getPlayerList().forEach(player -> {
-            TeamPlayerDetailResponse detail = byName.get(player.getName());
+            TeamPlayerDetailResponse detail = byId.get(player.getIdPlayer());
             if (detail != null) {
                 player.setIdUserTeamPlayerChange(detail.getIdUserTeamPlayerChange());
-                player.setIdPlayer(detail.getIdPlayer());
             }
         });
         long changesUsed = details.stream()

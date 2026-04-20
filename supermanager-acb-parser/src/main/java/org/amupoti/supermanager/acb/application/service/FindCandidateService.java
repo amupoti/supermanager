@@ -21,8 +21,8 @@ public class FindCandidateService {
     public void findCandidateBuyPlayer(Team team, MarketData marketData) {
         if (team.getPlayerList().size() >= MAX_TEAM_SIZE) return;
 
-        Set<String> teamNames = team.getPlayerList().stream()
-                .map(Player::getName)
+        Set<Long> teamIds = team.getPlayerList().stream()
+                .map(Player::getIdPlayer)
                 .collect(Collectors.toSet());
 
         Map<String, Long> positionCounts = team.getPlayerList().stream()
@@ -40,11 +40,11 @@ public class FindCandidateService {
         Map<String, Player> candidatesByPosition = new HashMap<>();
         POSITION_QUOTA.forEach((pos, quota) -> {
             if (positionCounts.getOrDefault(pos, 0L) < quota) {
-                marketData.findMostExpensiveFitPlayerName(teamNames, team.getCash(), Set.of(pos),
+                marketData.findMostExpensiveFitPlayer(teamIds, team.getCash(), Set.of(pos),
                                 requireSpanish, excludeForeign)
-                        .ifPresent(name -> {
-                            Map<String, String> data = marketData.getPlayerMap(name);
-                            long idPlayer = parseLong(data.get(MarketCategory.ID_PLAYER.name()));
+                        .ifPresent(idPlayer -> {
+                            Map<String, String> data = marketData.getPlayerMap(idPlayer);
+                            String name = data != null ? data.get(MarketCategory.NAME.name()) : null;
                             candidatesByPosition.put(pos, Player.builder()
                                     .name(name).position(pos)
                                     .marketData(data).idPlayer(idPlayer).build());
@@ -57,8 +57,4 @@ public class FindCandidateService {
         }
     }
 
-    private long parseLong(String value) {
-        try { return value != null ? Long.parseLong(value) : 0L; }
-        catch (NumberFormatException e) { return 0L; }
-    }
 }

@@ -50,6 +50,7 @@ public class TeamsDetailsResponse {
         String journeyPoints;
         int number;
         long idUserTeamPlayerChange;
+        long idPlayer;
     }
 
     @Data

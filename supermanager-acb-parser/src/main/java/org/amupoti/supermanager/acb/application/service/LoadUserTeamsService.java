@@ -119,7 +119,7 @@ public class LoadUserTeamsService implements LoadUserTeamsUseCase {
         List<CompletableFuture<Void>> futures = players.stream()
                 .map(player -> CompletableFuture.runAsync(() -> {
                     String avg = playerStatsPort.getLastFourAverage(player.getIdPlayer(), token);
-                    Map<String, String> data = marketData.getPlayerMap(player.getName());
+                    Map<String, String> data = marketData.getPlayerMap(player.getIdPlayer());
                     if (data != null && avg != null) {
                         data.put(MarketCategory.LAST_FOUR_VAL.name(), avg);
                     }
