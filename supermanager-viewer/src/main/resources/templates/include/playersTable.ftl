@@ -22,7 +22,7 @@
                 <#-- Real player row -->
                 <#assign p = row.realPlayer.player>
                 <tr>
-                    <td align="left">${p.name}<#if p.status.injured> <span class="label label-danger">LES</span></#if></td>
+                    <td align="left">${p.name}<#if p.status.injured> <span class="label label-danger">LES</span></#if><#if p.status.postponed> <span class="label label-warning">APL</span></#if><#if p.status.doubtful> <span class="label label-info">DUD</span></#if></td>
                     <td>${(p.marketData["TEAM_RDM"])!"-"}</td>
                     <td>${(p.marketData["PRICE_FORMATTED"])!"-"}</td>
                     <td><b>${(p.score)!"-"}</b></td>

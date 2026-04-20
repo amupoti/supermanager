@@ -47,6 +47,7 @@ public class ViewUserTeamsService implements ViewUserTeamsUseCase {
     public Map<String, PrivateLeagueTeamData> loadUserTeamView(String login, String password) throws IOException {
         List<Team> userTeams = loadUserTeamsUseCase.loadTeams(login, password);
         int nextMatch = scheduleUseCase.getNextMatch();
+        log.info("loadUserTeamView: nextMatch={}, nextMatches={}", nextMatch, nextMatches);
 
         Map<String, PrivateLeagueTeamData> teamMap = new HashMap<>();
         for (Team team : userTeams) {
@@ -84,13 +85,20 @@ public class ViewUserTeamsService implements ViewUserTeamsUseCase {
         String smTeamName = player.getMarketData().get(MarketCategory.TEAM.name());
         LeagueTeam rdmTeam = LeagueTeam.fromTeamName(smTeamName);
         player.getMarketData().put(TEAM_RDM, rdmTeam.name());
-        TeamSchedule schedule = scheduleUseCase.getTeamSchedule(rdmTeam, nextMatch, nextMatches);
-        List<ViewerMatch> matches = schedule.getMatches().stream()
-                .map(m -> ViewerMatch.builder()
-                        .againstTeam(m.getAgainstTeam())
-                        .local(m.isLocal())
-                        .build())
-                .collect(Collectors.toList());
+        List<ViewerMatch> matches;
+        try {
+            TeamSchedule schedule = scheduleUseCase.getTeamSchedule(rdmTeam, nextMatch, nextMatches);
+            log.info("Schedule for {} from match {}: {} matches returned", rdmTeam, nextMatch, schedule.getMatches().size());
+            matches = schedule.getMatches().stream()
+                    .map(m -> ViewerMatch.builder()
+                            .againstTeam(m.getAgainstTeam())
+                            .local(m.isLocal())
+                            .build())
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            log.warn("Failed to get schedule for team {}: {}", rdmTeam, e.getMessage());
+            matches = Collections.emptyList();
+        }
         return ViewerPlayer.builder().player(player).matches(matches).build();
     }
 

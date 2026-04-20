@@ -42,7 +42,8 @@ public enum LeagueTeam {
 
     public static LeagueTeam fromTeamName(String teamName) {
         for (LeagueTeam t : LeagueTeam.values()) {
-            if (teamName.contains(t.teamName)) {
+            // Match if input contains full team name OR if enum code matches input
+            if (teamName.contains(t.teamName) || t.name().equalsIgnoreCase(teamName)) {
                 return t;
             }
         }

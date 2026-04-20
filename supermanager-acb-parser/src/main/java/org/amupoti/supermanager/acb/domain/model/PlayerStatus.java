@@ -13,6 +13,8 @@ public class PlayerStatus {
     @Builder.Default private boolean active = true;
     @Builder.Default private boolean foreign = false;
     @Builder.Default private boolean injured = false;
+    @Builder.Default private boolean postponed = false;
+    @Builder.Default private boolean doubtful = false;
     @Builder.Default private boolean info = false;
 
     @Override
@@ -20,6 +22,8 @@ public class PlayerStatus {
         List<String> sb = new ArrayList<>();
         if (!active) sb.add("INA");
         if (injured) sb.add("LES");
+        if (postponed) sb.add("APL");
+        if (doubtful) sb.add("DUD");
         if (spanish) sb.add("ESP");
         if (foreign) sb.add("EXT");
         if (info) sb.add("Info");

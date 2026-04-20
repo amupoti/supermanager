@@ -44,8 +44,10 @@ public class TeamScheduleService implements GetAllSchedulesUseCase, GetTeamSched
     @Cacheable("RdmTeamData")
     public TeamSchedule getTeamSchedule(LeagueTeam team, int fromMatch, int numMatches) {
         int lastMatch = Math.min(fromMatch + numMatches - 1, 34);
+        log.debug("getTeamSchedule called for {} from {} to {}", team, fromMatch, lastMatch);
         try {
             List<Match> all = scrapingPort.scrapeTeamMatches(team);
+            log.debug("Scraped {} matches for {}", all.size(), team);
             fallbackStore.put(team, all);
             return TeamSchedule.builder()
                     .team(team)
