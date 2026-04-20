@@ -55,6 +55,7 @@ public class MarketData {
         return playerData.entrySet().stream()
                 .filter(e -> !excludedNames.contains(e.getKey()))
                 .filter(e -> "fit".equals(e.getValue().get(MarketCategory.FISIC_STATUS.name())))
+                .filter(e -> !"true".equals(e.getValue().get(MarketCategory.IS_BLOCKED.name())))
                 .filter(e -> {
                     String price = e.getValue().get(MarketCategory.PRICE.name());
                     return price != null && Double.parseDouble(price) <= budget;

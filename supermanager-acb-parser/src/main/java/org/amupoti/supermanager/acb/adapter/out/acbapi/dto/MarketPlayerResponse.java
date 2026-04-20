@@ -29,6 +29,8 @@ public class MarketPlayerResponse {
     boolean spanish;
     @JsonProperty("isExtracomunitario")
     boolean foreign;
+    @JsonProperty("isBlock")
+    boolean blocked;
 
     private final Map<String, Object> unknownFields = new HashMap<>();
 

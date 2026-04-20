@@ -106,6 +106,7 @@ public class AcbMarketDataAdapter implements MarketDataPort {
         marketData.addPlayerData(playerName, POSITION.name(), toPositionName(player.getPosition()));
         marketData.addPlayerData(playerName, IS_SPANISH.name(), String.valueOf(player.isSpanish()));
         marketData.addPlayerData(playerName, IS_FOREIGN.name(), String.valueOf(player.isForeign()));
+        marketData.addPlayerData(playerName, IS_BLOCKED.name(), String.valueOf(player.isBlocked()));
     }
 
     private String toPositionName(String position) {
