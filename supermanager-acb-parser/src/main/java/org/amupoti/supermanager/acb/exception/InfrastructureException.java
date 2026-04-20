@@ -1,0 +1,12 @@
+package org.amupoti.supermanager.acb.exception;
+
+public class InfrastructureException extends RuntimeException {
+
+    public InfrastructureException(String message, Exception e) {
+        super(message, e);
+    }
+
+    public InfrastructureException(String message) {
+        super(message);
+    }
+}
