@@ -93,20 +93,21 @@ public class AcbMarketDataAdapter implements MarketDataPort {
         if (player.getPrice() == null) {
             log.warn("ACB API: market player {} has null price — API field may have changed", player.getShortName());
         }
-        String playerName = player.getShortName();
-        marketData.addPlayer(playerName);
-        marketData.addPlayerData(playerName, PRICE.name(), player.getPrice());
-        marketData.addPlayerData(playerName, PRICE_FORMATTED.name(), formatPrice(player.getPrice()));
-        marketData.addPlayerData(playerName, PLUS_15_BROKER.name(), player.getUp15());
-        marketData.addPlayerData(playerName, KEEP_BROKER.name(), player.getKeep());
-        marketData.addPlayerData(playerName, MEAN_VAL.name(), player.getCompetitionAverage());
-        marketData.addPlayerData(playerName, TEAM.name(), player.getNameTeam());
-        marketData.addPlayerData(playerName, FISIC_STATUS.name(), player.getFisicStatus());
-        marketData.addPlayerData(playerName, ID_PLAYER.name(), String.valueOf(player.getIdPlayer()));
-        marketData.addPlayerData(playerName, POSITION.name(), toPositionName(player.getPosition()));
-        marketData.addPlayerData(playerName, IS_SPANISH.name(), String.valueOf(player.isSpanish()));
-        marketData.addPlayerData(playerName, IS_FOREIGN.name(), String.valueOf(player.isForeign()));
-        marketData.addPlayerData(playerName, IS_BLOCKED.name(), String.valueOf(player.isBlocked()));
+        long idPlayer = player.getIdPlayer();
+        marketData.addPlayer(idPlayer);
+        marketData.addPlayerData(idPlayer, NAME.name(), player.getShortName());
+        marketData.addPlayerData(idPlayer, PRICE.name(), player.getPrice());
+        marketData.addPlayerData(idPlayer, PRICE_FORMATTED.name(), formatPrice(player.getPrice()));
+        marketData.addPlayerData(idPlayer, PLUS_15_BROKER.name(), player.getUp15());
+        marketData.addPlayerData(idPlayer, KEEP_BROKER.name(), player.getKeep());
+        marketData.addPlayerData(idPlayer, MEAN_VAL.name(), player.getCompetitionAverage());
+        marketData.addPlayerData(idPlayer, TEAM.name(), player.getNameTeam());
+        marketData.addPlayerData(idPlayer, FISIC_STATUS.name(), player.getFisicStatus());
+        marketData.addPlayerData(idPlayer, ID_PLAYER.name(), String.valueOf(idPlayer));
+        marketData.addPlayerData(idPlayer, POSITION.name(), toPositionName(player.getPosition()));
+        marketData.addPlayerData(idPlayer, IS_SPANISH.name(), String.valueOf(player.isSpanish()));
+        marketData.addPlayerData(idPlayer, IS_FOREIGN.name(), String.valueOf(player.isForeign()));
+        marketData.addPlayerData(idPlayer, IS_BLOCKED.name(), String.valueOf(player.isBlocked()));
     }
 
     private String toPositionName(String position) {
