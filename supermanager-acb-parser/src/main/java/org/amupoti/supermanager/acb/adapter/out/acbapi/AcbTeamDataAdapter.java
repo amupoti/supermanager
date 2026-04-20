@@ -144,13 +144,14 @@ public class AcbTeamDataAdapter implements TeamDataPort {
         boolean injured = "injured".equals(fisicStatus);
         boolean postponed = "postponed".equals(fisicStatus);
         boolean doubtful = "doubtful".equals(fisicStatus);
+        boolean blocked = marketMap != null && "true".equals(marketMap.get(IS_BLOCKED.name()));
         boolean spanish = marketMap != null && "true".equals(marketMap.get(IS_SPANISH.name()));
         boolean foreign = marketMap != null && "true".equals(marketMap.get(IS_FOREIGN.name()));
         return Player.builder()
                 .name(p.getShortName())
                 .position(PlayerPosition.getFromNum(p.getPosition()).getName())
                 .score(p.getJourneyPoints())
-                .status(PlayerStatus.builder().injured(injured).postponed(postponed).doubtful(doubtful).spanish(spanish).foreign(foreign).build())
+                .status(PlayerStatus.builder().injured(injured).postponed(postponed).doubtful(doubtful).blocked(blocked).spanish(spanish).foreign(foreign).build())
                 .marketData(marketMap)
                 .idUserTeamPlayerChange(p.getIdUserTeamPlayerChange())
                 .build();
