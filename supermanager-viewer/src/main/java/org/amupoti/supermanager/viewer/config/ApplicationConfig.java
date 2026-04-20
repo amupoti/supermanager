@@ -37,7 +37,6 @@ import org.apache.hc.core5.http.HttpRequest;
 import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.hc.core5.util.TimeValue;
 import org.apache.hc.core5.util.Timeout;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCache;
@@ -85,11 +84,8 @@ public class ApplicationConfig {
     @Value("${private.league.teams:}")
     private String privateLeagueTeams;
 
-    @Autowired
-    CloseableHttpClient httpClient;
-
     @Bean
-    public PropertySourcesPlaceholderConfigurer getPropertySourcesPlaceholderConfigurer() {
+    public static PropertySourcesPlaceholderConfigurer getPropertySourcesPlaceholderConfigurer() {
         return new PropertySourcesPlaceholderConfigurer();
     }
 

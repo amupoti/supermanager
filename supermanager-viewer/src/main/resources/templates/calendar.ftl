@@ -8,7 +8,6 @@
 
     </script>
 </head>
-</script>
 <style type="text/css">
     body{
     background-color: #64b6ee
@@ -36,10 +35,10 @@
 
                     <#assign match = team.matches[i-1] >
                     <td class="${match.againstTeam.quality}" align="center" style="font-size: 80%">
-                         <div class="<#if match.local>localClass<#else>awayClass</#if>">
-                             ${match.againstTeam}</td>
-                         </div>
-                     </td>
+                        <div class="<#if match.local>localClass<#else>awayClass</#if>">
+                            ${match.againstTeam}
+                        </div>
+                    </td>
                  </#list>
             </tr>
 

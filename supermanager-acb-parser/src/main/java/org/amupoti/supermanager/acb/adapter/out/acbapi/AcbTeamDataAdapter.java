@@ -140,14 +140,17 @@ public class AcbTeamDataAdapter implements TeamDataPort {
         if (p.getShortName() == null)
             log.warn("ACB API: player shortName is null — API response may have changed");
         Map<String, String> marketMap = marketData.getPlayerMap(p.getShortName());
-        boolean injured = marketMap != null && "injured".equals(marketMap.get(FISIC_STATUS.name()));
+        String fisicStatus = marketMap != null ? marketMap.get(FISIC_STATUS.name()) : null;
+        boolean injured = "injured".equals(fisicStatus);
+        boolean postponed = "postponed".equals(fisicStatus);
+        boolean doubtful = "doubtful".equals(fisicStatus);
         boolean spanish = marketMap != null && "true".equals(marketMap.get(IS_SPANISH.name()));
         boolean foreign = marketMap != null && "true".equals(marketMap.get(IS_FOREIGN.name()));
         return Player.builder()
                 .name(p.getShortName())
                 .position(PlayerPosition.getFromNum(p.getPosition()).getName())
                 .score(p.getJourneyPoints())
-                .status(PlayerStatus.builder().injured(injured).spanish(spanish).foreign(foreign).build())
+                .status(PlayerStatus.builder().injured(injured).postponed(postponed).doubtful(doubtful).spanish(spanish).foreign(foreign).build())
                 .marketData(marketMap)
                 .idUserTeamPlayerChange(p.getIdUserTeamPlayerChange())
                 .build();
