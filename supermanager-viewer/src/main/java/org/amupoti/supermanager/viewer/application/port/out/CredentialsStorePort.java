@@ -1,6 +1,6 @@
 package org.amupoti.supermanager.viewer.application.port.out;
 
-import org.amupoti.sm.main.bean.SMUser;
+import org.amupoti.supermanager.viewer.domain.model.SMUser;
 
 import java.util.Optional;
 

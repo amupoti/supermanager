@@ -7,10 +7,9 @@ import org.amupoti.supermanager.rdm.application.port.out.ScheduleScrapingPort;
 import org.amupoti.supermanager.rdm.domain.model.LeagueTeam;
 import org.amupoti.supermanager.rdm.domain.model.Match;
 import org.amupoti.supermanager.rdm.domain.model.TeamSchedule;
-import org.amupoti.supermanager.parser.rdm.RdmException;
+import org.amupoti.supermanager.rdm.exception.RdmException;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,7 +20,6 @@ import java.util.stream.Collectors;
 /**
  * Use case service: provides team match schedule data with caching and stale-fallback.
  */
-@Service
 @Slf4j
 public class TeamScheduleService implements GetAllSchedulesUseCase, GetTeamScheduleUseCase {
 

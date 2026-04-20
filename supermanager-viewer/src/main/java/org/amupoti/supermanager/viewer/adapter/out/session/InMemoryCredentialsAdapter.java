@@ -1,7 +1,7 @@
 package org.amupoti.supermanager.viewer.adapter.out.session;
 
-import org.amupoti.sm.main.bean.SMUser;
 import org.amupoti.supermanager.viewer.application.port.out.CredentialsStorePort;
+import org.amupoti.supermanager.viewer.domain.model.SMUser;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -10,7 +10,6 @@ import java.util.Optional;
 
 /**
  * Out-adapter: in-memory session credential store.
- * Implements CredentialsStorePort — wraps UserCredentialsHolder logic.
  */
 @Component
 public class InMemoryCredentialsAdapter implements CredentialsStorePort {

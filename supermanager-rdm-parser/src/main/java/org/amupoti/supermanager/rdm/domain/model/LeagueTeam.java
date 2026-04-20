@@ -47,7 +47,7 @@ public enum LeagueTeam {
             }
         }
         log.error("Could not convert team {}", teamName);
-        throw new org.amupoti.supermanager.parser.rdm.RdmException(
+        throw new org.amupoti.supermanager.rdm.exception.RdmException(
                 "No se puede convertir el nombre de equipo " + teamName
                         + " a un nombre del rincon del manager. Es posible que el equipo haya cambiado su nombre");
     }
