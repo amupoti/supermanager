@@ -28,6 +28,10 @@ import org.amupoti.supermanager.viewer.application.port.in.ViewPrivateLeagueUseC
 import org.amupoti.supermanager.viewer.application.service.PrivateLeagueService;
 import org.amupoti.supermanager.viewer.application.service.ViewCalendarService;
 import org.amupoti.supermanager.viewer.application.port.in.ViewUserTeamsUseCase;
+import org.amupoti.supermanager.acb.application.port.in.AutoReplaceUseCase;
+import org.amupoti.supermanager.acb.application.service.AutoReplaceService;
+import org.amupoti.supermanager.viewer.application.port.in.AutoReplaceAllTeamsUseCase;
+import org.amupoti.supermanager.viewer.application.service.AutoReplaceAllTeamsService;
 import org.amupoti.supermanager.viewer.application.service.ViewUserTeamsService;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.DefaultHttpRequestRetryStrategy;
@@ -222,5 +226,19 @@ public class ApplicationConfig {
     public ViewUserTeamsUseCase viewUserTeamsUseCase(LoadUserTeamsUseCase loadUserTeamsUseCase,
                                                       TeamScheduleService scheduleService) {
         return new ViewUserTeamsService(loadUserTeamsUseCase, scheduleService, nextMatches);
+    }
+
+    @Bean
+    public AutoReplaceUseCase autoReplaceUseCase(SellPlayerUseCase sellPlayerUseCase,
+                                                  BuyPlayerUseCase buyPlayerUseCase) {
+        return new AutoReplaceService(sellPlayerUseCase, buyPlayerUseCase);
+    }
+
+    @Bean
+    public AutoReplaceAllTeamsUseCase autoReplaceAllTeamsUseCase(AuthenticationPort authPort,
+                                                                  LoadUserTeamsUseCase loadUserTeamsUseCase,
+                                                                  MarketDataPort marketDataPort,
+                                                                  AutoReplaceUseCase autoReplaceUseCase) {
+        return new AutoReplaceAllTeamsService(authPort, loadUserTeamsUseCase, marketDataPort, autoReplaceUseCase);
     }
 }

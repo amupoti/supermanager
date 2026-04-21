@@ -44,8 +44,23 @@ background-color: #64b6ee
 </div>
 </#if>
 
+<#if autoReplaceResult??>
+<div class="alert alert-success alert-dismissible" role="alert" style="margin: 10px">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    Auto-cambios completados: ${autoReplaceResult} cambio(s) realizados.
+</div>
+</#if>
+
 <div align="center">
+    <b><a class="btn btn-default" href="/" role="button"><span class="glyphicon glyphicon-home"></span> Inicio</a></b>
+    &nbsp;
     <b><a class="btn btn-info" href="/private/league.html" role="button">Liga Privada en directo</a></b>
+    &nbsp;
+    <form method="post" action="/users/auto-replace.html" style="display:inline"
+          onsubmit="return confirm('¿Realizar auto-cambios en todos los equipos? Se venderán jugadores lesionados/dudosos y se comprarán los mejores sustitutos disponibles.')">
+        <input type="hidden" name="id" value="${id}"/>
+        <button type="submit" class="btn btn-warning"><span class="glyphicon glyphicon-refresh"></span> Auto-cambios</button>
+    </form>
 </div>
 
 <div align="center" class="containerts">
