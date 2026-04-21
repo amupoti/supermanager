@@ -55,7 +55,11 @@ public class MarketData {
                                                      boolean requireSpanish, boolean excludeForeign) {
         return playerData.entrySet().stream()
                 .filter(e -> !excludedIds.contains(e.getKey()))
-                .filter(e -> "fit".equals(e.getValue().get(MarketCategory.FISIC_STATUS.name())))
+                .filter(e -> {
+                    // Exclude only explicitly bad statuses; null/absent means the player is available
+                    String status = e.getValue().get(MarketCategory.FISIC_STATUS.name());
+                    return !"injured".equals(status) && !"postponed".equals(status) && !"doubtful".equals(status);
+                })
                 .filter(e -> !"true".equals(e.getValue().get(MarketCategory.IS_BLOCKED.name())))
                 .filter(e -> {
                     String price = e.getValue().get(MarketCategory.PRICE.name());

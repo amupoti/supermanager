@@ -1,5 +1,6 @@
 package org.amupoti.supermanager.viewer.adapter.in.web;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.amupoti.supermanager.acb.application.port.in.BuyPlayerUseCase;
 import org.amupoti.supermanager.acb.application.port.in.CancelAllChangesUseCase;
 import org.amupoti.supermanager.acb.application.port.in.SellPlayerUseCase;
@@ -9,6 +10,7 @@ import org.amupoti.supermanager.acb.exception.ErrorCode;
 import org.amupoti.supermanager.acb.exception.SmException;
 import org.amupoti.supermanager.rdm.application.port.in.GetTeamScheduleUseCase;
 import org.amupoti.supermanager.viewer.application.model.PrivateLeagueTeamData;
+import org.amupoti.supermanager.viewer.application.port.in.AutoReplaceAllTeamsUseCase;
 import org.amupoti.supermanager.viewer.application.port.in.ViewPrivateLeagueUseCase;
 import org.amupoti.supermanager.viewer.application.port.in.ViewUserTeamsUseCase;
 import org.amupoti.supermanager.viewer.application.port.out.CredentialsStorePort;
@@ -55,6 +57,9 @@ public class UserTeamWebAdapter {
     private CancelAllChangesUseCase cancelAllChangesUseCase;
 
     @Autowired
+    private AutoReplaceAllTeamsUseCase autoReplaceAllTeamsUseCase;
+
+    @Autowired
     private GetTeamScheduleUseCase matchService;
 
     @Value("${scraping.next-matches:5}")
@@ -75,6 +80,7 @@ public class UserTeamWebAdapter {
     @RequestMapping(value = "/teams.html", method = RequestMethod.GET)
     public String getUserTeams(@RequestParam String id,
                                @RequestParam(required = false) String error,
+                               HttpServletRequest request,
                                Model model) throws Exception {
 
         SMUser user = credentialsStore.find(id)
@@ -100,6 +106,13 @@ public class UserTeamWebAdapter {
             model.addAttribute("errorMessage", "No se pudo comprar al jugador. Verifica tu caja o intenta más tarde.");
         } else if ("undo-failed".equals(error)) {
             model.addAttribute("errorMessage", "No se pudo deshacer el cambio. Es posible que el partido ya haya comenzado.");
+        } else if ("auto-replace-failed".equals(error)) {
+            model.addAttribute("errorMessage", "Error al realizar los auto-cambios. Inténtalo de nuevo.");
+        }
+
+        String autoReplaceResult = request.getParameter("autoReplaceResult");
+        if (autoReplaceResult != null) {
+            model.addAttribute("autoReplaceResult", autoReplaceResult);
         }
         return "userTeams";
     }
@@ -168,5 +181,22 @@ public class UserTeamWebAdapter {
             return "redirect:/users/teams.html?id=" + id + "&error=cancel-failed";
         }
         return "redirect:/users/teams.html?id=" + id;
+    }
+
+    @RequestMapping(value = "/auto-replace.html", method = RequestMethod.POST)
+    public String autoReplace(@RequestParam String id, Model model) {
+        SMUser user = credentialsStore.find(id)
+                .orElseThrow(() -> new SmException(ErrorCode.INCORRECT_SESSION_ID));
+        try {
+            var results = autoReplaceAllTeamsUseCase.autoReplaceAllTeams(user.getLogin(), user.getPassword());
+            long totalChanges = results.stream()
+                    .flatMap(r -> r.changesDescription().stream())
+                    .filter(d -> d.contains("→"))
+                    .count();
+            return "redirect:/users/teams.html?id=" + id + "&autoReplaceResult=" + totalChanges;
+        } catch (Exception e) {
+            log.warn("Auto-replace failed: " + e.getMessage());
+            return "redirect:/users/teams.html?id=" + id + "&error=auto-replace-failed";
+        }
     }
 }
