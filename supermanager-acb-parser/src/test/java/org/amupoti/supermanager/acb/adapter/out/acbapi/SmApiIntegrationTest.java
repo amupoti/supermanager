@@ -35,7 +35,7 @@ import static org.junit.Assert.*;
 public class SmApiIntegrationTest {
 
     private static final String USER     = "amupoti@gmail.com";
-    private static final String PASSWORD = "1Contrasenyadelasmalas!";
+    private static final String PASSWORD = "REMOVED_EXPOSED_PASSWORD";
     private static final int    TEAM_ID  = 168212;
 
     private static final String BASE_URL   = "https://supermanager.acb.com";
